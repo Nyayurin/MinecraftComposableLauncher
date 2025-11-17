@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="MinecraftComposableLauncher-jvm-1.0-SNAPSHOT">
+    <output-path>$PROJECT_DIR$/build/libs</output-path>
+    <root id="archive" name="MinecraftComposableLauncher-jvm-1.0-SNAPSHOT.jar">
+      <element id="module-output" name="MinecraftComposableLauncher.jvmMain" />
+    </root>
+  </artifact>
+</component>
