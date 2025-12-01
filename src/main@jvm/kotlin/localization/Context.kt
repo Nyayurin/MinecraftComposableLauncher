@@ -1,11 +1,16 @@
 package cn.yurin.minecraft_composable_launcher.localization
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 fun buildContext(block: context(ContextBuilder) () -> Unit) = ContextBuilder().apply(block).build()
 
-data class Context(
+class Context(
 	private val destinations: Map<Destination.Sign, Destination>,
-	val language: Language,
+	language: Language,
 ) {
+	var language: Language by mutableStateOf(language)
 	operator fun <S : Destination.Sign> get(value: S) = destinations[value] as Destination?
 }
 

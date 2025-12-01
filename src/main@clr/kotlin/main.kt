@@ -1,1 +1,0 @@
-package cn.yurin.minecraft_composable_launcher

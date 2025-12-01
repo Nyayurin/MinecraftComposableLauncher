@@ -1,0 +1,70 @@
+<Root>
+    <File name="main.kt">
+        <CodeNode.MultiLine>
+            <PlainNode.SingleLine>
+                <PlainNode.Plain>namespace cn.yurin.minecraft_composable_launcher</PlainNode.Plain>
+            </PlainNode.SingleLine>
+            <PaddingNode.Block>
+                <CodeNode.MultiLine>
+                    <PlainNode.SingleLine>
+                        <PlainNode.Plain>[global::kotlin.clr.KotlinFileClass]</PlainNode.Plain>
+                    </PlainNode.SingleLine>
+                    <CodeNode.SingleLine>
+                        <PlainNode.Plain>public </PlainNode.Plain>
+                        <PlainNode.Plain>static </PlainNode.Plain>
+                        <PlainNode.Plain>class </PlainNode.Plain>
+                        <PlainNode.Plain>MainKt</PlainNode.Plain>
+                    </CodeNode.SingleLine>
+                    <PaddingNode.Block>
+                        <CodeNode.MultiLine>
+                            <CodeNode.SingleLine>
+                                <PlainNode.Plain>public </PlainNode.Plain>
+                                <PlainNode.Plain>static </PlainNode.Plain>
+                                <PlainNode.Plain>void </PlainNode.Plain>
+                                <PlainNode.Plain>main(</PlainNode.Plain>
+                                <PlainNode.Plain></PlainNode.Plain>
+                                <PlainNode.Plain>)</PlainNode.Plain>
+                            </CodeNode.SingleLine>
+                            <PaddingNode.Block>
+                                <CodeNode.SingleLine>
+                                    <CodeNode.SingleLineList>
+                                        <PlainNode.Plain>global::kotlin.io.ConsoleKt</PlainNode.Plain>
+                                        <PlainNode.Plain>.</PlainNode.Plain>
+                                        <PlainNode.Plain>println</PlainNode.Plain>
+                                        <PlainNode.Plain>(</PlainNode.Plain>
+                                        <PlainNode.Plain>"Hello World!"</PlainNode.Plain>
+                                        <PlainNode.Plain>)</PlainNode.Plain>
+                                    </CodeNode.SingleLineList>
+                                    <PlainNode.Plain>;</PlainNode.Plain>
+                                </CodeNode.SingleLine>
+                            </PaddingNode.Block>
+                        </CodeNode.MultiLine>
+                        <CodeNode.None />
+                        <CodeNode.MultiLine>
+                            <CodeNode.SingleLine>
+                                <PlainNode.Plain>public </PlainNode.Plain>
+                                <PlainNode.Plain>static </PlainNode.Plain>
+                                <PlainNode.Plain>void </PlainNode.Plain>
+                                <PlainNode.Plain>Main(</PlainNode.Plain>
+                                <PlainNode.Plain>[global::kotlin.clr.KotlinNotNull] string[] args</PlainNode.Plain>
+                                <PlainNode.Plain>)</PlainNode.Plain>
+                            </CodeNode.SingleLine>
+                            <PaddingNode.Block>
+                                <CodeNode.SingleLine>
+                                    <CodeNode.SingleLineList>
+                                        <PlainNode.Plain>global::cn.yurin.minecraft_composable_launcher.MainKt</PlainNode.Plain>
+                                        <PlainNode.Plain>.</PlainNode.Plain>
+                                        <PlainNode.Plain>main</PlainNode.Plain>
+                                        <PlainNode.Plain>(</PlainNode.Plain>
+                                        <PlainNode.Plain>)</PlainNode.Plain>
+                                    </CodeNode.SingleLineList>
+                                    <PlainNode.Plain>;</PlainNode.Plain>
+                                </CodeNode.SingleLine>
+                            </PaddingNode.Block>
+                        </CodeNode.MultiLine>
+                    </PaddingNode.Block>
+                </CodeNode.MultiLine>
+            </PaddingNode.Block>
+        </CodeNode.MultiLine>
+    </File>
+</Root>

@@ -14,6 +14,7 @@ import androidx.compose.ui.window.*
 import cn.yurin.minecraft_composable_launcher.localization.initContext
 import kotlinx.coroutines.launch
 import java.awt.Dimension
+import java.awt.Frame
 
 fun main() = context(initContext()) {
 	application {
@@ -21,8 +22,10 @@ fun main() = context(initContext()) {
 			position = WindowPosition.Aligned(Alignment.Center),
 			size = DpSize(1000.dp, 600.dp),
 		)
+		var realSize by remember { mutableStateOf(state.size) }
 		val scope = rememberCoroutineScope()
 		var windowScale by remember { mutableFloatStateOf(0F) }
+		var windowAlpha by remember { mutableFloatStateOf(0F) }
 		Window(
 			onCloseRequest = ::exitApplication,
 			state = state,
@@ -30,22 +33,57 @@ fun main() = context(initContext()) {
 			undecorated = true,
 			transparent = true,
 		) {
-			LaunchedEffect(state.isMinimized) {
-				if (!state.isMinimized) {
-					scope.launch {
-						val anim = Animatable(0F)
-						anim.animateTo(
-							targetValue = 1F,
-							animationSpec = tween(),
-						) {
-							windowScale = value
-						}
+			val density = LocalDensity.current
+			LaunchedEffect(density.density) {
+				with(density) {
+					println("Density changed to ${density.density}, current size: ${state.size}")
+					state.size = DpSize(realSize.width.toPx().dp, realSize.height.toPx().dp)
+				}
+			}
+			LaunchedEffect(state.size) {
+				with(density) {
+					println("Window Size Changed: Density(${density.density}), DpSize: (${state.size.width.value}, ${state.size.height.value}), PxSize: (${window.size.width}, ${window.size.height})")
+					realSize = DpSize(state.size.width.value.toDp(), state.size.height.value.toDp())
+					println("Real DpSize: $realSize")
+				}
+			}
+			suspend fun animateWindow(reverse: Boolean) {
+				val anim = Animatable(
+					when (reverse) {
+						true -> 0F
+						else -> 1F
+					}
+				)
+				anim.animateTo(
+					targetValue = when (reverse) {
+						true -> 1F
+						else -> 0F
+					},
+					animationSpec = tween(200),
+				) {
+					windowScale = value * 0.25F + 0.75F
+					windowAlpha = value
+				}
+			}
+			LaunchedEffect(Unit) {
+				window.addWindowStateListener {
+					if (window.state == Frame.ICONIFIED) {
+						windowScale = .75F
+						windowAlpha = 0F
 					}
 				}
 			}
-			setMinimumSize(800.dp, 400.dp)
+			LaunchedEffect(state.isMinimized) {
+				if (!state.isMinimized) {
+					scope.launch {
+						animateWindow(true)
+					}
+				}
+			}
+			setMinimumSize(800.dp, 450.dp)
 			App(
 				windowScale = animateFloatAsState(windowScale).value,
+				windowAlpha = animateFloatAsState(windowAlpha).value,
 				windowDraggableArea = {
 					WindowDraggableArea {
 						it()
@@ -53,25 +91,13 @@ fun main() = context(initContext()) {
 				},
 				exitApplication = {
 					scope.launch {
-						val anim = Animatable(1F)
-						anim.animateTo(
-							targetValue = 0F,
-							animationSpec = tween(),
-						) {
-							windowScale = value
-						}
+						animateWindow(false)
 						exitApplication()
 					}
 				},
 				minimizeWindow = {
 					scope.launch {
-						val anim = Animatable(1F)
-						anim.animateTo(
-							targetValue = 0F,
-							animationSpec = tween(),
-						) {
-							windowScale = value
-						}
+						animateWindow(false)
 						state.isMinimized = true
 					}
 				}
@@ -88,6 +114,7 @@ fun FrameWindowScope.setMinimumSize(
 	val density = LocalDensity.current
 	LaunchedEffect(density) {
 		window.minimumSize = with(density) {
+			println("Set Minimum Size: (${width.value}dp, ${height.value}dp) -> (${width.toPx()}px, ${height.toPx()}px)")
 			Dimension(width.toPx().toInt(), height.toPx().toInt())
 		}
 	}

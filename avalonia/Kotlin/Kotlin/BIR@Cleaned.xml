@@ -1,0 +1,42 @@
+<Root>
+    <File name="main.kt">
+        <CodeNode.MultiLine>
+            <PlainNode.SingleLine>
+                <PlainNode.Plain>namespace cn.yurin.minecraft_composable_launcher</PlainNode.Plain>
+            </PlainNode.SingleLine>
+            <PaddingNode.Block>
+                <CodeNode.MultiLine>
+                    <PlainNode.SingleLine>
+                        <PlainNode.Plain>[global::kotlin.clr.KotlinFileClass]</PlainNode.Plain>
+                    </PlainNode.SingleLine>
+                    <CodeNode.SingleLine>
+                        <PlainNode.Plain>public static class MainKt</PlainNode.Plain>
+                    </CodeNode.SingleLine>
+                    <PaddingNode.Block>
+                        <CodeNode.MultiLine>
+                            <CodeNode.SingleLine>
+                                <PlainNode.Plain>public static void main()</PlainNode.Plain>
+                            </CodeNode.SingleLine>
+                            <PaddingNode.Block>
+                                <CodeNode.SingleLine>
+                                    <PlainNode.Plain>global::kotlin.io.ConsoleKt.println("Hello World!");</PlainNode.Plain>
+                                </CodeNode.SingleLine>
+                            </PaddingNode.Block>
+                        </CodeNode.MultiLine>
+                        <CodeNode.None />
+                        <CodeNode.MultiLine>
+                            <CodeNode.SingleLine>
+                                <PlainNode.Plain>public static void Main([global::kotlin.clr.KotlinNotNull] string[] args)</PlainNode.Plain>
+                            </CodeNode.SingleLine>
+                            <PaddingNode.Block>
+                                <CodeNode.SingleLine>
+                                    <PlainNode.Plain>global::cn.yurin.minecraft_composable_launcher.MainKt.main();</PlainNode.Plain>
+                                </CodeNode.SingleLine>
+                            </PaddingNode.Block>
+                        </CodeNode.MultiLine>
+                    </PaddingNode.Block>
+                </CodeNode.MultiLine>
+            </PaddingNode.Block>
+        </CodeNode.MultiLine>
+    </File>
+</Root>

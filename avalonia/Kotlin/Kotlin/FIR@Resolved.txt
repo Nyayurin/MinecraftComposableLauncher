@@ -1,0 +1,16 @@
+FILE: App.kt
+    public final class App : R|Avalonia/Application| {
+        public constructor(): R|cn/yurin/minecraft_avalonia_launcher/App| {
+            super<R|Avalonia/Application|>()
+        }
+
+    }
+
+FILE: Program.kt
+    public final fun main(args: R|kotlin/Array|): <ERROR TYPE REF: Inconsistent type: Avalonia/AppBuilder<TApp>? (parameters.size = 0, arguments.size = 1)> {
+        ^main R|cn/yurin/minecraft_avalonia_launcher/buildAvaloniaApp|()
+    }
+    private final fun buildAvaloniaApp(): <ERROR TYPE REF: Inconsistent type: Avalonia/AppBuilder<TApp>? (parameters.size = 0, arguments.size = 1)> {
+        ^buildAvaloniaApp Q|Avalonia/AppBuilder|.R|Avalonia/AppBuilder.Companion.Configure|<R|cn/yurin/minecraft_avalonia_launcher/App|>()
+    }
+

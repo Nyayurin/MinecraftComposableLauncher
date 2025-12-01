@@ -1,0 +1,16 @@
+FILE: App.kt
+    public final? class App : Application {
+        public? constructor(): R|cn/yurin/minecraft_avalonia_launcher/App| {
+            super<Application>()
+        }
+
+    }
+
+FILE: Program.kt
+    public? final? fun main(args: Array): <implicit> {
+        ^main buildAvaloniaApp#()
+    }
+    private final? fun buildAvaloniaApp(): <implicit> {
+        ^buildAvaloniaApp AppBuilder#.Configure#<App>()
+    }
+

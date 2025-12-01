@@ -1,0 +1,8 @@
+MODULE_FRAGMENT name:<main>
+  FILE fqName:cn.yurin.minecraft_composable_launcher fileName:C:/Users/Yurin/IdeaProjects/MinecraftComposableLauncher/src/main@clr/kotlin/main.kt
+    FUN name:main visibility:public modality:FINAL returnType:kotlin.Unit
+      BLOCK_BODY
+        TYPE_OP type=kotlin.Unit origin=IMPLICIT_COERCION_TO_UNIT typeOperand=kotlin.Unit
+          CALL 'public final fun println (message: kotlin.Any?): kotlin.Unit? declared in kotlin.io' type=kotlin.Unit? origin=null
+            ARG message: CONST String type=kotlin.String value="Hello World!"
+

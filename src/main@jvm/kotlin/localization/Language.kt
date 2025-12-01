@@ -2,7 +2,7 @@ package cn.yurin.minecraft_composable_launcher.localization
 
 enum class Language {
 	Chinese,
-	English,
+	English;
 }
 
 context(builder: LocalTextBuilder)
