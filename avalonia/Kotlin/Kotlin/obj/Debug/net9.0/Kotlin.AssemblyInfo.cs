@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Kotlin")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7157af7fb17495ebbebd5bf20c479c817162b5df")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+c3abcadf04e2cde0e7322b05c410310dde63dfe1")]
 [assembly: System.Reflection.AssemblyProductAttribute("Kotlin")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Kotlin")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

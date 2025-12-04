@@ -11,7 +11,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import cn.yurin.minecraft_composable_launcher.localization.initContext
+import cn.yurin.minecraft_composable_launcher.ui.localization.initContext
+import cn.yurin.minecraft_composable_launcher.ui.App
 import kotlinx.coroutines.launch
 import java.awt.Dimension
 import java.awt.Frame
@@ -22,7 +23,6 @@ fun main() = context(initContext()) {
 			position = WindowPosition.Aligned(Alignment.Center),
 			size = DpSize(1000.dp, 600.dp),
 		)
-		var realSize by remember { mutableStateOf(state.size) }
 		val scope = rememberCoroutineScope()
 		var windowScale by remember { mutableFloatStateOf(0F) }
 		var windowAlpha by remember { mutableFloatStateOf(0F) }
@@ -33,20 +33,6 @@ fun main() = context(initContext()) {
 			undecorated = true,
 			transparent = true,
 		) {
-			val density = LocalDensity.current
-			LaunchedEffect(density.density) {
-				with(density) {
-					println("Density changed to ${density.density}, current size: ${state.size}")
-					state.size = DpSize(realSize.width.toPx().dp, realSize.height.toPx().dp)
-				}
-			}
-			LaunchedEffect(state.size) {
-				with(density) {
-					println("Window Size Changed: Density(${density.density}), DpSize: (${state.size.width.value}, ${state.size.height.value}), PxSize: (${window.size.width}, ${window.size.height})")
-					realSize = DpSize(state.size.width.value.toDp(), state.size.height.value.toDp())
-					println("Real DpSize: $realSize")
-				}
-			}
 			suspend fun animateWindow(reverse: Boolean) {
 				val anim = Animatable(
 					when (reverse) {
@@ -113,9 +99,6 @@ fun FrameWindowScope.setMinimumSize(
 ) {
 	val density = LocalDensity.current
 	LaunchedEffect(density) {
-		window.minimumSize = with(density) {
-			println("Set Minimum Size: (${width.value}dp, ${height.value}dp) -> (${width.toPx()}px, ${height.toPx()}px)")
-			Dimension(width.toPx().toInt(), height.toPx().toInt())
-		}
+		window.minimumSize = Dimension(width.value.toInt(), height.value.toInt())
 	}
 }

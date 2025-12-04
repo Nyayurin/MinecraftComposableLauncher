@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.localization
+package cn.yurin.minecraft_composable_launcher.ui.localization
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

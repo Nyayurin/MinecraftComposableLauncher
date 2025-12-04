@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.localization
+package cn.yurin.minecraft_composable_launcher.ui.localization
 
 interface DestOrBuilderScope
 

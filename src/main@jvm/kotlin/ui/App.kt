@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher
+package cn.yurin.minecraft_composable_launcher.ui
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -23,11 +23,11 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.localization.*
-import cn.yurin.minecraft_composable_launcher.page.DownloadsPage
-import cn.yurin.minecraft_composable_launcher.page.LaunchPage
-import cn.yurin.minecraft_composable_launcher.page.MorePage
-import cn.yurin.minecraft_composable_launcher.page.SettingsPage
+import cn.yurin.minecraft_composable_launcher.ui.localization.*
+import cn.yurin.minecraft_composable_launcher.ui.page.DownloadsPage
+import cn.yurin.minecraft_composable_launcher.ui.page.LaunchPage
+import cn.yurin.minecraft_composable_launcher.ui.page.MorePage
+import cn.yurin.minecraft_composable_launcher.ui.page.SettingsPage
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.close_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.minimize_24px

@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.page
+package cn.yurin.minecraft_composable_launcher.ui.page
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
@@ -32,15 +32,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.localization.Context
-import cn.yurin.minecraft_composable_launcher.localization.LaunchPageDest
-import cn.yurin.minecraft_composable_launcher.localization.current
-import cn.yurin.minecraft_composable_launcher.localization.dest
-import cn.yurin.minecraft_composable_launcher.localization.launch
-import cn.yurin.minecraft_composable_launcher.localization.offline
-import cn.yurin.minecraft_composable_launcher.localization.online
-import cn.yurin.minecraft_composable_launcher.localization.settings
-import cn.yurin.minecraft_composable_launcher.localization.versions
+import cn.yurin.minecraft_composable_launcher.ui.localization.Context
+import cn.yurin.minecraft_composable_launcher.ui.localization.LaunchPageDest
+import cn.yurin.minecraft_composable_launcher.ui.localization.current
+import cn.yurin.minecraft_composable_launcher.ui.localization.dest
+import cn.yurin.minecraft_composable_launcher.ui.localization.launch
+import cn.yurin.minecraft_composable_launcher.ui.localization.offline
+import cn.yurin.minecraft_composable_launcher.ui.localization.online
+import cn.yurin.minecraft_composable_launcher.ui.localization.settings
+import cn.yurin.minecraft_composable_launcher.ui.localization.versions
 
 @Composable
 context(_: Context)

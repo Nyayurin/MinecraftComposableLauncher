@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher
+package cn.yurin.minecraft_composable_launcher.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
