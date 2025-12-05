@@ -17,6 +17,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: |
           chmod +x ./gradlew
+          ./gradlew :generateComposeResClass
+          ./gradlew :generateResourceAccessorsForJvmMain
+          ./gradlew :generateExpectResourceCollectorsForCommonMain
+          ./gradlew :generateActualResourceCollectorsForJvmMain
           ./gradlew :assembleJvmMainResources
       - name: package windowsUberJar
         run: ./gradlew :packageUberJarForCurrentOS
@@ -56,6 +60,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: |
           chmod +x ./gradlew
+          ./gradlew :generateComposeResClass
+          ./gradlew :generateResourceAccessorsForJvmMain
+          ./gradlew :generateExpectResourceCollectorsForCommonMain
+          ./gradlew :generateActualResourceCollectorsForJvmMain
           ./gradlew :assembleJvmMainResources
       - name: package linuxUberJar
         run: ./gradlew :packageUberJarForCurrentOS
@@ -95,6 +103,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: |
           chmod +x ./gradlew
+          ./gradlew :generateComposeResClass
+          ./gradlew :generateResourceAccessorsForJvmMain
+          ./gradlew :generateExpectResourceCollectorsForCommonMain
+          ./gradlew :generateActualResourceCollectorsForJvmMain
           ./gradlew :assembleJvmMainResources
       - name: package macosUberJar
         run: ./gradlew :packageUberJarForCurrentOS
