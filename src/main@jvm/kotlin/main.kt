@@ -10,14 +10,13 @@ import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import cn.yurin.minecraft_composable_launcher.ui.localization.initContext
 import cn.yurin.minecraft_composable_launcher.ui.App
+import cn.yurin.minecraft_composable_launcher.ui.localization.initContext
 import kotlinx.coroutines.launch
 import java.awt.Dimension
 import java.awt.Frame
@@ -75,8 +74,7 @@ fun main() = context(initContext()) {
 			Box(
 				modifier = Modifier
 					.fillMaxSize()
-					.padding(8.dp)
-					.shadow(8.dp),
+					.padding(8.dp),
 			) {
 				App(
 					windowScale = animateFloatAsState(windowScale).value,
