@@ -1,3 +1,5 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
 	kotlin("multiplatform") version "2.2.21"
 	kotlin("plugin.serialization") version "2.2.21"
@@ -87,4 +89,27 @@ compose.resources {
 		sourceSetName = "jvmMain",
 		directoryProvider = provider { layout.projectDirectory.dir("src/main@jvm/composeResources") }
 	)
+}
+
+compose.desktop {
+	application {
+		mainClass = "cn.yurin.minecraft_composable_launcher.MainKt"
+
+		nativeDistributions {
+			val os = System.getProperty("os.name")
+			when {
+				os.contains("Windows") -> targetFormats(TargetFormat.Msi, TargetFormat.Exe, TargetFormat.AppImage)
+				os.contains("Linux") -> targetFormats(TargetFormat.Deb, TargetFormat.Rpm, TargetFormat.AppImage)
+				os.contains("Mac OS") -> targetFormats(TargetFormat.Dmg, TargetFormat.Pkg)
+				else -> error("Unsupported OS: $os")
+			}
+			packageName = "Minecraft Composable Launcher"
+			packageVersion = "0.0.0"
+			jvmArgs("-Dfile.encoding=UTF-8")
+
+			linux {
+				modules("jdk.security.auth")
+			}
+		}
+	}
 }
