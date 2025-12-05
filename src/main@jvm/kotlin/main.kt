@@ -55,6 +55,14 @@ fun main() = context(initContext()) {
 					windowAlpha = value
 				}
 			}
+			var isRestored by remember { mutableStateOf(true) }
+			window.addWindowStateListener { e ->
+				val wasMinimized = e.oldState == Frame.ICONIFIED
+				val nowNormal = e.newState == Frame.NORMAL
+				if (wasMinimized && nowNormal) {
+					isRestored = true
+				}
+			}
 			LaunchedEffect(Unit) {
 				window.addWindowStateListener {
 					if (window.state == Frame.ICONIFIED) {
@@ -63,10 +71,11 @@ fun main() = context(initContext()) {
 					}
 				}
 			}
-			LaunchedEffect(state.isMinimized) {
-				if (!state.isMinimized) {
+			LaunchedEffect(isRestored) {
+				if (isRestored) {
 					scope.launch {
 						animateWindow(true)
+						isRestored = false
 					}
 				}
 			}
