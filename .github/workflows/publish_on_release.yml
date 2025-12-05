@@ -15,35 +15,29 @@ jobs:
           java-version: '21'
           distribution: 'zulu'
       - uses: gradle/actions/setup-gradle@v4
-      - run: chmod +x ./gradlew
+      - run: |
+          chmod +x ./gradlew
+          ./gradlew :assembleJvmMainResources
       - name: package windowsUberJar
         run: ./gradlew :packageUberJarForCurrentOS
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: windowsUberJar
           path: build/compose/jars/*
       - name: package windowsAppImage
         run: ./gradlew :packageAppImage
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: windowsAppImage
           path: build/compose/binaries/main/app/*
       - name: package windowsMsi
         run: ./gradlew :packageMsi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: windowsMsi
           path: build/compose/binaries/main/msi/*
       - name: package windowsExe
         run: ./gradlew :packageExe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: windowsExe
@@ -60,35 +54,29 @@ jobs:
           java-version: '21'
           distribution: 'zulu'
       - uses: gradle/actions/setup-gradle@v4
-      - run: chmod +x ./gradlew
+      - run: |
+          chmod +x ./gradlew
+          ./gradlew :assembleJvmMainResources
       - name: package linuxUberJar
         run: ./gradlew :packageUberJarForCurrentOS
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: linuxUberJar
           path: build/compose/jars/*
       - name: package linuxAppImage
         run: ./gradlew :packageAppImage
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: linuxAppImage
           path: build/compose/binaries/main/app/*
       - name: package linuxDeb
         run: ./gradlew :packageDeb
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: linuxDeb
           path: build/compose/binaries/main/deb/*
       - name: package linuxRpm
         run: ./gradlew :packageRpm
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: linuxRpm
@@ -105,20 +93,17 @@ jobs:
           java-version: '21'
           distribution: 'zulu'
       - uses: gradle/actions/setup-gradle@v4
-      - run: echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV
+      - run: |
           chmod +x ./gradlew
+          ./gradlew :assembleJvmMainResources
       - name: package macosUberJar
         run: ./gradlew :packageUberJarForCurrentOS
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: macosUberJar
           path: build/compose/jars/*
       - name: package macosDmg
         run: ./gradlew :packageDmg
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/upload-artifact@v4
         with:
           name: macosDmg

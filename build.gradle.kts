@@ -104,7 +104,7 @@ compose.desktop {
 				else -> error("Unsupported OS: $os")
 			}
 			packageName = "Minecraft Composable Launcher"
-			packageVersion = "0.0.0"
+			packageVersion = "1.0.0"
 			jvmArgs("-Dfile.encoding=UTF-8")
 
 			linux {
