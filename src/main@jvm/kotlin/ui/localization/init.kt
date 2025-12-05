@@ -6,6 +6,7 @@ fun initContext() = buildContext {
 	language = mutableStateOf(Language.Chinese).value
 	initTopbar()
 	initLaunchPage()
+	initDownloadsPage()
 	initSettingsPage()
 }
 
@@ -56,6 +57,45 @@ private fun initLaunchPage() = LaunchPageDest {
 
 	LaunchPageDest.Content {
 
+	}
+}
+
+context(_: ContextBuilder)
+private fun initDownloadsPage() = DownloadsPageDest {
+	DownloadsPageDest.SideBar {
+		vanilla {
+			chinese = "原版"
+			english = "Vanilla"
+		}
+	}
+
+	DownloadsPageDest.Content {
+		DownloadsPageDest.Content.Vanilla {
+			latest {
+				chinese = "最新版"
+				english = "Latest"
+			}
+
+			release {
+				chinese = "发行版"
+				english = "Release"
+			}
+
+			snapshot {
+				chinese = "快照版"
+				english = "Snapshot"
+			}
+
+			oldBeta {
+				chinese = "测试版"
+				english = "Old Beta"
+			}
+
+			oldAlpha {
+				chinese = "初始版"
+				english = "Old Alpha"
+			}
+		}
 	}
 }
 

@@ -64,7 +64,7 @@ private fun RowScope.Sidebar(
 		containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
 		modifier = Modifier
 			.fillMaxHeight()
-			.weight(0.1F),
+			.weight(0.15F),
 	) {
 		pages.forEachIndexed { index, page ->
 			NavigationRailItem(
@@ -98,7 +98,7 @@ private fun RowScope.Content(
 		},
 		modifier = Modifier
 			.fillMaxHeight()
-			.weight(0.9F)
+			.weight(0.85F)
 			.padding(horizontal = 32.dp),
 	) {
 		Column(
@@ -184,7 +184,6 @@ private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
 			}
 		}
 	}
-
 }
 
 @Composable
@@ -219,7 +218,6 @@ private fun Card(
 		}
 	}
 }
-
 
 @Composable
 context(context: Context)

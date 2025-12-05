@@ -34,6 +34,31 @@ val versions get() = property("versions")
 context(_: DestOrBuilderScope, _: LaunchPageDest.SideBar)
 val settings get() = property("settings")
 
+object DownloadsPageDest : Destination.Sign {
+	object SideBar : Destination.Sign
+	object Content : Destination.Sign {
+		object Vanilla : Destination.Sign
+	}
+}
+
+context(_: DestOrBuilderScope, _: DownloadsPageDest.SideBar)
+val vanilla get() = property("vanilla")
+
+context(_: DestOrBuilderScope, _: DownloadsPageDest.Content.Vanilla)
+val latest get() = property("latest")
+
+context(_: DestOrBuilderScope, _: DownloadsPageDest.Content.Vanilla)
+val release get() = property("release")
+
+context(_: DestOrBuilderScope, _: DownloadsPageDest.Content.Vanilla)
+val snapshot get() = property("snapshot")
+
+context(_: DestOrBuilderScope, _: DownloadsPageDest.Content.Vanilla)
+val oldBeta get() = property("oldBeta")
+
+context(_: DestOrBuilderScope, _: DownloadsPageDest.Content.Vanilla)
+val oldAlpha get() = property("oldAlpha")
+
 object SettingsPageDest : Destination.Sign {
 	object SideBar : Destination.Sign
 	object Content : Destination.Sign {

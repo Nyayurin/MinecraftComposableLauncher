@@ -3,9 +3,14 @@ package cn.yurin.minecraft_composable_launcher
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -67,27 +72,34 @@ fun main() = context(initContext()) {
 				}
 			}
 			setMinimumSize(800.dp, 450.dp)
-			App(
-				windowScale = animateFloatAsState(windowScale).value,
-				windowAlpha = animateFloatAsState(windowAlpha).value,
-				windowDraggableArea = {
-					WindowDraggableArea {
-						it()
+			Box(
+				modifier = Modifier
+					.fillMaxSize()
+					.padding(8.dp)
+					.shadow(8.dp),
+			) {
+				App(
+					windowScale = animateFloatAsState(windowScale).value,
+					windowAlpha = animateFloatAsState(windowAlpha).value,
+					windowDraggableArea = {
+						WindowDraggableArea {
+							it()
+						}
+					},
+					exitApplication = {
+						scope.launch {
+							animateWindow(false)
+							exitApplication()
+						}
+					},
+					minimizeWindow = {
+						scope.launch {
+							animateWindow(false)
+							state.isMinimized = true
+						}
 					}
-				},
-				exitApplication = {
-					scope.launch {
-						animateWindow(false)
-						exitApplication()
-					}
-				},
-				minimizeWindow = {
-					scope.launch {
-						animateWindow(false)
-						state.isMinimized = true
-					}
-				}
-			)
+				)
+			}
 		}
 	}
 }

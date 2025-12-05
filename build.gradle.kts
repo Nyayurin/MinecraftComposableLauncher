@@ -1,5 +1,6 @@
 plugins {
 	kotlin("multiplatform") version "2.2.21"
+	kotlin("plugin.serialization") version "2.2.21"
 	id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
 	id("org.jetbrains.compose") version "1.9.3"
 }
@@ -57,6 +58,12 @@ kotlin {
 				implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
 				implementation("com.materialkolor:material-kolor:4.0.0")
 				implementation("com.github.skydoves:colorpicker-compose:1.1.2")
+				implementation("io.ktor:ktor-client-core-jvm:3.3.3")
+				implementation("io.ktor:ktor-client-cio-jvm:3.3.3")
+				implementation("io.ktor:ktor-client-content-negotiation-jvm:3.3.3")
+				implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
+				implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+				implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 			}
 		}
 
