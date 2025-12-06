@@ -1,10 +1,13 @@
 package cn.yurin.minecraft_composable_launcher.ui.page
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
@@ -13,16 +16,32 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
-import cn.yurin.minecraft_composable_launcher.ui.client
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
+import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
+import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format.char
+import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
+import cn.yurin.minecraft_composable_launcher.ui.client
+import cn.yurin.minecraft_composable_launcher.ui.localization.Context
+import cn.yurin.minecraft_composable_launcher.ui.localization.DownloadsPageDest
+import cn.yurin.minecraft_composable_launcher.ui.localization.SettingsPageDest
+import cn.yurin.minecraft_composable_launcher.ui.localization.current
+import cn.yurin.minecraft_composable_launcher.ui.localization.language
+import cn.yurin.minecraft_composable_launcher.ui.localization.latest
+import cn.yurin.minecraft_composable_launcher.ui.localization.oldAlpha
+import cn.yurin.minecraft_composable_launcher.ui.localization.oldBeta
+import cn.yurin.minecraft_composable_launcher.ui.localization.release
+import cn.yurin.minecraft_composable_launcher.ui.localization.releaseAt
+import cn.yurin.minecraft_composable_launcher.ui.localization.snapshot
+import cn.yurin.minecraft_composable_launcher.ui.localization.vanilla
+import org.jetbrains.compose.resources.painterResource
 
 var manifest by mutableStateOf<VersionsManifest?>(null)
 
@@ -61,7 +80,8 @@ private fun RowScope.Sidebar(
 				onClick = {
 					if (currentPage == index) {
 						scope.launch {
-							val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
+							val response =
+								client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
 							manifest = response.body<VersionsManifest>()
 						}
 					}
@@ -129,7 +149,8 @@ context(context: Context)
 private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 	val scope = rememberCoroutineScope()
 	scope.launch {
-		val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
+		val response =
+			client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
 		manifest = response.body<VersionsManifest>()
 	}
 	AnimatedVisibility(manifest != null) {
@@ -147,8 +168,50 @@ private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 					)
 				},
 			) {
-				VersionItem(manifest.versions.find { it.id == manifest.latest.release }!!)
-				VersionItem(manifest.versions.find { it.id == manifest.latest.snapshot }!!)
+				VersionItem(
+					version = manifest.versions.find { it.id == manifest.latest.release }!!,
+					detail = { version ->
+						buildString {
+							append(release.current)
+							append(", ")
+							append(releaseAt.current)
+							append(" ")
+							append(
+								localDateTimeFormater.format(
+									LocalDateTime.parse(
+										version.releaseTime,
+										localDateTimeParser
+									)
+								)
+							)
+						}
+					},
+					onClick = { version ->
+
+					},
+				)
+				VersionItem(
+					version = manifest.versions.find { it.id == manifest.latest.snapshot }!!,
+					detail = { version ->
+						buildString {
+							append(snapshot.current)
+							append(", ")
+							append(releaseAt.current)
+							append(" ")
+							append(
+								localDateTimeFormater.format(
+									LocalDateTime.parse(
+										version.releaseTime,
+										localDateTimeParser
+									)
+								)
+							)
+						}
+					},
+					onClick = { version ->
+
+					},
+				)
 			}
 			listOf(
 				release to "release",
@@ -166,7 +229,20 @@ private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 					},
 				) {
 					versions[type]?.forEach { version ->
-						VersionItem(version)
+						VersionItem(
+							version = version,
+							detail = { version ->
+								localDateTimeFormater.format(
+									LocalDateTime.parse(
+										version.releaseTime,
+										localDateTimeParser
+									)
+								)
+							},
+							onClick = { version ->
+
+							},
+						)
 					}
 				}
 			}
@@ -212,10 +288,34 @@ private fun FoldableCard(
 		modifier = modifier
 			.clip(RoundedCornerShape(16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainerHighest)
-			.clickable { fold = !fold }
 			.padding(16.dp),
 	) {
-		title()
+		Row(
+			horizontalArrangement = Arrangement.SpaceBetween,
+			verticalAlignment = Alignment.CenterVertically,
+			modifier = Modifier.fillMaxWidth(),
+		) {
+			title()
+			IconButton(
+				onClick = { fold = !fold }
+			) {
+				Icon(
+					painter = painterResource(Res.drawable.arrow_drop_up_24px),
+					tint = MaterialTheme.colorScheme.onSurface,
+					contentDescription = null,
+					modifier = modifier
+						.size(64.dp)
+						.rotate(
+							animateFloatAsState(
+								when (fold) {
+									true -> 0F
+									else -> 180F
+								}
+							).value
+						),
+				)
+			}
+		}
 		AnimatedVisibility(!fold) {
 			Spacer(modifier = modifier.height(16.dp))
 			Column(
@@ -261,12 +361,15 @@ val localDateTimeFormater = LocalDateTime.Format {
 context(_: Context)
 private fun VersionItem(
 	version: VersionsManifest.Version,
+	detail: (VersionsManifest.Version) -> String,
+	onClick: (VersionsManifest.Version) -> Unit,
 ) = dest(DownloadsPageDest.Content.Vanilla) {
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
 			.clip(RoundedCornerShape(16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainer)
+			.clickable { onClick(version) }
 			.padding(12.dp),
 	) {
 		Text(
@@ -275,7 +378,7 @@ private fun VersionItem(
 			style = MaterialTheme.typography.titleLarge,
 		)
 		Text(
-			text = localDateTimeFormater.format(LocalDateTime.parse(version.releaseTime, localDateTimeParser)),
+			text = detail(version),
 			color = MaterialTheme.colorScheme.onSurface,
 			style = MaterialTheme.typography.bodyLarge,
 		)

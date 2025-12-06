@@ -18,7 +18,7 @@ repositories {
 kotlin {
 	jvmToolchain(21)
 
-	jvm {
+	jvm("composeJvm") {
 	}
 
 	sourceSets {
@@ -33,22 +33,21 @@ kotlin {
 			resources.setSrcDirs(listOf("src/main/resources"))
 			dependencies {
 				implementation(compose.components.resources)
-				implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 			}
 		}
 
-		jvmMain {
+		val composeMain by creating {
+			dependsOn(commonMain.get())
 			kotlin.setSrcDirs(
 				listOf(
-					"src/main@jvm/kotlin",
-					"build/generated/compose/resourceGenerator/kotlin/jvmMainResourceAccessors",
-					"build/generated/compose/resourceGenerator/kotlin/jvmMainResourceCollectors"
+					"src/main@compose/kotlin",
+					"build/generated/compose/resourceGenerator/kotlin/composeMainResourceAccessors",
 				)
 			)
 			resources.setSrcDirs(
 				listOf(
-					"src/main@jvm/resources",
-					"build/generated/compose/resourceGenerator/assembledResources/jvmMain"
+					"src/main@compose/resources",
+					"build/generated/compose/resourceGenerator/assembledResources/composeMain",
 				)
 			)
 			dependencies {
@@ -56,7 +55,7 @@ kotlin {
 				implementation(compose.ui)
 				implementation(compose.foundation)
 				implementation(compose.material3)
-				implementation(compose.desktop.currentOs)
+				implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 				implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
 				implementation("com.materialkolor:material-kolor:4.0.0")
 				implementation("com.github.skydoves:colorpicker-compose:1.1.2")
@@ -66,13 +65,51 @@ kotlin {
 				implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
 				implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 				implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+				implementation("ch.qos.logback:logback-classic:1.5.21")
 			}
 		}
 
-		val clrMain by creating {
+		val composeJvmMain by getting {
+			dependsOn(composeMain)
+			kotlin.setSrcDirs(
+				listOf(
+					"src/main@composeJvm/kotlin",
+					"build/generated/compose/resourceGenerator/kotlin/composeJvmMainResourceCollectors",
+				)
+			)
+			resources.setSrcDirs(
+				listOf(
+					"src/main@composeJvm/resources",
+					"build/generated/compose/resourceGenerator/assembledResources/composeJvmMain",
+				)
+			)
+			dependencies {
+				implementation(compose.desktop.currentOs)
+			}
+		}
+
+		val composeClrMain by creating {
+			dependsOn(composeMain)
+			kotlin.setSrcDirs(listOf("src/main@composeClr/kotlin"))
+			resources.setSrcDirs(listOf("src/main@composeClr/resources"))
+			dependencies {
+
+			}
+		}
+
+		val avaloniaMain by creating {
 			dependsOn(commonMain.get())
-			kotlin.setSrcDirs(listOf("src/main@clr/kotlin"))
-			resources.setSrcDirs(listOf("src/main@clr/resources"))
+			kotlin.setSrcDirs(listOf("src/main@avalonia/kotlin"))
+			resources.setSrcDirs(listOf("src/main@avalonia/resources"))
+			dependencies {
+
+			}
+		}
+
+		val avaloniaClrMain by creating {
+			dependsOn(avaloniaMain)
+			kotlin.setSrcDirs(listOf("src/main@avaloniaClr/kotlin"))
+			resources.setSrcDirs(listOf("src/main@avaloniaClr/resources"))
 			dependencies {
 
 			}
@@ -86,8 +123,16 @@ kotlin {
 
 compose.resources {
 	customDirectory(
-		sourceSetName = "jvmMain",
-		directoryProvider = provider { layout.projectDirectory.dir("src/main@jvm/composeResources") }
+		sourceSetName = "composeMain",
+		directoryProvider = provider { layout.projectDirectory.dir("src/main@compose/composeResources") }
+	)
+	customDirectory(
+		sourceSetName = "composeJvmMain",
+		directoryProvider = provider { layout.projectDirectory.dir("src/main@composeJvm/composeResources") }
+	)
+	customDirectory(
+		sourceSetName = "composeClrMain",
+		directoryProvider = provider { layout.projectDirectory.dir("src/main@composeClr/composeResources") }
 	)
 }
 

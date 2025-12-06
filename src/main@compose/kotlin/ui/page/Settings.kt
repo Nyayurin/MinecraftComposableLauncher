@@ -19,6 +19,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import cn.yurin.minecraft_composable_launcher.ui.localization.language
+import com.github.skydoves.colorpicker.compose.BrightnessSlider
+import com.github.skydoves.colorpicker.compose.ColorEnvelope
+import com.github.skydoves.colorpicker.compose.HsvColorPicker
+import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import cn.yurin.minecraft_composable_launcher.ui.isDarkMode
 import cn.yurin.minecraft_composable_launcher.ui.localization.Context
 import cn.yurin.minecraft_composable_launcher.ui.localization.Language
@@ -27,16 +32,11 @@ import cn.yurin.minecraft_composable_launcher.ui.localization.chineseLang
 import cn.yurin.minecraft_composable_launcher.ui.localization.darkMode
 import cn.yurin.minecraft_composable_launcher.ui.localization.dest
 import cn.yurin.minecraft_composable_launcher.ui.localization.englishLang
-import cn.yurin.minecraft_composable_launcher.ui.localization.language
 import cn.yurin.minecraft_composable_launcher.ui.localization.launch
 import cn.yurin.minecraft_composable_launcher.ui.localization.more
 import cn.yurin.minecraft_composable_launcher.ui.localization.personalization
 import cn.yurin.minecraft_composable_launcher.ui.localization.theme
 import cn.yurin.minecraft_composable_launcher.ui.seedColor
-import com.github.skydoves.colorpicker.compose.BrightnessSlider
-import com.github.skydoves.colorpicker.compose.ColorEnvelope
-import com.github.skydoves.colorpicker.compose.HsvColorPicker
-import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 
 @Composable
 context(_: Context)
@@ -172,8 +172,13 @@ private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
 						AnimatedContent(context.language) {
 							Text(
 								text = when (language) {
-									Language.Chinese -> chineseLang.language(it)
-									Language.English -> englishLang.language(it)
+									Language.Chinese -> chineseLang.language(
+										it
+									)
+
+									Language.English -> englishLang.language(
+										it
+									)
 								},
 								color = MaterialTheme.colorScheme.onSurface,
 								style = MaterialTheme.typography.bodyLarge,

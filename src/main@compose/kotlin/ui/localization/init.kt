@@ -47,7 +47,7 @@ private fun initLaunchPage() = LaunchPageDest {
 		}
 		versions {
 			chinese = "版本"
-			english = "versions"
+			english = "Versions"
 		}
 		settings {
 			chinese = "设置"
@@ -56,6 +56,10 @@ private fun initLaunchPage() = LaunchPageDest {
 	}
 
 	LaunchPageDest.Content {
+
+	}
+
+	LaunchPageDest.VersionSelectPage {
 
 	}
 }
@@ -94,6 +98,11 @@ private fun initDownloadsPage() = DownloadsPageDest {
 			oldAlpha {
 				chinese = "初始版"
 				english = "Old Alpha"
+			}
+
+			releaseAt {
+				chinese = "发行于"
+				english = "Release at"
 			}
 		}
 	}

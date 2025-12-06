@@ -17,6 +17,8 @@ val more get() = property("more")
 object LaunchPageDest : Destination.Sign {
 	object SideBar : Destination.Sign
 	object Content : Destination.Sign
+
+	object VersionSelectPage : Destination.Sign
 }
 
 context(_: DestOrBuilderScope, _: LaunchPageDest.SideBar)
@@ -59,6 +61,9 @@ val oldBeta get() = property("oldBeta")
 context(_: DestOrBuilderScope, _: DownloadsPageDest.Content.Vanilla)
 val oldAlpha get() = property("oldAlpha")
 
+context(_: DestOrBuilderScope, _: DownloadsPageDest.Content.Vanilla)
+val releaseAt get() = property("releaseAt")
+
 object SettingsPageDest : Destination.Sign {
 	object SideBar : Destination.Sign
 	object Content : Destination.Sign {
@@ -67,6 +72,7 @@ object SettingsPageDest : Destination.Sign {
 			object ColorPicker : Destination.Sign
 			object Language : Destination.Sign
 		}
+
 		object More : Destination.Sign
 	}
 }

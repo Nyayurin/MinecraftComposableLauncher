@@ -4,7 +4,6 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -12,22 +11,52 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
+import cn.yurin.minecraft_composable_launcher.ui.page.launch.VersionSelectSidebar
 
 @Composable
 context(_: Context)
-fun LaunchPage() = dest(LaunchPageDest) {
-	Row {
-		Sidebar()
-		Spacer(
-			modifier = Modifier
-				.weight(0.7F),
-		)
+fun LaunchPage() {
+	var currentPage by remember { mutableIntStateOf(0) }
+	AnimatedContent(currentPage) { page ->
+		when (page) {
+			0 -> dest(LaunchPageDest) {
+				Row {
+					Sidebar(
+						onLaunchClick = {
+
+						},
+						onVersionSelectClick = { currentPage = 1 },
+						onSettingClick = { currentPage = 2 },
+					)
+					Spacer(
+						modifier = Modifier
+							.weight(0.7F),
+					)
+				}
+			}
+
+			1 -> dest(LaunchPageDest.VersionSelectPage) {
+				Row {
+					VersionSelectSidebar(
+						onBack = { currentPage = 0 },
+					)
+					Spacer(
+						modifier = Modifier
+							.weight(0.7F),
+					)
+				}
+			}
+		}
 	}
 }
 
 @Composable
 context(_: Context)
-private fun RowScope.Sidebar() = dest(LaunchPageDest.SideBar) {
+private fun RowScope.Sidebar(
+	onLaunchClick: () -> Unit,
+	onVersionSelectClick: () -> Unit,
+	onSettingClick: () -> Unit,
+) = dest(LaunchPageDest.SideBar) {
 	Column(
 		horizontalAlignment = Alignment.CenterHorizontally,
 		modifier = Modifier
@@ -37,7 +66,10 @@ private fun RowScope.Sidebar() = dest(LaunchPageDest.SideBar) {
 			.padding(32.dp)
 	) {
 		var selection by remember { mutableIntStateOf(0) }
-		val pages = listOf(online, offline)
+		val pages = listOf(
+			online,
+			offline
+		)
 		Box(
 			contentAlignment = Alignment.TopCenter,
 			modifier = Modifier.weight(1F),
@@ -117,7 +149,7 @@ private fun RowScope.Sidebar() = dest(LaunchPageDest.SideBar) {
 				verticalArrangement = Arrangement.spacedBy(8.dp),
 			) {
 				FilledTonalButton(
-					onClick = {},
+					onClick = onLaunchClick,
 					colors = ButtonDefaults.filledTonalButtonColors(
 						containerColor = MaterialTheme.colorScheme.primary,
 						contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -135,7 +167,7 @@ private fun RowScope.Sidebar() = dest(LaunchPageDest.SideBar) {
 					modifier = Modifier.fillMaxWidth(),
 				) {
 					FilledTonalButton(
-						onClick = {},
+						onClick = onVersionSelectClick,
 						colors = ButtonDefaults.filledTonalButtonColors(
 							containerColor = MaterialTheme.colorScheme.secondary,
 							contentColor = MaterialTheme.colorScheme.onSecondary,
@@ -149,7 +181,7 @@ private fun RowScope.Sidebar() = dest(LaunchPageDest.SideBar) {
 						)
 					}
 					FilledTonalButton(
-						onClick = {},
+						onClick = onSettingClick,
 						colors = ButtonDefaults.filledTonalButtonColors(
 							containerColor = MaterialTheme.colorScheme.secondary,
 							contentColor = MaterialTheme.colorScheme.onSecondary,

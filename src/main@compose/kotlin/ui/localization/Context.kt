@@ -11,11 +11,11 @@ class Context(
 	language: Language,
 ) {
 	var language: Language by mutableStateOf(language)
-	operator fun <S : Destination.Sign> get(value: S) = destinations[value] as Destination?
+	operator fun <S : Destination.Sign> get(value: S) = destinations[value]
 }
 
 context(context: Context)
-inline fun <S: Destination.Sign> dest(sign: S, block: context(Context, Destination, S) () -> Unit) {
+inline fun <S : Destination.Sign> dest(sign: S, block: context(Context, Destination, S) () -> Unit) {
 	context(context, context[sign]!!, sign) {
 		block()
 	}

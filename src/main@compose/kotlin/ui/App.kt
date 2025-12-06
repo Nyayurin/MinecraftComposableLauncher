@@ -7,14 +7,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
 import cn.yurin.minecraft_composable_launcher.ui.page.*
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
@@ -36,6 +35,8 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.serialization.kotlinx.json.*
+import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
+import cn.yurin.minecraft_composable_launcher.ui.localization.language
 import org.jetbrains.compose.resources.painterResource
 
 var seedColor by mutableStateOf(Color(0xFF9B9D95))
@@ -48,14 +49,13 @@ val client = HttpClient(CIO) {
 }
 
 @Composable
-context(_: Context)
 fun App(
 	windowScale: Float,
 	windowAlpha: Float,
 	windowDraggableArea: @Composable (@Composable () -> Unit) -> Unit,
 	exitApplication: () -> Unit,
 	minimizeWindow: () -> Unit,
-) {
+) = context(initContext()) {
 	LaunchedEffect(Unit) {
 		val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
 		manifest = response.body<VersionsManifest>()
@@ -120,23 +120,24 @@ fun TopBar(
 	minimizeWindow: () -> Unit,
 ) = dest(TopbarDest) {
 	windowDraggableArea {
-		Row(
-			verticalAlignment = Alignment.CenterVertically,
+		Box(
 			modifier = Modifier
 				.fillMaxWidth()
 				.background(MaterialTheme.colorScheme.primaryContainer)
-				.padding(16.dp),
+				.padding(8.dp),
 		) {
 			Text(
 				text = "MCL",
 				color = MaterialTheme.colorScheme.onPrimaryContainer,
 				style = MaterialTheme.typography.titleLarge,
-				modifier = Modifier.weight(0.5F),
+				modifier = Modifier
+					.padding(start = 8.dp)
+					.align(Alignment.CenterStart),
 			)
 			val pages = listOf(launch, downloads, settings, more)
 			SingleChoiceSegmentedButtonRow(
 				space = 8.dp,
-				modifier = Modifier.weight(1F),
+				modifier = Modifier.align(Alignment.Center),
 			) {
 				pages.forEachIndexed { index, page ->
 					SegmentedButton(
@@ -173,7 +174,7 @@ fun TopBar(
 			}
 			Row(
 				horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-				modifier = Modifier.weight(0.5F),
+				modifier = Modifier.align(Alignment.CenterEnd),
 			) {
 				IconButton(
 					onClick = minimizeWindow,
