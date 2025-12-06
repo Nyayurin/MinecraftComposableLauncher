@@ -44,31 +44,35 @@ kotlin {
 
 		val commonMain by getting(
 			dependOn = null,
-			path = "main",
+			path = "source/main",
 			additionKotlin = listOf("commonResClass", "commonMainResourceCollectors"),
 		)
 		val composeMain by creating(
 			dependOn = commonMain,
-			path = "main@compose/main",
+			path = "source@compose/main",
 			additionKotlin = listOf("composeMainResourceAccessors"),
 		)
 		val composeJvmMain by getting(
 			dependOn = composeMain,
-			path = "main@compose/main@jvm",
+			path = "source@compose/main@jvm",
 			additionKotlin = listOf("composeJvmMainResourceCollectors"),
 			additionResources = listOf("composeJvmMain"),
 		)
 		val composeClrMain by creating(
 			dependOn = composeMain,
-			path = "main@compose/main@clr",
+			path = "source@compose/main@clr",
 		)
 		val avaloniaMain by creating(
 			dependOn = commonMain,
-			path = "main@avalonia/main",
+			path = "source@avalonia/main",
+		)
+		val avaloniaMixMain by creating(
+			dependOn = avaloniaMain,
+			path = "source@avalonia/main@mix"
 		)
 		val avaloniaClrMain by creating(
 			dependOn = avaloniaMain,
-			path = "main@avalonia/main@clr",
+			path = "source@avalonia/main@clr",
 		)
 
 		commonMain.dependencies {
@@ -106,7 +110,7 @@ kotlin {
 compose.resources {
 	customDirectory(
 		sourceSetName = "composeMain",
-		directoryProvider = provider { layout.projectDirectory.dir("source/compose/main/composeResources") }
+		directoryProvider = provider { layout.projectDirectory.dir("source/main@compose/main/composeResources") }
 	)
 }
 
@@ -140,7 +144,7 @@ fun KotlinSourceSet.configureSource(
 ) {
 	kotlin.setSrcDirs(
 		listOf(
-			"source/$path/kotlin",
+			"$path/kotlin",
 			*additionKotlin.map {
 				"build/generated/compose/resourceGenerator/kotlin/$it"
 			}.toTypedArray(),
@@ -148,7 +152,7 @@ fun KotlinSourceSet.configureSource(
 	)
 	resources.setSrcDirs(
 		listOf(
-			"source/$path/res",
+			"$path/res",
 			*additionResources.map {
 				"build/generated/compose/resourceGenerator/assembledResources/$it"
 			}.toTypedArray(),
