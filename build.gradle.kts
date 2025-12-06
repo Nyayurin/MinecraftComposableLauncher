@@ -1,4 +1,6 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 plugins {
 	kotlin("multiplatform") version "2.2.21"
@@ -18,39 +20,14 @@ repositories {
 kotlin {
 	jvmToolchain(21)
 
-	jvm("composeJvm") {
-	}
+	jvm("composeJvm")
 
 	sourceSets {
-		commonMain {
-			kotlin.setSrcDirs(
-				listOf(
-					"src/main/kotlin",
-					"build/generated/compose/resourceGenerator/kotlin/commonResClass",
-					"build/generated/compose/resourceGenerator/kotlin/commonMainResourceCollectors"
-				)
-			)
-			resources.setSrcDirs(listOf("src/main/resources"))
-			dependencies {
+		val dependencies = mapOf<String, KotlinDependencyHandler.() -> Unit>(
+			"commonMain" to {
 				implementation(compose.components.resources)
-			}
-		}
-
-		val composeMain by creating {
-			dependsOn(commonMain.get())
-			kotlin.setSrcDirs(
-				listOf(
-					"src/main@compose/kotlin",
-					"build/generated/compose/resourceGenerator/kotlin/composeMainResourceAccessors",
-				)
-			)
-			resources.setSrcDirs(
-				listOf(
-					"src/main@compose/resources",
-					"build/generated/compose/resourceGenerator/assembledResources/composeMain",
-				)
-			)
-			dependencies {
+			},
+			"composeMain" to {
 				implementation(compose.runtime)
 				implementation(compose.ui)
 				implementation(compose.foundation)
@@ -66,54 +43,70 @@ kotlin {
 				implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 				implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 				implementation("ch.qos.logback:logback-classic:1.5.21")
-			}
-		}
-
-		val composeJvmMain by getting {
-			dependsOn(composeMain)
-			kotlin.setSrcDirs(
-				listOf(
-					"src/main@composeJvm/kotlin",
-					"build/generated/compose/resourceGenerator/kotlin/composeJvmMainResourceCollectors",
-				)
-			)
-			resources.setSrcDirs(
-				listOf(
-					"src/main@composeJvm/resources",
-					"build/generated/compose/resourceGenerator/assembledResources/composeJvmMain",
-				)
-			)
-			dependencies {
+			},
+			"composeJvmMain" to {
 				implementation(compose.desktop.currentOs)
-			}
+			},
+		)
+
+		fun NamedDomainObjectContainer<KotlinSourceSet>.getting(
+			dependOn: KotlinSourceSet?,
+			name: String?,
+			additionKotlin: List<String> = emptyList(),
+			additionResources: List<String> = emptyList(),
+			dependenciesName: String,
+		): NamedDomainObjectCollectionDelegateProvider<KotlinSourceSet> = getting {
+			dependOn?.let { dependsOn(it) }
+			configureSource(name, additionKotlin, additionResources)
+			dependencies(dependencies[dependenciesName] ?: {})
 		}
 
-		val composeClrMain by creating {
-			dependsOn(composeMain)
-			kotlin.setSrcDirs(listOf("src/main@composeClr/kotlin"))
-			resources.setSrcDirs(listOf("src/main@composeClr/resources"))
-			dependencies {
-
-			}
+		fun NamedDomainObjectContainer<KotlinSourceSet>.creating(
+			dependOn: KotlinSourceSet?,
+			name: String?,
+			additionKotlin: List<String> = emptyList(),
+			additionResources: List<String> = emptyList(),
+			dependenciesName: String,
+		): NamedDomainObjectContainerCreatingDelegateProvider<KotlinSourceSet> = creating {
+			dependOn?.let { dependsOn(it) }
+			configureSource(name, additionKotlin, additionResources)
+			dependencies(dependencies[dependenciesName] ?: {})
 		}
 
-		val avaloniaMain by creating {
-			dependsOn(commonMain.get())
-			kotlin.setSrcDirs(listOf("src/main@avalonia/kotlin"))
-			resources.setSrcDirs(listOf("src/main@avalonia/resources"))
-			dependencies {
-
-			}
-		}
-
-		val avaloniaClrMain by creating {
-			dependsOn(avaloniaMain)
-			kotlin.setSrcDirs(listOf("src/main@avaloniaClr/kotlin"))
-			resources.setSrcDirs(listOf("src/main@avaloniaClr/resources"))
-			dependencies {
-
-			}
-		}
+		val commonMain by getting(
+			dependOn = null,
+			name = "null",
+			additionKotlin = listOf("commonResClass", "commonMainResourceCollectors"),
+			dependenciesName = "commonMain",
+		)
+		val composeMain by creating(
+			dependOn = commonMain,
+			name = "compose",
+			additionKotlin = listOf("composeMainResourceAccessors"),
+			dependenciesName = "composeMain",
+		)
+		val composeJvmMain by getting(
+			dependOn = composeMain,
+			name = "composeJvm",
+			additionKotlin = listOf("composeJvmMainResourceCollectors"),
+			additionResources = listOf("composeJvmMain"),
+			dependenciesName = "composeJvmMain",
+		)
+		val composeClrMain by creating(
+			dependOn = composeMain,
+			name = "composeClr",
+			dependenciesName = "composeClrMain",
+		)
+		val avaloniaMain by creating(
+			dependOn = commonMain,
+			name = "avalonia",
+			dependenciesName = "avaloniaMain",
+		)
+		val avaloniaClrMain by creating(
+			dependOn = avaloniaMain,
+			name = "avaloniaClr",
+			dependenciesName = "avaloniaClrMain",
+		)
 
 		all {
 			languageSettings.enableLanguageFeature("ContextParameters")
@@ -125,14 +118,6 @@ compose.resources {
 	customDirectory(
 		sourceSetName = "composeMain",
 		directoryProvider = provider { layout.projectDirectory.dir("src/main@compose/composeResources") }
-	)
-	customDirectory(
-		sourceSetName = "composeJvmMain",
-		directoryProvider = provider { layout.projectDirectory.dir("src/main@composeJvm/composeResources") }
-	)
-	customDirectory(
-		sourceSetName = "composeClrMain",
-		directoryProvider = provider { layout.projectDirectory.dir("src/main@composeClr/composeResources") }
 	)
 }
 
@@ -157,4 +142,27 @@ compose.desktop {
 			}
 		}
 	}
+}
+
+fun KotlinSourceSet.configureSource(
+	name: String?,
+	additionKotlin: List<String>,
+	additionResources: List<String>,
+) {
+	kotlin.setSrcDirs(
+		listOf(
+			"src/main${name?.let { "@$it" } ?: ""}/kotlin",
+			*additionKotlin.map {
+				"build/generated/compose/resourceGenerator/kotlin/$it"
+			}.toTypedArray(),
+		)
+	)
+	resources.setSrcDirs(
+		listOf(
+			"src/main${name?.let { "@$it" } ?: ""}/resources",
+			*additionResources.map {
+				"build/generated/compose/resourceGenerator/assembledResources/$it"
+			}.toTypedArray(),
+		)
+	)
 }
