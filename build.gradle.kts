@@ -110,7 +110,7 @@ kotlin {
 compose.resources {
 	customDirectory(
 		sourceSetName = "composeMain",
-		directoryProvider = provider { layout.projectDirectory.dir("source/main@compose/main/composeResources") }
+		directoryProvider = provider { layout.projectDirectory.dir("source@compose/main/composeResources") }
 	)
 }
 
