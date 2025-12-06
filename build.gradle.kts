@@ -1,5 +1,4 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 plugins {
@@ -23,90 +22,80 @@ kotlin {
 	jvm("composeJvm")
 
 	sourceSets {
-		val dependencies = mapOf<String, KotlinDependencyHandler.() -> Unit>(
-			"commonMain" to {
-				implementation(compose.components.resources)
-			},
-			"composeMain" to {
-				implementation(compose.runtime)
-				implementation(compose.ui)
-				implementation(compose.foundation)
-				implementation(compose.material3)
-				implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-				implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
-				implementation("com.materialkolor:material-kolor:4.0.0")
-				implementation("com.github.skydoves:colorpicker-compose:1.1.2")
-				implementation("io.ktor:ktor-client-core-jvm:3.3.3")
-				implementation("io.ktor:ktor-client-cio-jvm:3.3.3")
-				implementation("io.ktor:ktor-client-content-negotiation-jvm:3.3.3")
-				implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
-				implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-				implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
-				implementation("ch.qos.logback:logback-classic:1.5.21")
-			},
-			"composeJvmMain" to {
-				implementation(compose.desktop.currentOs)
-			},
-		)
-
 		fun NamedDomainObjectContainer<KotlinSourceSet>.getting(
 			dependOn: KotlinSourceSet?,
-			name: String?,
+			path: String,
 			additionKotlin: List<String> = emptyList(),
 			additionResources: List<String> = emptyList(),
-			dependenciesName: String,
 		): NamedDomainObjectCollectionDelegateProvider<KotlinSourceSet> = getting {
 			dependOn?.let { dependsOn(it) }
-			configureSource(name, additionKotlin, additionResources)
-			dependencies(dependencies[dependenciesName] ?: {})
+			configureSource(path, additionKotlin, additionResources)
 		}
 
 		fun NamedDomainObjectContainer<KotlinSourceSet>.creating(
 			dependOn: KotlinSourceSet?,
-			name: String?,
+			path: String,
 			additionKotlin: List<String> = emptyList(),
 			additionResources: List<String> = emptyList(),
-			dependenciesName: String,
 		): NamedDomainObjectContainerCreatingDelegateProvider<KotlinSourceSet> = creating {
 			dependOn?.let { dependsOn(it) }
-			configureSource(name, additionKotlin, additionResources)
-			dependencies(dependencies[dependenciesName] ?: {})
+			configureSource(path, additionKotlin, additionResources)
 		}
 
 		val commonMain by getting(
 			dependOn = null,
-			name = "null",
+			path = "main",
 			additionKotlin = listOf("commonResClass", "commonMainResourceCollectors"),
-			dependenciesName = "commonMain",
 		)
 		val composeMain by creating(
 			dependOn = commonMain,
-			name = "compose",
+			path = "compose/main",
 			additionKotlin = listOf("composeMainResourceAccessors"),
-			dependenciesName = "composeMain",
 		)
 		val composeJvmMain by getting(
 			dependOn = composeMain,
-			name = "composeJvm",
+			path = "compose/main@jvm",
 			additionKotlin = listOf("composeJvmMainResourceCollectors"),
 			additionResources = listOf("composeJvmMain"),
-			dependenciesName = "composeJvmMain",
 		)
 		val composeClrMain by creating(
 			dependOn = composeMain,
-			name = "composeClr",
-			dependenciesName = "composeClrMain",
+			path = "compose/main@clr",
 		)
 		val avaloniaMain by creating(
 			dependOn = commonMain,
-			name = "avalonia",
-			dependenciesName = "avaloniaMain",
+			path = "avalonia/main",
 		)
 		val avaloniaClrMain by creating(
 			dependOn = avaloniaMain,
-			name = "avaloniaClr",
-			dependenciesName = "avaloniaClrMain",
+			path = "avalonia/main@clr",
 		)
+
+		commonMain.dependencies {
+			implementation(compose.components.resources)
+		}
+
+		composeMain.dependencies {
+			implementation(compose.runtime)
+			implementation(compose.ui)
+			implementation(compose.foundation)
+			implementation(compose.material3)
+			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
+			implementation("com.materialkolor:material-kolor:4.0.0")
+			implementation("com.github.skydoves:colorpicker-compose:1.1.2")
+			implementation("io.ktor:ktor-client-core-jvm:3.3.3")
+			implementation("io.ktor:ktor-client-cio-jvm:3.3.3")
+			implementation("io.ktor:ktor-client-content-negotiation-jvm:3.3.3")
+			implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
+			implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+			implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
+			implementation("ch.qos.logback:logback-classic:1.5.21")
+		}
+
+		composeJvmMain.dependencies {
+			implementation(compose.desktop.currentOs)
+		}
 
 		all {
 			languageSettings.enableLanguageFeature("ContextParameters")
@@ -117,7 +106,7 @@ kotlin {
 compose.resources {
 	customDirectory(
 		sourceSetName = "composeMain",
-		directoryProvider = provider { layout.projectDirectory.dir("src/main@compose/composeResources") }
+		directoryProvider = provider { layout.projectDirectory.dir("source/compose/main/composeResources") }
 	)
 }
 
@@ -145,13 +134,13 @@ compose.desktop {
 }
 
 fun KotlinSourceSet.configureSource(
-	name: String?,
+	path: String,
 	additionKotlin: List<String>,
 	additionResources: List<String>,
 ) {
 	kotlin.setSrcDirs(
 		listOf(
-			"src/main${name?.let { "@$it" } ?: ""}/kotlin",
+			"source/$path/kotlin",
 			*additionKotlin.map {
 				"build/generated/compose/resourceGenerator/kotlin/$it"
 			}.toTypedArray(),
@@ -159,7 +148,7 @@ fun KotlinSourceSet.configureSource(
 	)
 	resources.setSrcDirs(
 		listOf(
-			"src/main${name?.let { "@$it" } ?: ""}/resources",
+			"source/$path/res",
 			*additionResources.map {
 				"build/generated/compose/resourceGenerator/assembledResources/$it"
 			}.toTypedArray(),
