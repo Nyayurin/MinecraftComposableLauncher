@@ -49,26 +49,26 @@ kotlin {
 		)
 		val composeMain by creating(
 			dependOn = commonMain,
-			path = "compose/main",
+			path = "main@compose/main",
 			additionKotlin = listOf("composeMainResourceAccessors"),
 		)
 		val composeJvmMain by getting(
 			dependOn = composeMain,
-			path = "compose/main@jvm",
+			path = "main@compose/main@jvm",
 			additionKotlin = listOf("composeJvmMainResourceCollectors"),
 			additionResources = listOf("composeJvmMain"),
 		)
 		val composeClrMain by creating(
 			dependOn = composeMain,
-			path = "compose/main@clr",
+			path = "main@compose/main@clr",
 		)
 		val avaloniaMain by creating(
 			dependOn = commonMain,
-			path = "avalonia/main",
+			path = "main@avalonia/main",
 		)
 		val avaloniaClrMain by creating(
 			dependOn = avaloniaMain,
-			path = "avalonia/main@clr",
+			path = "main@avalonia/main@clr",
 		)
 
 		commonMain.dependencies {
