@@ -70,7 +70,7 @@ fun LaunchPage() {
 										libraries.joinToString(";"),
 										currentVersion.manifest.mainClass,
 										"--gameDir",
-										".minecraft",
+										currentFolder!!.path,
 										"--assetsDir",
 										"${currentFolder!!.path}/assets",
 										"--assetIndex",
