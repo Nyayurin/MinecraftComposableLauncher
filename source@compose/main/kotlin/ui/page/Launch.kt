@@ -10,11 +10,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import cn.yurin.minecraft_composable_launcher.core.Data
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
+import cn.yurin.minecraft_composable_launcher.ui.page.launch.VersionSelectContent
 import cn.yurin.minecraft_composable_launcher.ui.page.launch.VersionSelectSidebar
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 fun LaunchPage() {
 	var currentPage by remember { mutableIntStateOf(0) }
 	AnimatedContent(currentPage) { page ->
@@ -40,9 +42,7 @@ fun LaunchPage() {
 					VersionSelectSidebar(
 						onBack = { currentPage = 0 },
 					)
-					Spacer(
-						modifier = Modifier
-							.weight(0.7F),
+					VersionSelectContent(
 					)
 				}
 			}
@@ -51,7 +51,7 @@ fun LaunchPage() {
 }
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 private fun RowScope.Sidebar(
 	onLaunchClick: () -> Unit,
 	onVersionSelectClick: () -> Unit,

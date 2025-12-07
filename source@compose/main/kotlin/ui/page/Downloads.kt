@@ -19,6 +19,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import cn.yurin.minecraft_composable_launcher.core.Data
+import cn.yurin.minecraft_composable_launcher.core.client
+import cn.yurin.minecraft_composable_launcher.core.manifest
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
@@ -28,7 +31,6 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format.char
 import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
-import cn.yurin.minecraft_composable_launcher.ui.client
 import cn.yurin.minecraft_composable_launcher.ui.localization.Context
 import cn.yurin.minecraft_composable_launcher.ui.localization.DownloadsPageDest
 import cn.yurin.minecraft_composable_launcher.ui.localization.SettingsPageDest
@@ -41,12 +43,11 @@ import cn.yurin.minecraft_composable_launcher.ui.localization.release
 import cn.yurin.minecraft_composable_launcher.ui.localization.releaseAt
 import cn.yurin.minecraft_composable_launcher.ui.localization.snapshot
 import cn.yurin.minecraft_composable_launcher.ui.localization.vanilla
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.painterResource
 
-var manifest by mutableStateOf<VersionsManifest?>(null)
-
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 fun DownloadsPage() = dest(SettingsPageDest) {
 	Row {
 		var selection by remember { mutableIntStateOf(0) }
@@ -61,7 +62,7 @@ fun DownloadsPage() = dest(SettingsPageDest) {
 }
 
 @Composable
-context(context: Context)
+context(context: Context, _: Data)
 private fun RowScope.Sidebar(
 	currentPage: Int,
 	onPageChanged: (Int) -> Unit,
@@ -103,7 +104,7 @@ private fun RowScope.Sidebar(
 }
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 private fun RowScope.Content(
 	currentPage: Int,
 ) = dest(SettingsPageDest.Content) {
@@ -145,17 +146,16 @@ private fun RowScope.Content(
 }
 
 @Composable
-context(context: Context)
+context(_: Context, _: Data)
 private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 	val scope = rememberCoroutineScope()
-	scope.launch {
-		val response =
-			client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
+	scope.launch(Dispatchers.IO) {
+		val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
 		manifest = response.body<VersionsManifest>()
 	}
 	AnimatedVisibility(manifest != null) {
 		val manifest = remember { manifest!! }
-		val versions = remember { manifest.versions.groupBy { version -> version.type } }
+		val versions = manifest.versions.groupBy { version -> version.type }
 		Column(
 			verticalArrangement = Arrangement.spacedBy(32.dp),
 		) {
@@ -251,7 +251,7 @@ private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 }
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 private fun Card(
 	title: @Composable () -> Unit,
 	modifier: Modifier = Modifier.fillMaxWidth(),
@@ -277,7 +277,7 @@ private fun Card(
 }
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 private fun FoldableCard(
 	title: @Composable () -> Unit,
 	modifier: Modifier = Modifier.fillMaxWidth(),
@@ -358,7 +358,7 @@ val localDateTimeFormater = LocalDateTime.Format {
 }
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 private fun VersionItem(
 	version: VersionsManifest.Version,
 	detail: (VersionsManifest.Version) -> String,

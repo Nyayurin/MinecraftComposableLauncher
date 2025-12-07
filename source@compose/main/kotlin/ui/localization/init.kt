@@ -60,7 +60,21 @@ private fun initLaunchPage() = LaunchPageDest {
 	}
 
 	LaunchPageDest.VersionSelectPage {
+		LaunchPageDest.VersionSelectPage.SideBar {
 
+		}
+
+		LaunchPageDest.VersionSelectPage.Content {
+			info {
+				chinese = "信息"
+				english = "Info"
+			}
+
+			regularVersion {
+				chinese = "常规版本"
+				english = "Regular Version"
+			}
+		}
 	}
 }
 

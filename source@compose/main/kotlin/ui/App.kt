@@ -7,46 +7,28 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SegmentedButton
-import androidx.compose.material3.SegmentedButtonDefaults
-import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import cn.yurin.minecraft_composable_launcher.core.*
+import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
-import cn.yurin.minecraft_composable_launcher.ui.page.*
+import cn.yurin.minecraft_composable_launcher.ui.page.DownloadsPage
+import cn.yurin.minecraft_composable_launcher.ui.page.LaunchPage
+import cn.yurin.minecraft_composable_launcher.ui.page.MorePage
+import cn.yurin.minecraft_composable_launcher.ui.page.SettingsPage
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.close_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.minimize_24px
-import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
-import io.ktor.serialization.kotlinx.json.*
-import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
-import cn.yurin.minecraft_composable_launcher.ui.localization.language
 import org.jetbrains.compose.resources.painterResource
-
-var seedColor by mutableStateOf(Color(0xFF9B9D95))
-var isDarkMode by mutableStateOf<Boolean?>(null)
-
-val client = HttpClient(CIO) {
-	install(ContentNegotiation) {
-		json()
-	}
-}
 
 @Composable
 fun App(
@@ -55,7 +37,7 @@ fun App(
 	windowDraggableArea: @Composable (@Composable () -> Unit) -> Unit,
 	exitApplication: () -> Unit,
 	minimizeWindow: () -> Unit,
-) = context(initContext()) {
+) = context(initContext(), Data()) {
 	LaunchedEffect(Unit) {
 		val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
 		manifest = response.body<VersionsManifest>()
@@ -111,7 +93,7 @@ fun App(
 }
 
 @Composable
-context(context: Context)
+context(context: Context, _: Data)
 fun TopBar(
 	currentPage: Int,
 	onPageChanges: (Int) -> Unit,

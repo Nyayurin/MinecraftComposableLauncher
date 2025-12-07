@@ -18,7 +18,10 @@ object LaunchPageDest : Destination.Sign {
 	object SideBar : Destination.Sign
 	object Content : Destination.Sign
 
-	object VersionSelectPage : Destination.Sign
+	object VersionSelectPage : Destination.Sign {
+		object SideBar : Destination.Sign
+		object Content : Destination.Sign
+	}
 }
 
 context(_: DestOrBuilderScope, _: LaunchPageDest.SideBar)
@@ -35,6 +38,12 @@ val versions get() = property("versions")
 
 context(_: DestOrBuilderScope, _: LaunchPageDest.SideBar)
 val settings get() = property("settings")
+
+context(_: DestOrBuilderScope, _: LaunchPageDest.VersionSelectPage.Content)
+val regularVersion get() = property("regularVersion")
+
+context(_: DestOrBuilderScope, _: LaunchPageDest.VersionSelectPage.Content)
+val info get() = property("info")
 
 object DownloadsPageDest : Destination.Sign {
 	object SideBar : Destination.Sign

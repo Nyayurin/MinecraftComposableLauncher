@@ -5,12 +5,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import cn.yurin.minecraft_composable_launcher.core.Data
 import cn.yurin.minecraft_composable_launcher.ui.localization.Context
 import cn.yurin.minecraft_composable_launcher.ui.localization.SettingsPageDest
 import cn.yurin.minecraft_composable_launcher.ui.localization.dest
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 fun MorePage() = dest(SettingsPageDest) {
 	Row(modifier = Modifier.fillMaxSize()) {
 		Spacer(

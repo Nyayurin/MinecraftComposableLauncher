@@ -19,12 +19,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import cn.yurin.minecraft_composable_launcher.core.Data
+import cn.yurin.minecraft_composable_launcher.core.isDarkMode
+import cn.yurin.minecraft_composable_launcher.core.seedColor
 import cn.yurin.minecraft_composable_launcher.ui.localization.language
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
-import cn.yurin.minecraft_composable_launcher.ui.isDarkMode
 import cn.yurin.minecraft_composable_launcher.ui.localization.Context
 import cn.yurin.minecraft_composable_launcher.ui.localization.Language
 import cn.yurin.minecraft_composable_launcher.ui.localization.SettingsPageDest
@@ -36,10 +38,9 @@ import cn.yurin.minecraft_composable_launcher.ui.localization.launch
 import cn.yurin.minecraft_composable_launcher.ui.localization.more
 import cn.yurin.minecraft_composable_launcher.ui.localization.personalization
 import cn.yurin.minecraft_composable_launcher.ui.localization.theme
-import cn.yurin.minecraft_composable_launcher.ui.seedColor
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 fun SettingsPage() = dest(SettingsPageDest) {
 	Row {
 		var selection by remember { mutableIntStateOf(0) }
@@ -54,7 +55,7 @@ fun SettingsPage() = dest(SettingsPageDest) {
 }
 
 @Composable
-context(context: Context)
+context(context: Context, _: Data)
 private fun RowScope.Sidebar(
 	currentPage: Int,
 	onPageChanged: (Int) -> Unit,
@@ -86,7 +87,7 @@ private fun RowScope.Sidebar(
 }
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 private fun RowScope.Content(
 	currentPage: Int,
 ) = dest(SettingsPageDest.Content) {
@@ -118,12 +119,12 @@ private fun RowScope.Content(
 }
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 private fun Launch() = dest(SettingsPageDest.Content.Launch) {
 }
 
 @Composable
-context(context: Context)
+context(context: Context, _: Data)
 private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
 	Row(
 		horizontalArrangement = Arrangement.spacedBy(32.dp),
@@ -192,13 +193,13 @@ private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
 }
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 private fun More() = dest(SettingsPageDest.Content.More) {
 
 }
 
 @Composable
-context(_: Context)
+context(_: Context, _: Data)
 private fun Card(
 	title: @Composable () -> Unit,
 	modifier: Modifier = Modifier.fillMaxWidth(),
@@ -225,7 +226,7 @@ private fun Card(
 }
 
 @Composable
-context(context: Context)
+context(context: Context, _: Data)
 fun ColorPicker(
 	onColorChanged: (ColorEnvelope) -> Unit,
 	initialColor: Color,
