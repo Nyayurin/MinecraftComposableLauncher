@@ -45,6 +45,10 @@ private fun initLaunchPage() = LaunchPageDest {
 			chinese = "启动"
 			english = "Launch"
 		}
+		selectVersion {
+			chinese = "选择版本"
+			english = "Select Version"
+		}
 		versions {
 			chinese = "版本"
 			english = "Versions"
@@ -69,7 +73,6 @@ private fun initLaunchPage() = LaunchPageDest {
 				chinese = "信息"
 				english = "Info"
 			}
-
 			regularVersion {
 				chinese = "常规版本"
 				english = "Regular Version"
@@ -93,27 +96,22 @@ private fun initDownloadsPage() = DownloadsPageDest {
 				chinese = "最新版"
 				english = "Latest"
 			}
-
 			release {
 				chinese = "发行版"
 				english = "Release"
 			}
-
 			snapshot {
 				chinese = "快照版"
 				english = "Snapshot"
 			}
-
 			oldBeta {
 				chinese = "测试版"
 				english = "Old Beta"
 			}
-
 			oldAlpha {
 				chinese = "初始版"
 				english = "Old Alpha"
 			}
-
 			releaseAt {
 				chinese = "发行于"
 				english = "Release at"

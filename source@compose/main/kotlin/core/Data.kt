@@ -5,17 +5,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.serialization.kotlinx.json.json
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 
 class Data {
 	var seedColor by mutableStateOf(Color(0xFF9B9D95))
 	var isDarkMode by mutableStateOf<Boolean?>(null)
-	var manifest by mutableStateOf<VersionsManifest?>(null)
-	var gameStructure by mutableStateOf<GameStructure?>(null)
+	var versionsManifest by mutableStateOf<VersionsManifest?>(null)
+	var versionManifests by mutableStateOf<Map<String, List<Version>>?>(null)
+	var currentVersion by mutableStateOf<Version?>(null)
 
+	val json = Json {
+		ignoreUnknownKeys = true
+	}
 	val client = HttpClient(CIO) {
 		install(ContentNegotiation) {
 			json()
@@ -38,18 +43,29 @@ var isDarkMode
 	}
 
 context(data: Data)
-var manifest
-	get() = data.manifest
+var versionsManifest
+	get() = data.versionsManifest
 	set(value) {
-		data.manifest = value
+		data.versionsManifest = value
 	}
 
 context(data: Data)
-var gameStructure
-	get() = data.gameStructure
+var versionManifests
+	get() = data.versionManifests
 	set(value) {
-		data.gameStructure = value
+		data.versionManifests = value
 	}
+
+context(data: Data)
+var currentVersion
+	get() = data.currentVersion
+	set(value) {
+		data.currentVersion = value
+	}
+
+context(data: Data)
+val json
+	get() = data.json
 
 context(data: Data)
 val client

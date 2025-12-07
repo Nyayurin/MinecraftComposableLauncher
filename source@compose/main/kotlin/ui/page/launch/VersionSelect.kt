@@ -13,21 +13,42 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import cn.yurin.minecraft_composable_launcher.core.Data
-import cn.yurin.minecraft_composable_launcher.core.GameStructure
-import cn.yurin.minecraft_composable_launcher.core.gameStructure
+import cn.yurin.minecraft_composable_launcher.core.Version
+import cn.yurin.minecraft_composable_launcher.core.currentVersion
+import cn.yurin.minecraft_composable_launcher.core.versionManifests
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_back_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
-import java.io.File
 
 @Composable
 context(_: Context, _: Data)
-fun RowScope.VersionSelectSidebar(
+fun VersionSelectPage(onBack: () -> Unit) = dest(LaunchPageDest.VersionSelectPage) {
+	AnimatedVisibility(versionManifests != null) {
+		val versionManifests = remember { versionManifests!! }
+		var currentPage by remember { mutableStateOf(versionManifests.keys.first()) }
+		Row {
+			VersionSelectSidebar(
+				versionManifests = versionManifests,
+				onBack = onBack,
+				onChange = { currentPage = it },
+			)
+			VersionSelectContent(
+				path = currentPage,
+				versionManifests = versionManifests[currentPage]!!,
+				onBack = onBack,
+			)
+		}
+	}
+}
+
+@Composable
+context(_: Context, _: Data)
+private fun RowScope.VersionSelectSidebar(
+	versionManifests: Map<String, List<Version>>,
 	onBack: () -> Unit,
+	onChange: (String) -> Unit,
 ) = dest(LaunchPageDest.VersionSelectPage.SideBar) {
 	NavigationRail(
 		containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -68,82 +89,74 @@ fun RowScope.VersionSelectSidebar(
 
 @Composable
 context(_: Context, _: Data)
-fun RowScope.VersionSelectContent(
+private fun RowScope.VersionSelectContent(
+	path: String,
+	versionManifests: List<Version>,
+	onBack: () -> Unit,
 ) = dest(LaunchPageDest.VersionSelectPage.Content) {
 	val scope = rememberCoroutineScope()
-	scope.launch(Dispatchers.IO) {
-		gameStructure = GameStructure(
-			path = File("").absolutePath,
-			versions = File(".minecraft/versions").listFiles().filter { it.isDirectory }.map { it.name },
-		)
-	}
-	AnimatedVisibility(
-		visible = gameStructure != null,
+	Box(
 		modifier = Modifier
+			.fillMaxHeight()
 			.weight(0.8F),
 	) {
-		val gameStructure = remember { gameStructure!! }
-		Box(
+		val scrollState = rememberScrollState()
+		Column(
+			verticalArrangement = Arrangement.spacedBy(32.dp),
 			modifier = Modifier
-				.fillMaxHeight(),
+				.verticalScroll(scrollState)
+				.padding(horizontal = 32.dp),
 		) {
-			val scrollState = rememberScrollState()
-			Column(
-				verticalArrangement = Arrangement.spacedBy(32.dp),
-				modifier = Modifier
-					.verticalScroll(scrollState)
-					.padding(horizontal = 32.dp),
-			) {
-				Spacer(modifier = Modifier.height(0.dp))
-				Card(
-					title = {
-						Text(
-							text = info.current,
-							color = MaterialTheme.colorScheme.onSurface,
-							style = MaterialTheme.typography.headlineSmall,
-						)
-					}
-				) {
+			Spacer(modifier = Modifier.height(0.dp))
+			Card(
+				title = {
 					Text(
-						text = gameStructure.path,
+						text = info.current,
 						color = MaterialTheme.colorScheme.onSurface,
-						style = MaterialTheme.typography.bodyLarge,
+						style = MaterialTheme.typography.headlineSmall,
 					)
 				}
-				FoldableCard(
-					title = {
-						Text(
-							text = regularVersion.current,
-							color = MaterialTheme.colorScheme.onSurface,
-							style = MaterialTheme.typography.headlineSmall,
-						)
-					},
-					defaultFold = false,
-				) {
-					gameStructure.versions.forEach { version ->
-						VersionItem(
-							title = {
-								Text(
-									text = version,
-									color = MaterialTheme.colorScheme.onSurface,
-									style = MaterialTheme.typography.bodyLarge,
-								)
-							},
-							onClick = {
-
-							},
-						)
-					}
-				}
-				Spacer(modifier = Modifier.height(0.dp))
+			) {
+				Text(
+					text = path,
+					color = MaterialTheme.colorScheme.onSurface,
+					style = MaterialTheme.typography.bodyLarge,
+				)
 			}
-			VerticalScrollbar(
-				adapter = rememberScrollbarAdapter(scrollState),
-				modifier = Modifier
-					.align(Alignment.CenterEnd)
-					.fillMaxHeight(),
-			)
+			FoldableCard(
+				title = {
+					Text(
+						text = regularVersion.current,
+						color = MaterialTheme.colorScheme.onSurface,
+						style = MaterialTheme.typography.headlineSmall,
+					)
+				},
+				defaultFold = false,
+			) {
+				versionManifests.forEach { version ->
+					VersionItem(
+						title = {
+							Text(
+								text = version.name,
+								color = MaterialTheme.colorScheme.onSurface,
+								style = MaterialTheme.typography.bodyLarge,
+							)
+						},
+						onClick = {
+							currentVersion = version
+							onBack()
+						},
+					)
+				}
+			}
+			Spacer(modifier = Modifier.height(0.dp))
 		}
+		VerticalScrollbar(
+			adapter = rememberScrollbarAdapter(scrollState),
+			modifier = Modifier
+				.align(Alignment.CenterEnd)
+				.fillMaxHeight(),
+		)
 	}
 }
 

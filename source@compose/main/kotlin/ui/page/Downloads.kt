@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.minecraft_composable_launcher.core.Data
 import cn.yurin.minecraft_composable_launcher.core.client
-import cn.yurin.minecraft_composable_launcher.core.manifest
+import cn.yurin.minecraft_composable_launcher.core.versionsManifest
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
@@ -83,7 +83,7 @@ private fun RowScope.Sidebar(
 						scope.launch {
 							val response =
 								client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
-							manifest = response.body<VersionsManifest>()
+							versionsManifest = response.body<VersionsManifest>()
 						}
 					}
 					onPageChanged(index)
@@ -151,10 +151,10 @@ private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 	val scope = rememberCoroutineScope()
 	scope.launch(Dispatchers.IO) {
 		val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
-		manifest = response.body<VersionsManifest>()
+		versionsManifest = response.body<VersionsManifest>()
 	}
-	AnimatedVisibility(manifest != null) {
-		val manifest = remember { manifest!! }
+	AnimatedVisibility(versionsManifest != null) {
+		val manifest = remember { versionsManifest!! }
 		val versions = manifest.versions.groupBy { version -> version.type }
 		Column(
 			verticalArrangement = Arrangement.spacedBy(32.dp),

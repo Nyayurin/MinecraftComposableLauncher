@@ -34,6 +34,9 @@ context(_: DestOrBuilderScope, _: LaunchPageDest.SideBar)
 val launch get() = property("launch")
 
 context(_: DestOrBuilderScope, _: LaunchPageDest.SideBar)
+val selectVersion get() = property("selectVersion")
+
+context(_: DestOrBuilderScope, _: LaunchPageDest.SideBar)
 val versions get() = property("versions")
 
 context(_: DestOrBuilderScope, _: LaunchPageDest.SideBar)
