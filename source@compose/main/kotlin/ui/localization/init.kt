@@ -65,7 +65,10 @@ private fun initLaunchPage() = LaunchPageDest {
 
 	LaunchPageDest.VersionSelectPage {
 		LaunchPageDest.VersionSelectPage.SideBar {
-
+			importFolder {
+				chinese = "导入文件夹"
+				english = "Import Folder"
+			}
 		}
 
 		LaunchPageDest.VersionSelectPage.Content {

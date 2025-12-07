@@ -29,7 +29,6 @@ import cn.yurin.minecraftcomposablelauncher.generated.resources.minimize_24px
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import org.jetbrains.compose.resources.painterResource
-import java.io.File
 
 @Composable
 fun App(
@@ -42,29 +41,6 @@ fun App(
 	LaunchedEffect(Unit) {
 		val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
 		versionsManifest = response.body<VersionsManifest>()
-		versionManifests = listOf(".minecraft").associateWith { rootFolder ->
-			File("$rootFolder/versions").listFiles().filter { file ->
-				file.isDirectory
-			}.filter { version ->
-				version.listFiles { file ->
-					file.isFile && file.name == "${version.name}.json"
-				}.isNotEmpty()
-			}.map { version ->
-				Version(
-					name = version.name,
-					path = version.absolutePath,
-					manifest = json.decodeFromString<VersionManifest>(
-						File(
-							version,
-							"${version.name}.json"
-						).readText()
-					)
-				)
-			}.sortedByDescending {
-				it.manifest.releaseTime
-			}
-		}
-		currentVersion = versionManifests!!.values.firstOrNull()?.firstOrNull()
 	}
 	val scrollbarStyle = if (isDarkMode ?: isSystemInDarkTheme()) darkScrollbarStyle() else lightScrollbarStyle()
 	CompositionLocalProvider(

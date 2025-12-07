@@ -5,3 +5,9 @@ data class Version(
 	val path: String,
 	val manifest: VersionManifest,
 )
+
+data class Folder(
+	val name: String,
+	val path: String,
+	val versions: List<Version>,
+)

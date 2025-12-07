@@ -95,6 +95,7 @@ kotlin {
 			implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 			implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 			implementation("ch.qos.logback:logback-classic:1.5.21")
+			implementation("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
 		}
 
 		composeJvmMain.dependencies {

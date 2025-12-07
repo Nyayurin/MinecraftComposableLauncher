@@ -154,7 +154,10 @@ private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 		versionsManifest = response.body<VersionsManifest>()
 	}
 	AnimatedVisibility(versionsManifest != null) {
-		val manifest = remember { versionsManifest!! }
+		var manifest by remember { mutableStateOf(versionsManifest!!) }
+		remember(versionsManifest) {
+			versionsManifest?.let { manifest = it }
+		}
 		val versions = manifest.versions.groupBy { version -> version.type }
 		Column(
 			verticalArrangement = Arrangement.spacedBy(32.dp),

@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.minecraft_composable_launcher.core.Data
+import cn.yurin.minecraft_composable_launcher.core.currentFolder
 import cn.yurin.minecraft_composable_launcher.core.currentVersion
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
 import cn.yurin.minecraft_composable_launcher.ui.page.launch.VersionSelectPage
@@ -21,6 +22,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import java.io.File
+import java.lang.System
 
 @Composable
 context(_: Context, _: Data)
@@ -44,55 +46,54 @@ fun LaunchPage() {
 						onLaunchClick = {
 							when (currentVersion) {
 								null -> currentPage = 1
-								else -> {
-									scope.launch(Dispatchers.IO) {
-										val currentVersion = currentVersion!!
-										val libraries = listOf(
-											*currentVersion.manifest.libraries.filter { library ->
-												when (library.rule?.os?.name) {
-													System.getenv("os.name"), null -> true
-													else -> false
-												}
-											}.mapNotNull { library ->
-												library.downloads?.artifact?.path?.let { path ->
-													File(".minecraft/libraries", path).absolutePath
-												}
-											}.toTypedArray(),
-											File(currentVersion.path, "${currentVersion.name}.jar").absolutePath
-										)
-										val process = ProcessBuilder(
-											"java",
-											"-Dminecraft.launcher.brand=MinecraftComposableLauncher",
-											"-Dminecraft.launcher.version=1.0.0",
-											"-cp",
-											libraries.joinToString(";"),
-											currentVersion.manifest.mainClass,
-											"--gameDir",
-											".minecraft",
-											"--assetsDir",
-											".minecraft/assets",
-											"--assetIndex",
-											currentVersion.manifest.assetIndex.id,
-											"--uuid",
-											"83e0c8867af43b2a8eedcede1fd64ce0",
-											"--accessToken",
-											"8a8bf5456a914d1bb73ec634b260a385",
-											"--version",
-											currentVersion.manifest.id,
-										).start()
-										val error = scope.async(Dispatchers.IO) {
-											while (process.isAlive) {
-												process.errorReader().readLine()?.let(::println)
+								else -> scope.launch(Dispatchers.IO) {
+									val currentVersion = currentVersion!!
+									val libraries = listOf(
+										*currentVersion.manifest.libraries.filter { library ->
+											when (library.rule?.os?.name) {
+												null -> true
+												in System.getProperty("os.name").lowercase() -> true
+												else -> false
 											}
-										}
-										val input = scope.async(Dispatchers.IO) {
-											while (process.isAlive) {
-												process.inputReader().readLine()?.let(::println)
+										}.mapNotNull { library ->
+											library.downloads?.artifact?.path?.let { path ->
+												File("${currentFolder!!.path}/libraries", path).absolutePath
 											}
+										}.toTypedArray(),
+										File(currentVersion.path, "${currentVersion.name}.jar").absolutePath
+									)
+									val process = ProcessBuilder(
+										"java",
+										"-Dminecraft.launcher.brand=MinecraftComposableLauncher",
+										"-Dminecraft.launcher.version=1.0.0",
+										"-cp",
+										libraries.joinToString(";"),
+										currentVersion.manifest.mainClass,
+										"--gameDir",
+										".minecraft",
+										"--assetsDir",
+										"${currentFolder!!.path}/assets",
+										"--assetIndex",
+										currentVersion.manifest.assetIndex.id,
+										"--uuid",
+										"83e0c8867af43b2a8eedcede1fd64ce0",
+										"--accessToken",
+										"8a8bf5456a914d1bb73ec634b260a385",
+										"--version",
+										currentVersion.manifest.id,
+									).start()
+									val error = scope.async(Dispatchers.IO) {
+										while (process.isAlive) {
+											process.errorReader().readLine()?.let(System.err::println)
 										}
-										awaitAll(input, error)
-										println("Process done")
 									}
+									val input = scope.async(Dispatchers.IO) {
+										while (process.isAlive) {
+											process.inputReader().readLine()?.let(::println)
+										}
+									}
+									awaitAll(input, error)
+									println("Process done")
 								}
 							}
 						},
@@ -130,10 +131,7 @@ private fun RowScope.Sidebar(
 			.padding(32.dp)
 	) {
 		var selection by remember { mutableIntStateOf(0) }
-		val pages = listOf(
-			online,
-			offline
-		)
+		val pages = listOf(online, offline)
 		Box(
 			contentAlignment = Alignment.TopCenter,
 			modifier = Modifier.align(Alignment.TopCenter),

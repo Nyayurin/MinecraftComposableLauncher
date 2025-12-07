@@ -15,7 +15,8 @@ class Data {
 	var seedColor by mutableStateOf(Color(0xFF9B9D95))
 	var isDarkMode by mutableStateOf<Boolean?>(null)
 	var versionsManifest by mutableStateOf<VersionsManifest?>(null)
-	var versionManifests by mutableStateOf<Map<String, List<Version>>?>(null)
+	var folders by mutableStateOf<List<Folder>>(emptyList())
+	var currentFolder by mutableStateOf<Folder?>(null)
 	var currentVersion by mutableStateOf<Version?>(null)
 
 	val json = Json {
@@ -50,10 +51,17 @@ var versionsManifest
 	}
 
 context(data: Data)
-var versionManifests
-	get() = data.versionManifests
+var folders
+	get() = data.folders
 	set(value) {
-		data.versionManifests = value
+		data.folders = value
+	}
+
+context(data: Data)
+var currentFolder
+	get() = data.currentFolder
+	set(value) {
+		data.currentFolder = value
 	}
 
 context(data: Data)

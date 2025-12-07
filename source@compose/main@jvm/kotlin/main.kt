@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import androidx.compose.ui.window.application
 import cn.yurin.minecraft_composable_launcher.ui.App
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.User32
@@ -118,6 +119,7 @@ fun FrameWindowScope.setMinimumSize(
 }
 
 fun ComposeWindow.disableMaximize() {
+	if (!System.getProperty("os.name").lowercase().contains("win")) return
 	val hwnd = WinDef.HWND(Pointer.createConstant(windowHandle))
 
 	val style = User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_STYLE)

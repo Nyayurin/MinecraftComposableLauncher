@@ -42,6 +42,9 @@ val versions get() = property("versions")
 context(_: DestOrBuilderScope, _: LaunchPageDest.SideBar)
 val settings get() = property("settings")
 
+context(_: DestOrBuilderScope, _: LaunchPageDest.VersionSelectPage.SideBar)
+val importFolder get() = property("importFolder")
+
 context(_: DestOrBuilderScope, _: LaunchPageDest.VersionSelectPage.Content)
 val regularVersion get() = property("regularVersion")
 

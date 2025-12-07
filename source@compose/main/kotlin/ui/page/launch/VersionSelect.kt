@@ -1,5 +1,6 @@
 package cn.yurin.minecraft_composable_launcher.ui.page.launch
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
@@ -12,44 +13,71 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.core.Data
-import cn.yurin.minecraft_composable_launcher.core.Version
-import cn.yurin.minecraft_composable_launcher.core.currentVersion
-import cn.yurin.minecraft_composable_launcher.core.versionManifests
+import cn.yurin.minecraft_composable_launcher.core.*
 import cn.yurin.minecraft_composable_launcher.ui.localization.*
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_back_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
+import io.github.vinceglb.filekit.absolutePath
+import io.github.vinceglb.filekit.dialogs.compose.rememberDirectoryPickerLauncher
+import io.github.vinceglb.filekit.name
 import org.jetbrains.compose.resources.painterResource
+import java.io.File
 
 @Composable
 context(_: Context, _: Data)
 fun VersionSelectPage(onBack: () -> Unit) = dest(LaunchPageDest.VersionSelectPage) {
-	AnimatedVisibility(versionManifests != null) {
-		val versionManifests = remember { versionManifests!! }
-		var currentPage by remember { mutableStateOf(versionManifests.keys.first()) }
-		Row {
-			VersionSelectSidebar(
-				versionManifests = versionManifests,
-				onBack = onBack,
-				onChange = { currentPage = it },
-			)
-			VersionSelectContent(
-				path = currentPage,
-				versionManifests = versionManifests[currentPage]!!,
-				onBack = onBack,
-			)
-		}
+	Row {
+		VersionSelectSidebar(
+			onBack = onBack,
+		)
+		VersionSelectContent(
+			onBack = onBack,
+		)
 	}
 }
 
 @Composable
 context(_: Context, _: Data)
 private fun RowScope.VersionSelectSidebar(
-	versionManifests: Map<String, List<Version>>,
 	onBack: () -> Unit,
-	onChange: (String) -> Unit,
 ) = dest(LaunchPageDest.VersionSelectPage.SideBar) {
+	val launcher = rememberDirectoryPickerLauncher { file ->
+		if (file != null) {
+			if (!folders.any { it.path == file.absolutePath() }) {
+				folders += Folder(
+					name = file.name,
+					path = file.absolutePath(),
+					versions = File(file.file, "versions").listFiles().filter { file ->
+						file.isDirectory
+					}.filter { version ->
+						version.listFiles { file ->
+							file.isFile && file.name == "${version.name}.json"
+						}.isNotEmpty()
+					}.map { version ->
+						Version(
+							name = version.name,
+							path = version.absolutePath,
+							manifest = json.decodeFromString<VersionManifest>(
+								File(
+									version,
+									"${version.name}.json"
+								).readText()
+							)
+						)
+					}.sortedByDescending {
+						it.manifest.releaseTime
+					}
+				)
+				if (currentFolder == null) {
+					currentFolder = folders.first()
+				}
+				if (currentVersion == null) {
+					currentVersion = currentFolder!!.versions.first()
+				}
+			}
+		}
+	}
 	NavigationRail(
 		containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
 		modifier = Modifier
@@ -72,17 +100,43 @@ private fun RowScope.VersionSelectSidebar(
 		Spacer(
 			modifier = Modifier.height(16.dp),
 		)
-		NavigationRailItem(
-			selected = true,
-			onClick = {},
-			icon = {},
-			label = {
-				Text(
-					text = "Minecraft",
-					color = MaterialTheme.colorScheme.onSurface,
-					style = MaterialTheme.typography.titleLarge,
-				)
+		AnimatedContent(folders) { folders ->
+			Column(
+				horizontalAlignment = Alignment.CenterHorizontally,
+				verticalArrangement = Arrangement.spacedBy(16.dp),
+			) {
+				folders.forEach { folder ->
+					NavigationRailItem(
+						selected = true,
+						onClick = { currentFolder = folder },
+						icon = {},
+						label = {
+							Text(
+								text = folder.name,
+								color = MaterialTheme.colorScheme.onSurface,
+								style = MaterialTheme.typography.titleLarge,
+							)
+						},
+					)
+				}
+			}
+		}
+		Spacer(
+			modifier = Modifier.weight(1F),
+		)
+		Button(
+			onClick = {
+				launcher.launch()
 			},
+		) {
+			Text(
+				text = importFolder.current,
+				color = MaterialTheme.colorScheme.onSurface,
+				style = MaterialTheme.typography.titleLarge,
+			)
+		}
+		Spacer(
+			modifier = Modifier.height(16.dp),
 		)
 	}
 }
@@ -90,73 +144,91 @@ private fun RowScope.VersionSelectSidebar(
 @Composable
 context(_: Context, _: Data)
 private fun RowScope.VersionSelectContent(
-	path: String,
-	versionManifests: List<Version>,
 	onBack: () -> Unit,
 ) = dest(LaunchPageDest.VersionSelectPage.Content) {
-	val scope = rememberCoroutineScope()
-	Box(
-		modifier = Modifier
-			.fillMaxHeight()
-			.weight(0.8F),
-	) {
-		val scrollState = rememberScrollState()
-		Column(
-			verticalArrangement = Arrangement.spacedBy(32.dp),
-			modifier = Modifier
-				.verticalScroll(scrollState)
-				.padding(horizontal = 32.dp),
-		) {
-			Spacer(modifier = Modifier.height(0.dp))
-			Card(
-				title = {
-					Text(
-						text = info.current,
-						color = MaterialTheme.colorScheme.onSurface,
-						style = MaterialTheme.typography.headlineSmall,
-					)
-				}
-			) {
-				Text(
-					text = path,
-					color = MaterialTheme.colorScheme.onSurface,
-					style = MaterialTheme.typography.bodyLarge,
-				)
-			}
-			FoldableCard(
-				title = {
-					Text(
-						text = regularVersion.current,
-						color = MaterialTheme.colorScheme.onSurface,
-						style = MaterialTheme.typography.headlineSmall,
-					)
-				},
-				defaultFold = false,
-			) {
-				versionManifests.forEach { version ->
-					VersionItem(
-						title = {
-							Text(
-								text = version.name,
-								color = MaterialTheme.colorScheme.onSurface,
-								style = MaterialTheme.typography.bodyLarge,
-							)
-						},
-						onClick = {
-							currentVersion = version
-							onBack()
-						},
-					)
-				}
-			}
-			Spacer(modifier = Modifier.height(0.dp))
-		}
-		VerticalScrollbar(
-			adapter = rememberScrollbarAdapter(scrollState),
-			modifier = Modifier
-				.align(Alignment.CenterEnd)
-				.fillMaxHeight(),
+	if (currentFolder == null) {
+		Spacer(
+			modifier = Modifier.weight(0.8F),
 		)
+	}
+	AnimatedVisibility(
+		visible = currentFolder != null,
+		modifier = Modifier.weight(0.8F),
+	) {
+		var folder by remember { mutableStateOf(currentFolder!!) }
+		remember(currentFolder) {
+			currentFolder?.let { folder = it }
+		}
+		Box(
+			modifier = Modifier.fillMaxHeight(),
+		) {
+			val scrollState = rememberScrollState()
+			Column(
+				verticalArrangement = Arrangement.spacedBy(32.dp),
+				modifier = Modifier
+					.verticalScroll(scrollState)
+					.padding(horizontal = 32.dp),
+			) {
+				Spacer(modifier = Modifier.height(0.dp))
+				Card(
+					title = {
+						Text(
+							text = info.current,
+							color = MaterialTheme.colorScheme.onSurface,
+							style = MaterialTheme.typography.headlineSmall,
+						)
+					}
+				) {
+					AnimatedContent(folder) { folder ->
+						Text(
+							text = folder.path,
+							color = MaterialTheme.colorScheme.onSurface,
+							style = MaterialTheme.typography.bodyLarge,
+						)
+					}
+				}
+				FoldableCard(
+					title = {
+						Text(
+							text = regularVersion.current,
+							color = MaterialTheme.colorScheme.onSurface,
+							style = MaterialTheme.typography.headlineSmall,
+						)
+					},
+					defaultFold = false,
+				) {
+					AnimatedContent(folder) { folder ->
+						Column(
+							verticalArrangement = Arrangement.spacedBy(16.dp),
+							modifier = Modifier.fillMaxWidth(),
+						) {
+							folder.versions.forEach { version ->
+								VersionItem(
+									title = {
+										Text(
+											text = version.name,
+											color = MaterialTheme.colorScheme.onSurface,
+											style = MaterialTheme.typography.bodyLarge,
+										)
+									},
+									onClick = {
+										currentVersion = version
+										onBack()
+									},
+								)
+							}
+						}
+					}
+				}
+				Spacer(modifier = Modifier.height(0.dp))
+			}
+			VerticalScrollbar(
+				adapter = rememberScrollbarAdapter(scrollState),
+				modifier = Modifier
+					.align(Alignment.CenterEnd)
+					.fillMaxHeight(),
+			)
+		}
 	}
 }
 
