@@ -6,6 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UseAvalonia>true</UseAvalonia>
+		<RootNamespace>PureFuncUI</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -1,1 +1,0 @@
-"C:\Program Files\dotnet/dotnet" "C:\Users\Yurin\IdeaProjects\MinecraftComposableLauncher\.\kfc\home\resolver\AssemblyResolver.dll" "C:\Users\Yurin\IdeaProjects\MinecraftComposableLauncher\.\kfc\home\lib\kotlin-stdlib.dll" "C:\Users\Yurin\IdeaProjects\MinecraftComposableLauncher\.\kfc\home\lib\kotlin-stdlib.dll"

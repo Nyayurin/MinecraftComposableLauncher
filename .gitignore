@@ -1,6 +1,12 @@
 ### IntelliJ IDEA ###
 .idea
 
+### Rider ###
+avalonia/*/.idea
+
+### ReSharper ###
+avalonia/*/*.sln.DotSettings.user
+
 ### Kotlin ###
 .kotlin
 
