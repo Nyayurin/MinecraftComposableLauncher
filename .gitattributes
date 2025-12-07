@@ -1,0 +1,11 @@
+### Gradle ###
+gradlew linguist-vendored
+gradlew.bat linguist-vendored
+
+### Kotlin/CLR ###
+kfc/** linguist-vendored
+avalonia/Kotlin/Source/*.cs linguist-generated
+avalonia/Mix/Source/*.cs linguist-generated
+
+### Script ###
+script/* linguist-vendored
