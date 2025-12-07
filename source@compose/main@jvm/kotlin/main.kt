@@ -10,12 +10,17 @@ import androidx.compose.foundation.window.WindowDraggableArea
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import cn.yurin.minecraft_composable_launcher.ui.App
+import com.sun.jna.Pointer
+import com.sun.jna.platform.win32.User32
+import com.sun.jna.platform.win32.WinDef
+import com.sun.jna.platform.win32.WinUser
 import kotlinx.coroutines.launch
 import java.awt.Dimension
 import java.awt.Frame
@@ -70,6 +75,7 @@ fun main() = application {
 			}
 		}
 		setMinimumSize(800.dp, 450.dp)
+		window.disableMaximize()
 		Box(
 			modifier = Modifier
 				.fillMaxSize()
@@ -109,4 +115,26 @@ fun FrameWindowScope.setMinimumSize(
 	LaunchedEffect(density) {
 		window.minimumSize = Dimension(width.value.toInt(), height.value.toInt())
 	}
+}
+
+fun ComposeWindow.disableMaximize() {
+	val hwnd = WinDef.HWND(Pointer.createConstant(windowHandle))
+
+	val style = User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_STYLE)
+
+	// 去掉最大化按钮 和 调整大小框架（可选）
+	val newStyle = style and WinUser.WS_MAXIMIZEBOX.inv() and WinUser.WS_THICKFRAME.inv()
+
+	User32.INSTANCE.SetWindowLong(hwnd, WinUser.GWL_STYLE, newStyle)
+
+	// 让 Windows 更新菜单和行为
+	User32.INSTANCE.SetWindowPos(
+		hwnd,
+		null,
+		0, 0, 0, 0,
+		WinUser.SWP_NOMOVE or
+				WinUser.SWP_NOSIZE or
+				WinUser.SWP_NOZORDER or
+				WinUser.SWP_FRAMECHANGED
+	)
 }
