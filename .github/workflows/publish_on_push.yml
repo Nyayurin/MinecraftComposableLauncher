@@ -5,7 +5,7 @@ on:
     paths-ignore:
       - 'README.md'
 jobs:
-  package-windows-x86-64bit:
+  package-windows-x86:
     runs-on: windows-latest
     permissions:
       contents: read
@@ -29,71 +29,27 @@ jobs:
         run: ./gradlew :packageUberJarForCurrentOS
       - uses: actions/upload-artifact@v4
         with:
-          name: MCL-windows-uberjar-x86_64
+          name: MCL-windows-uberjar-amd64
           path: build/compose/jars/*
       - name: package windowsAppImage
         run: ./gradlew :packageAppImage
       - uses: actions/upload-artifact@v4
         with:
-          name: MCL-windows-portable-x86_64
+          name: MCL-windows-portable-amd64
           path: build/compose/binaries/main/app/*
       - name: package windowsMsi
         run: ./gradlew :packageMsi
       - uses: actions/upload-artifact@v4
         with:
-          name: MCL-windows-installer-msi-x86_64
+          name: MCL-windows-installer-msi-amd64
           path: build/compose/binaries/main/msi/*
       - name: package windowsExe
         run: ./gradlew :packageExe
       - uses: actions/upload-artifact@v4
         with:
-          name: MCL-windows-installer-exe-x86_64
+          name: MCL-windows-installer-exe-amd64
           path: build/compose/binaries/main/exe/*
-  package-windows-x86-32bit:
-    runs-on: windows-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'zulu'
-          architecture: 'x86'
-      - uses: gradle/actions/setup-gradle@v4
-      - run: |
-          chmod +x ./gradlew
-          ./gradlew :generateComposeResClass
-          ./gradlew :generateResourceAccessorsForComposeMain
-          ./gradlew :generateExpectResourceCollectorsForCommonMain
-          ./gradlew :generateActualResourceCollectorsForComposeJvmMain
-          ./gradlew :assembleComposeJvmMainResources
-      - name: package windowsUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-windows-uberjar-x86
-          path: build/compose/jars/*
-      - name: package windowsAppImage
-        run: ./gradlew :packageAppImage
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-windows-portable-x86
-          path: build/compose/binaries/main/app/*
-      - name: package windowsMsi
-        run: ./gradlew :packageMsi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-windows-installer-msi-x86
-          path: build/compose/binaries/main/msi/*
-      - name: package windowsExe
-        run: ./gradlew :packageExe
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-windows-installer-exe-x86
-          path: build/compose/binaries/main/exe/*
-  package-windows-arm-64bit:
+  package-windows-arm:
     runs-on: windows-11-arm
     permissions:
       contents: read
@@ -137,51 +93,7 @@ jobs:
         with:
           name: MCL-windows-installer-exe-aarch64
           path: build/compose/binaries/main/exe/*
-  package-windows-arm-32bit:
-    runs-on: windows-11-arm
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'zulu'
-          architecture: 'armv7'
-      - uses: gradle/actions/setup-gradle@v4
-      - run: |
-          chmod +x ./gradlew
-          ./gradlew :generateComposeResClass
-          ./gradlew :generateResourceAccessorsForComposeMain
-          ./gradlew :generateExpectResourceCollectorsForCommonMain
-          ./gradlew :generateActualResourceCollectorsForComposeJvmMain
-          ./gradlew :assembleComposeJvmMainResources
-      - name: package windowsUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-windows-uberjar-armv7
-          path: build/compose/jars/*
-      - name: package windowsAppImage
-        run: ./gradlew :packageAppImage
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-windows-portable-armv7
-          path: build/compose/binaries/main/app/*
-      - name: package windowsMsi
-        run: ./gradlew :packageMsi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-windows-installer-msi-armv7
-          path: build/compose/binaries/main/msi/*
-      - name: package windowsExe
-        run: ./gradlew :packageExe
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-windows-installer-exe-armv7
-          path: build/compose/binaries/main/exe/*
-  package-linux-x86-64bit:
+  package-linux-x86:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -205,71 +117,27 @@ jobs:
         run: ./gradlew :packageUberJarForCurrentOS
       - uses: actions/upload-artifact@v4
         with:
-          name: MCL-linux-uberjar-x86_64
+          name: MCL-linux-uberjar-amd64
           path: build/compose/jars/*
       - name: package linuxAppImage
         run: ./gradlew :packageAppImage
       - uses: actions/upload-artifact@v4
         with:
-          name: MCL-linux-portable-x86_64
+          name: MCL-linux-portable-amd64
           path: build/compose/binaries/main/app/*
       - name: package linuxDeb
         run: ./gradlew :packageDeb
       - uses: actions/upload-artifact@v4
         with:
-          name: MCL-linux-installer-deb-x86_64
+          name: MCL-linux-installer-deb-amd64
           path: build/compose/binaries/main/deb/*
       - name: package linuxRpm
         run: ./gradlew :packageRpm
       - uses: actions/upload-artifact@v4
         with:
-          name: MCL-linux-installer-rpm-x86_64
+          name: MCL-linux-installer-rpm-amd64
           path: build/compose/binaries/main/rpm/*
-  package-linux-x86-32bit:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'zulu'
-          architecture: 'x86'
-      - uses: gradle/actions/setup-gradle@v4
-      - run: |
-          chmod +x ./gradlew
-          ./gradlew :generateComposeResClass
-          ./gradlew :generateResourceAccessorsForComposeMain
-          ./gradlew :generateExpectResourceCollectorsForCommonMain
-          ./gradlew :generateActualResourceCollectorsForComposeJvmMain
-          ./gradlew :assembleComposeJvmMainResources
-      - name: package linuxUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-linux-uberjar-x86
-          path: build/compose/jars/*
-      - name: package linuxAppImage
-        run: ./gradlew :packageAppImage
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-linux-portable-x86
-          path: build/compose/binaries/main/app/*
-      - name: package linuxDeb
-        run: ./gradlew :packageDeb
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-linux-installer-deb-x86
-          path: build/compose/binaries/main/deb/*
-      - name: package linuxRpm
-        run: ./gradlew :packageRpm
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-linux-installer-rpm-x86
-          path: build/compose/binaries/main/rpm/*
-  package-linux-arm-64bit:
+  package-linux-arm:
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
@@ -313,51 +181,7 @@ jobs:
         with:
           name: MCL-linux-installer-rpm-aarch64
           path: build/compose/binaries/main/rpm/*
-  package-linux-arm-32bit:
-    runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'zulu'
-          architecture: 'armv7'
-      - uses: gradle/actions/setup-gradle@v4
-      - run: |
-          chmod +x ./gradlew
-          ./gradlew :generateComposeResClass
-          ./gradlew :generateResourceAccessorsForComposeMain
-          ./gradlew :generateExpectResourceCollectorsForCommonMain
-          ./gradlew :generateActualResourceCollectorsForComposeJvmMain
-          ./gradlew :assembleComposeJvmMainResources
-      - name: package linuxUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-linux-uberjar-armv7
-          path: build/compose/jars/*
-      - name: package linuxAppImage
-        run: ./gradlew :packageAppImage
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-linux-portable-armv7
-          path: build/compose/binaries/main/app/*
-      - name: package linuxDeb
-        run: ./gradlew :packageDeb
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-linux-installer-deb-armv7
-          path: build/compose/binaries/main/deb/*
-      - name: package linuxRpm
-        run: ./gradlew :packageRpm
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-linux-installer-rpm-armv7
-          path: build/compose/binaries/main/rpm/*
-  package-macos-arm-64bit:
+  package-macos-arm:
     runs-on: macos-latest
     permissions:
       contents: read
@@ -388,36 +212,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-macos-installer-dmg-aarch64
-          path: build/compose/binaries/main/dmg/*
-  package-macos-arm-32bit:
-    runs-on: macos-latest
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'zulu'
-          architecture: 'armv7'
-      - uses: gradle/actions/setup-gradle@v4
-      - run: |
-          chmod +x ./gradlew
-          ./gradlew :generateComposeResClass
-          ./gradlew :generateResourceAccessorsForComposeMain
-          ./gradlew :generateExpectResourceCollectorsForCommonMain
-          ./gradlew :generateActualResourceCollectorsForComposeJvmMain
-          ./gradlew :assembleComposeJvmMainResources
-      - name: package macosUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-macos-uberjar-armv7
-          path: build/compose/jars/*
-      - name: package macosDmg
-        run: ./gradlew :packageDmg
-      - uses: actions/upload-artifact@v4
-        with:
-          name: MCL-macos-installer-dmg-armv7
           path: build/compose/binaries/main/dmg/*
