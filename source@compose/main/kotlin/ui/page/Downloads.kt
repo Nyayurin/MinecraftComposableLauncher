@@ -43,6 +43,7 @@ import cn.yurin.minecraft_composable_launcher.ui.localization.release
 import cn.yurin.minecraft_composable_launcher.ui.localization.releaseAt
 import cn.yurin.minecraft_composable_launcher.ui.localization.snapshot
 import cn.yurin.minecraft_composable_launcher.ui.localization.vanilla
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.painterResource
 
@@ -81,9 +82,13 @@ private fun RowScope.Sidebar(
 				onClick = {
 					if (currentPage == index) {
 						scope.launch {
-							val response =
-								client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
-							versionsManifest = response.body<VersionsManifest>()
+							runCatching {
+								val response =
+									client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
+								versionsManifest = response.body<VersionsManifest>()
+							}.onFailure {
+								println("Failed to get version manifest: ${it.message}")
+							}
 						}
 					}
 					onPageChanged(index)
@@ -150,8 +155,16 @@ context(_: Context, _: Data)
 private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 	val scope = rememberCoroutineScope()
 	scope.launch(Dispatchers.IO) {
-		val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
-		versionsManifest = response.body<VersionsManifest>()
+		runCatching {
+			val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
+			if (response.status == HttpStatusCode.OK) {
+				versionsManifest = response.body<VersionsManifest>()
+			} else {
+				println("Failed to get version manifest: ${response.status}")
+			}
+		}.onFailure {
+			println("Failed to get version manifest: ${it.message}")
+		}
 	}
 	AnimatedVisibility(versionsManifest != null) {
 		var manifest by remember { mutableStateOf(versionsManifest!!) }

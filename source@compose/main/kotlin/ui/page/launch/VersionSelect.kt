@@ -7,6 +7,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +46,7 @@ private fun RowScope.VersionSelectSidebar(
 	val launcher = rememberDirectoryPickerLauncher { file ->
 		if (file != null) {
 			if (!folders.any { it.path == file.absolutePath() }) {
-				folders += Folder(
+				folders += GameFolder.DotMinecraft(
 					name = file.name,
 					path = file.absolutePath(),
 					versions = File(file.file, "versions").listFiles().filter { file ->
@@ -58,12 +59,7 @@ private fun RowScope.VersionSelectSidebar(
 						Version(
 							name = version.name,
 							path = version.absolutePath,
-							manifest = json.decodeFromString<VersionManifest>(
-								File(
-									version,
-									"${version.name}.json"
-								).readText()
-							)
+							manifest = json.decodeFromString(File(version, "${version.name}.json").readText())
 						)
 					}.sortedByDescending {
 						it.manifest.releaseTime
@@ -124,15 +120,20 @@ private fun RowScope.VersionSelectSidebar(
 		Spacer(
 			modifier = Modifier.weight(1F),
 		)
-		Button(
+		FilledTonalButton(
 			onClick = {
 				launcher.launch()
 			},
+			shape = RoundedCornerShape(12.dp),
+			colors = ButtonDefaults.filledTonalButtonColors(
+				containerColor = MaterialTheme.colorScheme.primary,
+				contentColor = MaterialTheme.colorScheme.onPrimary,
+			),
 		) {
 			Text(
 				text = importFolder.current,
-				color = MaterialTheme.colorScheme.onSurface,
-				style = MaterialTheme.typography.titleLarge,
+				color = MaterialTheme.colorScheme.onPrimary,
+				style = MaterialTheme.typography.bodyLarge,
 			)
 		}
 		Spacer(

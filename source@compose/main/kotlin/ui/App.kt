@@ -28,6 +28,7 @@ import cn.yurin.minecraftcomposablelauncher.generated.resources.close_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.minimize_24px
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.http.HttpStatusCode
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -39,8 +40,16 @@ fun App(
 	minimizeWindow: () -> Unit,
 ) = context(remember { initContext() }, remember { Data() }) {
 	LaunchedEffect(Unit) {
-		val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
-		versionsManifest = response.body<VersionsManifest>()
+		runCatching {
+			val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
+			if (response.status == HttpStatusCode.OK) {
+				versionsManifest = response.body<VersionsManifest>()
+			} else {
+				println("Failed to get version manifest: ${response.status}")
+			}
+		}.onFailure {
+			println("Failed to get version manifest: ${it.message}")
+		}
 	}
 	val scrollbarStyle = if (isDarkMode ?: isSystemInDarkTheme()) darkScrollbarStyle() else lightScrollbarStyle()
 	CompositionLocalProvider(
