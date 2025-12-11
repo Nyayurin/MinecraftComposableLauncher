@@ -121,6 +121,41 @@ private fun initDownloadsPage() = DownloadsPageDest {
 			}
 		}
 	}
+
+	DownloadsPageDest.DownloadAlert {
+		titleDownloading {
+			chinese = "下载版本中..."
+			english = "Downloading version..."
+		}
+		titleDownloaded {
+			chinese = "下载版本完成"
+			english = "Download version finished"
+		}
+		manifest {
+			chinese = "清单"
+			english = "Manifest"
+		}
+		client {
+			chinese = "客户端"
+			english = "Client"
+		}
+		libraries {
+			chinese = "依赖库"
+			english = "Libraries"
+		}
+		assetIndex {
+			chinese = "资源索引"
+			english = "Asset Index"
+		}
+		assets {
+			chinese = "资源"
+			english = "Assets"
+		}
+		confirm {
+			chinese = "确认"
+			english = "Confirm"
+		}
+	}
 }
 
 context(_: ContextBuilder)

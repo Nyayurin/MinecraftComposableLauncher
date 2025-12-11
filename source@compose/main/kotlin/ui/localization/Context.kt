@@ -3,6 +3,9 @@ package cn.yurin.mcl.ui.localization
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 fun buildContext(block: context(ContextBuilder) () -> Unit) = ContextBuilder().apply(block).build()
 
@@ -14,10 +17,14 @@ class Context(
 	operator fun <S : Destination.Sign> get(value: S) = destinations[value]
 }
 
+@OptIn(ExperimentalContracts::class)
 context(context: Context)
-inline fun <S : Destination.Sign> dest(sign: S, block: context(Context, Destination, S) () -> Unit) {
+inline fun <S : Destination.Sign, R> dest(sign: S, block: context(Context, Destination, S) () -> R): R {
+	contract {
+		callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+	}
 	context(context, context[sign]!!, sign) {
-		block()
+		return block()
 	}
 }
 

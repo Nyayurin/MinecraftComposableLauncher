@@ -5,6 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import cn.yurin.mcl.network.VersionsManifest
+import cn.yurin.mcl.ui.localization.Context
+import cn.yurin.mcl.ui.localization.DownloadsPageDest
+import cn.yurin.mcl.ui.localization.assetIndex
+import cn.yurin.mcl.ui.localization.assets
+import cn.yurin.mcl.ui.localization.client
+import cn.yurin.mcl.ui.localization.current
+import cn.yurin.mcl.ui.localization.dest
+import cn.yurin.mcl.ui.localization.libraries
+import cn.yurin.mcl.ui.localization.manifest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -16,6 +25,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
@@ -34,7 +44,7 @@ class Data {
 	val json = Json {
 		ignoreUnknownKeys = true
 	}
-	val client = HttpClient(CIO) {
+	val httpClient = HttpClient(CIO) {
 		install(ContentNegotiation) {
 			json()
 		}
@@ -48,151 +58,142 @@ class Data {
 	val scope = CoroutineScope(Dispatchers.IO)
 }
 
-context(_: Data)
+context(_: Data, _: Context)
 suspend fun downloadManifest(
 	version: VersionsManifest.Version,
 	onInitDownloadList: (String, Int) -> Unit,
 	onDownloaded: (String) -> Unit,
 	onDownloadError: (Throwable) -> Unit,
-): Result<VersionManifest> {
-	val file = File(currentFolder!!.path, "versions/${version.id}/${version.id}.json")
-	if (file.exists()) {
-		return Result.success(json.decodeFromString(file.readText()))
-	}
-	onInitDownloadList("manifest", 1)
-	file.parentFile.mkdirs()
-	val response = client.get(version.url)
-	if (response.status == HttpStatusCode.OK) {
-		val manifestRaw = response.bodyAsText()
-		file.writeText(manifestRaw)
-		val manifest = json.decodeFromString<VersionManifest>(manifestRaw)
-		onDownloaded("manifest")
-		return Result.success(manifest)
-	}
-	onDownloadError(Exception("Failed to download manifest ${version.url}: ${response.status}"))
-	return Result.failure(Exception("Failed to download manifest ${version.url}: ${response.status}"))
+): VersionManifest? = dest(DownloadsPageDest.DownloadAlert) {
+	runCatching {
+		val file = File(currentFolder!!.path, "versions/${version.id}/${version.id}.json")
+		if (file.exists()) {
+			return json.decodeFromString(file.readText())
+		}
+		onInitDownloadList(manifest.current, 1)
+		file.parentFile.mkdirs()
+		val response = httpClient.get(version.url)
+		if (response.status == HttpStatusCode.OK) {
+			val manifestRaw = response.bodyAsText()
+			file.writeText(manifestRaw)
+			val versionManifest = json.decodeFromString<VersionManifest>(manifestRaw)
+			onDownloaded(manifest.current)
+			return versionManifest
+		}
+		onDownloadError(Exception("Failed to download manifest ${version.url}: ${response.status}"))
+	}.onFailure { onDownloadError(it) }
+	return null
 }
 
-context(_: Data, scope: CoroutineScope)
+context(_: Data, scope: CoroutineScope, _: Context)
 suspend fun completeVersion(
 	version: VersionsManifest.Version,
 	manifest: VersionManifest,
-	onInitDownloadList: (Map<String, Int>) -> Unit,
+	onInitDownloadList: (String, Int) -> Unit,
 	onDownloaded: (String) -> Unit,
 	onDownloadError: (Throwable) -> Unit,
-) {
-	val semaphore = Semaphore(64)
-	val hasClientFile: Boolean
-	val libraries = mutableListOf<VersionManifest.Library>()
-	val assetIndex: AssetIndex
-	val assets = mutableListOf<AssetIndex.Item>()
-	File(currentFolder!!.path, "versions/${version.id}/${version.id}.jar").let { file ->
-		hasClientFile = file.exists()
-	}
-	manifest.libraries.forEach { library ->
-		val filter = when (library.rule?.os?.name) {
-			null -> true
-			in System.getProperty("os.name").lowercase() -> true
-			else -> false
-		}
-		if (filter && library.downloads != null) {
-			val file = File(currentFolder!!.path, "libraries/${library.downloads.artifact.path}")
-			if (!file.exists()) libraries += library
-		}
-	}
-	File(currentFolder!!.path, "assets/indexes/${manifest.assetIndex.id}.json").let { file ->
-		if (!file.exists()) {
-			file.parentFile.mkdirs()
-			val assetIndexRaw = client.get(manifest.assetIndex.url).bodyAsText()
-			file.writeText(assetIndexRaw)
-		}
-		assetIndex = json.decodeFromString(file.readText())
-	}
-	assetIndex.objects.values.forEach { item ->
-		val file = File(currentFolder!!.path, "assets/objects/${item.hash.substring(0, 2)}/${item.hash}")
-		if (!file.exists()) assets += item
-	}
-	onInitDownloadList(
-		buildMap {
-			if (!hasClientFile) {
-				put("client", 1)
-			}
-			if (libraries.isNotEmpty()) {
-				put("libraries", libraries.size)
-			}
-			if (assets.isNotEmpty()) {
-				put("assets", assets.size)
-			}
-		}
-	)
-	scope.launch {
+) = dest(DownloadsPageDest.DownloadAlert) {
+	val semaphore = Semaphore(Runtime.getRuntime().availableProcessors())
+	val clientJob = scope.launch {
 		runCatching {
 			semaphore.withPermit {
-				if (!hasClientFile) {
-					val file = File(currentFolder!!.path, "versions/${version.id}/${version.id}.jar")
-					val response = client.get(manifest.downloads.client.url)
+				val file = File(currentFolder!!.path, "versions/${version.id}/${version.id}.jar")
+				if (!file.exists()) {
+					onInitDownloadList(client.current, 1)
+					val response = httpClient.get(manifest.downloads.client.url)
 					if (response.status != HttpStatusCode.OK) {
 						onDownloadError(Exception("Failed to download jar ${manifest.downloads.client.url}: ${response.status}"))
 						return@runCatching
 					}
-					file.writeBytes(client.get(manifest.downloads.client.url).bodyAsBytes())
-					onDownloaded("client")
+					file.writeBytes(response.bodyAsBytes())
+					onDownloaded(client.current)
 				}
 			}
 		}.onFailure { onDownloadError(it) }
 	}
 
-	scope.launch {
-		libraries.map { library ->
-			scope.launch {
-				runCatching {
-					semaphore.withPermit {
-						val file = File(currentFolder!!.path, "libraries/${library.downloads!!.artifact.path}")
-						file.parentFile.mkdirs()
-						val response = client.get(library.downloads.artifact.url)
-						if (response.status != HttpStatusCode.OK) {
-							onDownloadError(Exception("Failed to download library ${response.call.request.url}: ${response.status}"))
-							return@launch
-						}
-						file.writeBytes(response.bodyAsBytes())
-						onDownloaded("libraries")
+	val librariesJobs = manifest.libraries.filter { library ->
+		val filter = when (library.rule?.os?.name) {
+			null -> true
+			in System.getProperty("os.name").lowercase() -> true
+			else -> false
+		}
+		when (filter && library.downloads != null) {
+			true -> !File(currentFolder!!.path, "libraries/${library.downloads.artifact.path}").exists()
+			else -> false
+		}
+	}.also {
+		if (it.isNotEmpty()) {
+			onInitDownloadList(libraries.current, it.size)
+		}
+	}.map { library ->
+		scope.launch {
+			runCatching {
+				semaphore.withPermit {
+					val file = File(currentFolder!!.path, "libraries/${library.downloads!!.artifact.path}")
+					file.parentFile.mkdirs()
+					val response = httpClient.get(library.downloads.artifact.url)
+					if (response.status != HttpStatusCode.OK) {
+						onDownloadError(Exception("Failed to download library ${response.call.request.url}: ${response.status}"))
+						return@launch
 					}
-				}.onFailure { onDownloadError(it) }
-			}
-		}.joinAll()
+					file.writeBytes(response.bodyAsBytes())
+					onDownloaded(libraries.current)
+				}
+			}.onFailure { onDownloadError(it) }
+		}
 	}
 
-	scope.launch {
-		assets.map { item ->
-			scope.launch {
-				runCatching {
-					semaphore.withPermit {
-						val file =
-							File(currentFolder!!.path, "assets/objects/${item.hash.substring(0, 2)}/${item.hash}")
-						file.parentFile.mkdirs()
-						val response =
-							client.get(
-								"https://resources.download.minecraft.net/${
-									item.hash.substring(0, 2)
-								}/${item.hash}"
-							)
-						if (response.status != HttpStatusCode.OK) {
-							onDownloadError(Exception("Failed to download asset ${response.call.request.url}: ${response.status}"))
-							return@launch
-						}
-						file.writeBytes(response.bodyAsBytes())
-						onDownloaded("assets")
-					}
-				}.onFailure { onDownloadError(it) }
+	val assetIndex = scope.async {
+		runCatching {
+			semaphore.withPermit {
+				val file = File(currentFolder!!.path, "assets/indexes/${manifest.assetIndex.id}.json")
+				if (!file.exists()) {
+					onInitDownloadList(assetIndex.current, 1)
+					file.parentFile.mkdirs()
+					val assetIndexRaw = httpClient.get(manifest.assetIndex.url).bodyAsText()
+					file.writeText(assetIndexRaw)
+					onDownloaded(assetIndex.current)
+				}
+				json.decodeFromString<AssetIndex>(file.readText())
 			}
-		}.joinAll()
+		}.onFailure { onDownloadError(it) }
+	}.await().getOrNull()
+
+	val assesJobs = assetIndex?.objects?.values?.filter { item ->
+		val file = File(currentFolder!!.path, "assets/objects/${item.hash.substring(0, 2)}/${item.hash}")
+		!file.exists()
+	}?.also { items ->
+		if (items.isNotEmpty()) {
+			onInitDownloadList(assets.current, items.size)
+		}
+	}?.map { item ->
+		scope.launch {
+			runCatching {
+				semaphore.withPermit {
+					val file = File(currentFolder!!.path, "assets/objects/${item.hash.substring(0, 2)}/${item.hash}")
+					file.parentFile.mkdirs()
+					val response = httpClient.get("https://resources.download.minecraft.net/${item.hash.substring(0, 2)}/${item.hash}")
+					if (response.status != HttpStatusCode.OK) {
+						onDownloadError(Exception("Failed to download asset ${response.call.request.url}: ${response.status}"))
+						return@launch
+					}
+					file.writeBytes(response.bodyAsBytes())
+					onDownloaded(assets.current)
+				}
+			}.onFailure { onDownloadError(it) }
+		}
 	}
+
+	clientJob.join()
+	librariesJobs.joinAll()
+	assesJobs?.joinAll()
 }
 
 context(_: Data)
 suspend fun refreshVersionsManifest() {
 	runCatching {
-		val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
+		val response = httpClient.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
 		if (response.status == HttpStatusCode.OK) {
 			versionsManifest = response.body<VersionsManifest>()
 		} else {
@@ -279,8 +280,8 @@ val json
 	get() = data.json
 
 context(data: Data)
-val client
-	get() = data.client
+val httpClient
+	get() = data.httpClient
 
 context(data: Data)
 val scope

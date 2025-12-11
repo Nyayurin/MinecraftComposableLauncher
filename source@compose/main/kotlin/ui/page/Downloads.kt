@@ -112,6 +112,7 @@ private fun RowScope.Content(
 	) {
 		var showDownloadPage by remember { mutableStateOf(false) }
 		val downloadList = remember { mutableStateListOf<Pair<String, Pair<Int, Int>>>() }
+		var downloadFinished by remember { mutableStateOf(false) }
 		val scrollState = rememberScrollState()
 		AnimatedContent(
 			targetState = currentPage,
@@ -138,6 +139,7 @@ private fun RowScope.Content(
 								scope.launch(Dispatchers.IO) {
 									showDownloadPage = true
 									downloadList.clear()
+									downloadFinished = false
 									println("Downloading version ${version.id}")
 									downloadManifest(
 										version = version,
@@ -147,19 +149,18 @@ private fun RowScope.Content(
 										onDownloaded = { key ->
 											val index = downloadList.indexOfFirst { item -> item.first == key }
 											val item = downloadList[index]
-											downloadList[index] =
-												item.first to (item.second.first to item.second.second + 1)
+											downloadList[index] = item.first to (item.second.first to item.second.second + 1)
 										},
 										onDownloadError = { e ->
 											println("Failed to download version ${version.id}: $e")
 											e.printStackTrace()
 										},
-									).onSuccess { manifest ->
+									)?.let { manifest ->
 										completeVersion(
 											version = version,
 											manifest = manifest,
-											onInitDownloadList = { map ->
-												downloadList.addAll(map.map { (key, value) -> key to (value to 0) })
+											onInitDownloadList = { key, sum ->
+												downloadList += key to (sum to 0)
 											},
 											onDownloaded = { key ->
 												val index = downloadList.indexOfFirst { item -> item.first == key }
@@ -173,6 +174,7 @@ private fun RowScope.Content(
 											},
 										)
 									}
+									downloadFinished = true
 									refreshFolders()
 								}
 							}
@@ -189,64 +191,75 @@ private fun RowScope.Content(
 				.fillMaxHeight(),
 		)
 		if (showDownloadPage) {
-			AlertDialog(
-				onDismissRequest = { showDownloadPage = false },
-				title = { Text("Downloading versions...") },
-				icon = null,
-				confirmButton = {
-					TextButton(
-						onClick = { showDownloadPage = false }
-					) {
+			dest(DownloadsPageDest.DownloadAlert) {
+				AlertDialog(
+					onDismissRequest = { showDownloadPage = false },
+					title = {
 						Text(
-							text = "Confirm",
+							text = when (downloadFinished) {
+								true -> titleDownloaded.current
+								else -> titleDownloading.current
+							},
 							color = MaterialTheme.colorScheme.onSurface,
 							style = MaterialTheme.typography.titleSmall,
 						)
-					}
-				},
-				dismissButton = null,
-				text = {
-					Column(
-						verticalArrangement = Arrangement.spacedBy(16.dp),
-					) {
-						downloadList.forEach { (key, value) ->
-							val (sum, count) = value
-							val percentage = count / sum.toFloat()
-							Row(
-								verticalAlignment = Alignment.CenterVertically,
-								modifier = Modifier.fillMaxWidth(),
-							) {
-								Box(
-									contentAlignment = Alignment.Center,
-									modifier = Modifier.size(64.dp),
+					},
+					icon = null,
+					confirmButton = {
+						TextButton(
+							onClick = { showDownloadPage = false }
+						) {
+							Text(
+								text = confirm.current,
+								color = MaterialTheme.colorScheme.onSurface,
+								style = MaterialTheme.typography.titleSmall,
+							)
+						}
+					},
+					dismissButton = null,
+					text = {
+						Column(
+							verticalArrangement = Arrangement.spacedBy(16.dp),
+						) {
+							downloadList.forEach { (key, value) ->
+								val (sum, count) = value
+								val percentage = count / sum.toFloat()
+								Row(
+									verticalAlignment = Alignment.CenterVertically,
+									modifier = Modifier.fillMaxWidth(),
 								) {
-									CircularProgressIndicator(
-										progress = { percentage },
+									Box(
+										contentAlignment = Alignment.Center,
+										modifier = Modifier.size(64.dp),
+									) {
+										CircularProgressIndicator(
+											progress = { percentage },
+										)
+										Text(
+											text = "${(percentage * 100).toInt()}%",
+											color = MaterialTheme.colorScheme.onSurface,
+											style = MaterialTheme.typography.bodySmall,
+										)
+									}
+									Text(
+										text = key,
+										color = MaterialTheme.colorScheme.onSurface,
+										style = MaterialTheme.typography.titleSmall,
+									)
+									Spacer(
+										modifier = Modifier.weight(1F),
 									)
 									Text(
-										text = "${(percentage * 100).toInt()}%",
+										text = "$count / $sum",
 										color = MaterialTheme.colorScheme.onSurface,
-										style = MaterialTheme.typography.bodySmall,
+										style = MaterialTheme.typography.titleSmall,
 									)
 								}
-								Text(
-									text = key,
-									color = MaterialTheme.colorScheme.onSurface,
-									style = MaterialTheme.typography.titleSmall,
-								)
-								Spacer(
-									modifier = Modifier.weight(1F),
-								)
-								Text(
-									text = "$count / $sum",
-									color = MaterialTheme.colorScheme.onSurface,
-									style = MaterialTheme.typography.titleSmall,
-								)
 							}
 						}
-					}
-				},
-			)
+					},
+				)
+			}
 		}
 	}
 }
@@ -287,11 +300,7 @@ private fun Vanilla(
 							append(", ")
 							append(releaseAt.current)
 							append(" ")
-							append(
-								localDateTimeFormater.format(
-									LocalDateTime.parse(version.releaseTime, localDateTimeParser)
-								)
-							)
+							append(localDateTimeFormater.format(LocalDateTime.parse(version.releaseTime, localDateTimeParser)))
 						}
 					},
 					onClick = onDownloadVersion,
@@ -305,11 +314,7 @@ private fun Vanilla(
 								append(", ")
 								append(releaseAt.current)
 								append(" ")
-								append(
-									localDateTimeFormater.format(
-										LocalDateTime.parse(version.releaseTime, localDateTimeParser)
-									)
-								)
+								append(localDateTimeFormater.format(LocalDateTime.parse(version.releaseTime, localDateTimeParser)))
 							}
 						},
 						onClick = onDownloadVersion,
@@ -335,9 +340,7 @@ private fun Vanilla(
 						VersionItem(
 							version = version,
 							detail = { version ->
-								localDateTimeFormater.format(
-									LocalDateTime.parse(version.releaseTime, localDateTimeParser)
-								)
+								localDateTimeFormater.format(LocalDateTime.parse(version.releaseTime, localDateTimeParser))
 							},
 							onClick = onDownloadVersion,
 						)
