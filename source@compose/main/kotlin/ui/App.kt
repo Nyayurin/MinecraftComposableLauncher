@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.ui
+package cn.yurin.mcl.ui
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -16,19 +16,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.core.*
-import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
-import cn.yurin.minecraft_composable_launcher.ui.localization.*
-import cn.yurin.minecraft_composable_launcher.ui.page.DownloadsPage
-import cn.yurin.minecraft_composable_launcher.ui.page.LaunchPage
-import cn.yurin.minecraft_composable_launcher.ui.page.MorePage
-import cn.yurin.minecraft_composable_launcher.ui.page.SettingsPage
+import cn.yurin.mcl.core.Data
+import cn.yurin.mcl.core.isDarkMode
+import cn.yurin.mcl.core.refreshVersionsManifest
+import cn.yurin.mcl.core.seedColor
+import cn.yurin.mcl.ui.localization.*
+import cn.yurin.mcl.ui.page.DownloadsPage
+import cn.yurin.mcl.ui.page.LaunchPage
+import cn.yurin.mcl.ui.page.MorePage
+import cn.yurin.mcl.ui.page.SettingsPage
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.close_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.minimize_24px
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.HttpStatusCode
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -40,16 +39,7 @@ fun App(
 	minimizeWindow: () -> Unit,
 ) = context(remember { initContext() }, remember { Data() }) {
 	LaunchedEffect(Unit) {
-		runCatching {
-			val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
-			if (response.status == HttpStatusCode.OK) {
-				versionsManifest = response.body<VersionsManifest>()
-			} else {
-				println("Failed to get version manifest: ${response.status}")
-			}
-		}.onFailure {
-			println("Failed to get version manifest: ${it.message}")
-		}
+		refreshVersionsManifest()
 	}
 	val scrollbarStyle = if (isDarkMode ?: isSystemInDarkTheme()) darkScrollbarStyle() else lightScrollbarStyle()
 	CompositionLocalProvider(

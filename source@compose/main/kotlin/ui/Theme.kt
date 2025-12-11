@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.ui
+package cn.yurin.mcl.ui
 
 import androidx.compose.foundation.ScrollbarStyle
 import androidx.compose.foundation.shape.RoundedCornerShape

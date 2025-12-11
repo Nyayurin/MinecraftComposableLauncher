@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.ui.localization
+package cn.yurin.mcl.ui.localization
 
 @JvmInline
 value class LocalTextProperty(val key: String)
@@ -12,10 +12,6 @@ val LocalTextProperty.current
 
 context(dest: Destination)
 fun LocalTextProperty.language(language: Language) = dest.endpoints[key]?.map[language]!!
-
-context(context: Context)
-val LocalText.current
-	get() = map[context.language]!!
 
 data class LocalText(val map: Map<Language, String>)
 

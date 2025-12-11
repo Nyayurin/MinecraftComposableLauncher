@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.ui.page
+package cn.yurin.mcl.ui.page
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
@@ -11,12 +11,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.core.Data
-import cn.yurin.minecraft_composable_launcher.core.buildGameProcess
-import cn.yurin.minecraft_composable_launcher.core.currentFolder
-import cn.yurin.minecraft_composable_launcher.core.currentVersion
-import cn.yurin.minecraft_composable_launcher.ui.localization.*
-import cn.yurin.minecraft_composable_launcher.ui.page.launch.VersionSelectPage
+import cn.yurin.mcl.core.Data
+import cn.yurin.mcl.core.buildGameProcess
+import cn.yurin.mcl.core.currentFolder
+import cn.yurin.mcl.core.currentVersion
+import cn.yurin.mcl.ui.localization.*
+import cn.yurin.mcl.ui.page.launch.VersionSelectPage
 import kotlinx.coroutines.*
 import java.io.File
 

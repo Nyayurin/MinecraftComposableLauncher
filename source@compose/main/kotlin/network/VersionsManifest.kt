@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.network
+package cn.yurin.mcl.network
 
 import kotlinx.serialization.Serializable
 

@@ -1,4 +1,6 @@
-package cn.yurin.minecraft_composable_launcher.core
+package cn.yurin.mcl.core
+
+import kotlinx.serialization.Serializable
 
 data class Version(
 	val name: String,
@@ -22,4 +24,15 @@ sealed class GameFolder {
 		override val path: String,
 		override val versions: List<Version>,
 	) : GameFolder()
+}
+
+@Serializable
+data class AssetIndex(
+	val objects: Map<String, Item>,
+) {
+	@Serializable
+	data class Item(
+		val hash: String,
+		val size: Int,
+	)
 }

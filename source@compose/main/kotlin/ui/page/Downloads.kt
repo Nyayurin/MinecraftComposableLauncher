@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.ui.page
+package cn.yurin.mcl.ui.page
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
@@ -6,12 +6,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,32 +14,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.core.Data
-import cn.yurin.minecraft_composable_launcher.core.client
-import cn.yurin.minecraft_composable_launcher.core.versionsManifest
-import cn.yurin.minecraft_composable_launcher.ui.localization.*
+import cn.yurin.mcl.core.*
+import cn.yurin.mcl.network.VersionsManifest
+import cn.yurin.mcl.ui.localization.*
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
-import io.ktor.client.call.*
-import io.ktor.client.request.*
+import io.github.vinceglb.filekit.absolutePath
+import io.github.vinceglb.filekit.dialogs.compose.rememberDirectoryPickerLauncher
+import io.github.vinceglb.filekit.name
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.format.char
-import cn.yurin.minecraft_composable_launcher.network.VersionsManifest
-import cn.yurin.minecraft_composable_launcher.ui.localization.Context
-import cn.yurin.minecraft_composable_launcher.ui.localization.DownloadsPageDest
-import cn.yurin.minecraft_composable_launcher.ui.localization.SettingsPageDest
-import cn.yurin.minecraft_composable_launcher.ui.localization.current
-import cn.yurin.minecraft_composable_launcher.ui.localization.language
-import cn.yurin.minecraft_composable_launcher.ui.localization.latest
-import cn.yurin.minecraft_composable_launcher.ui.localization.oldAlpha
-import cn.yurin.minecraft_composable_launcher.ui.localization.oldBeta
-import cn.yurin.minecraft_composable_launcher.ui.localization.release
-import cn.yurin.minecraft_composable_launcher.ui.localization.releaseAt
-import cn.yurin.minecraft_composable_launcher.ui.localization.snapshot
-import cn.yurin.minecraft_composable_launcher.ui.localization.vanilla
-import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.painterResource
 
 @Composable
@@ -68,7 +49,6 @@ private fun RowScope.Sidebar(
 	currentPage: Int,
 	onPageChanged: (Int) -> Unit,
 ) = dest(DownloadsPageDest.SideBar) {
-	val scope = rememberCoroutineScope()
 	val pages = listOf(vanilla)
 	NavigationRail(
 		containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
@@ -81,14 +61,8 @@ private fun RowScope.Sidebar(
 				selected = currentPage == index,
 				onClick = {
 					if (currentPage == index) {
-						scope.launch {
-							runCatching {
-								val response =
-									client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
-								versionsManifest = response.body<VersionsManifest>()
-							}.onFailure {
-								println("Failed to get version manifest: ${it.message}")
-							}
+						scope.launch(Dispatchers.IO) {
+							refreshVersionsManifest()
 						}
 					}
 					onPageChanged(index)
@@ -113,11 +87,31 @@ context(_: Context, _: Data)
 private fun RowScope.Content(
 	currentPage: Int,
 ) = dest(SettingsPageDest.Content) {
+	val launcher = rememberDirectoryPickerLauncher { file ->
+		if (file != null) {
+			if (!folders.any { it.path == file.absolutePath() }) {
+				folders += GameFolder.DotMinecraft(
+					name = file.name,
+					path = file.absolutePath(),
+					versions = emptyList()
+				)
+				if (currentFolder == null) {
+					currentFolder = folders.first()
+				}
+				refreshFolders()
+				if (currentVersion == null) {
+					currentVersion = currentFolder!!.versions.firstOrNull()
+				}
+			}
+		}
+	}
 	Box(
 		modifier = Modifier
 			.fillMaxHeight()
 			.weight(0.85F),
 	) {
+		var showDownloadPage by remember { mutableStateOf(false) }
+		val downloadList = remember { mutableStateListOf<Pair<String, Pair<Int, Int>>>() }
 		val scrollState = rememberScrollState()
 		AnimatedContent(
 			targetState = currentPage,
@@ -136,7 +130,54 @@ private fun RowScope.Content(
 			) {
 				Spacer(modifier = Modifier.height(0.dp))
 				when (it) {
-					0 -> Vanilla()
+					0 -> Vanilla(
+						onDownloadVersion = { version ->
+							if (currentFolder == null) {
+								launcher.launch()
+							} else {
+								scope.launch(Dispatchers.IO) {
+									showDownloadPage = true
+									downloadList.clear()
+									println("Downloading version ${version.id}")
+									downloadManifest(
+										version = version,
+										onInitDownloadList = { key, sum ->
+											downloadList += key to (sum to 0)
+										},
+										onDownloaded = { key ->
+											val index = downloadList.indexOfFirst { item -> item.first == key }
+											val item = downloadList[index]
+											downloadList[index] =
+												item.first to (item.second.first to item.second.second + 1)
+										},
+										onDownloadError = { e ->
+											println("Failed to download version ${version.id}: $e")
+											e.printStackTrace()
+										},
+									).onSuccess { manifest ->
+										completeVersion(
+											version = version,
+											manifest = manifest,
+											onInitDownloadList = { map ->
+												downloadList.addAll(map.map { (key, value) -> key to (value to 0) })
+											},
+											onDownloaded = { key ->
+												val index = downloadList.indexOfFirst { item -> item.first == key }
+												val item = downloadList[index]
+												downloadList[index] =
+													item.first to (item.second.first to item.second.second + 1)
+											},
+											onDownloadError = { e ->
+												println("Failed to complete version ${version.id}: $e")
+												e.printStackTrace()
+											},
+										)
+									}
+									refreshFolders()
+								}
+							}
+						}
+					)
 				}
 				Spacer(modifier = Modifier.height(0.dp))
 			}
@@ -147,24 +188,76 @@ private fun RowScope.Content(
 				.align(Alignment.CenterEnd)
 				.fillMaxHeight(),
 		)
+		if (showDownloadPage) {
+			AlertDialog(
+				onDismissRequest = { showDownloadPage = false },
+				title = { Text("Downloading versions...") },
+				icon = null,
+				confirmButton = {
+					TextButton(
+						onClick = { showDownloadPage = false }
+					) {
+						Text(
+							text = "Confirm",
+							color = MaterialTheme.colorScheme.onSurface,
+							style = MaterialTheme.typography.titleSmall,
+						)
+					}
+				},
+				dismissButton = null,
+				text = {
+					Column(
+						verticalArrangement = Arrangement.spacedBy(16.dp),
+					) {
+						downloadList.forEach { (key, value) ->
+							val (sum, count) = value
+							val percentage = count / sum.toFloat()
+							Row(
+								verticalAlignment = Alignment.CenterVertically,
+								modifier = Modifier.fillMaxWidth(),
+							) {
+								Box(
+									contentAlignment = Alignment.Center,
+									modifier = Modifier.size(64.dp),
+								) {
+									CircularProgressIndicator(
+										progress = { percentage },
+									)
+									Text(
+										text = "${(percentage * 100).toInt()}%",
+										color = MaterialTheme.colorScheme.onSurface,
+										style = MaterialTheme.typography.bodySmall,
+									)
+								}
+								Text(
+									text = key,
+									color = MaterialTheme.colorScheme.onSurface,
+									style = MaterialTheme.typography.titleSmall,
+								)
+								Spacer(
+									modifier = Modifier.weight(1F),
+								)
+								Text(
+									text = "$count / $sum",
+									color = MaterialTheme.colorScheme.onSurface,
+									style = MaterialTheme.typography.titleSmall,
+								)
+							}
+						}
+					}
+				},
+			)
+		}
 	}
 }
 
 @Composable
 context(_: Context, _: Data)
-private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
-	val scope = rememberCoroutineScope()
+private fun Vanilla(
+	onDownloadVersion: (VersionsManifest.Version) -> Unit,
+) = dest(DownloadsPageDest.Content.Vanilla) {
 	scope.launch(Dispatchers.IO) {
-		runCatching {
-			val response = client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
-			if (response.status == HttpStatusCode.OK) {
-				versionsManifest = response.body<VersionsManifest>()
-			} else {
-				println("Failed to get version manifest: ${response.status}")
-			}
-		}.onFailure {
-			println("Failed to get version manifest: ${it.message}")
-		}
+		refreshVersionsManifest()
 	}
 	AnimatedVisibility(versionsManifest != null) {
 		var manifest by remember { mutableStateOf(versionsManifest!!) }
@@ -184,8 +277,10 @@ private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 					)
 				},
 			) {
+				val latestRelease = manifest.versions.find { it.id == manifest.latest.release }!!
+				val latestSnapshot = manifest.versions.find { it.id == manifest.latest.snapshot }!!
 				VersionItem(
-					version = manifest.versions.find { it.id == manifest.latest.release }!!,
+					version = latestRelease,
 					detail = { version ->
 						buildString {
 							append(release.current)
@@ -194,40 +289,32 @@ private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 							append(" ")
 							append(
 								localDateTimeFormater.format(
-									LocalDateTime.parse(
-										version.releaseTime,
-										localDateTimeParser
-									)
+									LocalDateTime.parse(version.releaseTime, localDateTimeParser)
 								)
 							)
 						}
 					},
-					onClick = { version ->
-
-					},
+					onClick = onDownloadVersion,
 				)
-				VersionItem(
-					version = manifest.versions.find { it.id == manifest.latest.snapshot }!!,
-					detail = { version ->
-						buildString {
-							append(snapshot.current)
-							append(", ")
-							append(releaseAt.current)
-							append(" ")
-							append(
-								localDateTimeFormater.format(
-									LocalDateTime.parse(
-										version.releaseTime,
-										localDateTimeParser
+				AnimatedVisibility(latestSnapshot.type == "snapshot") {
+					VersionItem(
+						version = latestSnapshot,
+						detail = { version ->
+							buildString {
+								append(snapshot.current)
+								append(", ")
+								append(releaseAt.current)
+								append(" ")
+								append(
+									localDateTimeFormater.format(
+										LocalDateTime.parse(version.releaseTime, localDateTimeParser)
 									)
 								)
-							)
-						}
-					},
-					onClick = { version ->
-
-					},
-				)
+							}
+						},
+						onClick = onDownloadVersion,
+					)
+				}
 			}
 			listOf(
 				release to "release",
@@ -249,15 +336,10 @@ private fun Vanilla() = dest(DownloadsPageDest.Content.Vanilla) {
 							version = version,
 							detail = { version ->
 								localDateTimeFormater.format(
-									LocalDateTime.parse(
-										version.releaseTime,
-										localDateTimeParser
-									)
+									LocalDateTime.parse(version.releaseTime, localDateTimeParser)
 								)
 							},
-							onClick = { version ->
-
-							},
+							onClick = onDownloadVersion,
 						)
 					}
 				}

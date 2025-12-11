@@ -121,7 +121,7 @@ compose.resources {
 
 compose.desktop {
 	application {
-		mainClass = "cn.yurin.minecraft_composable_launcher.MainKt"
+		mainClass = "cn.yurin.mcl.MainKt"
 
 		nativeDistributions {
 			val os = System.getProperty("os.name")

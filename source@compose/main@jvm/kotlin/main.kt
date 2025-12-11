@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher
+package cn.yurin.mcl
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import androidx.compose.ui.window.application
-import cn.yurin.minecraft_composable_launcher.ui.App
+import cn.yurin.mcl.ui.App
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.User32
 import com.sun.jna.platform.win32.WinDef

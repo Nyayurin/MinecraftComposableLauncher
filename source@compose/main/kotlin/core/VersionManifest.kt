@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.core
+package cn.yurin.mcl.core
 
 import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.KSerializer

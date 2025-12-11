@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.core
+package cn.yurin.mcl.core
 
 fun buildGameProcess(
 	java: String,

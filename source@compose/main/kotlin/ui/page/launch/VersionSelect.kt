@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.ui.page.launch
+package cn.yurin.mcl.ui.page.launch
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -7,15 +7,14 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.core.*
-import cn.yurin.minecraft_composable_launcher.ui.localization.*
+import cn.yurin.mcl.core.*
+import cn.yurin.mcl.ui.localization.*
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_back_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
@@ -49,7 +48,7 @@ private fun RowScope.VersionSelectSidebar(
 				folders += GameFolder.DotMinecraft(
 					name = file.name,
 					path = file.absolutePath(),
-					versions = File(file.file, "versions").listFiles().filter { file ->
+					versions = (File(file.file, "versions").listFiles() ?: emptyArray()).filter { file ->
 						file.isDirectory
 					}.filter { version ->
 						version.listFiles { file ->
@@ -69,7 +68,7 @@ private fun RowScope.VersionSelectSidebar(
 					currentFolder = folders.first()
 				}
 				if (currentVersion == null) {
-					currentVersion = currentFolder!!.versions.first()
+					currentVersion = currentFolder!!.versions.firstOrNull()
 				}
 			}
 		}

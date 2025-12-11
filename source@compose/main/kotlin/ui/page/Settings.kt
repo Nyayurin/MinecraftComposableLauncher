@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.ui.page
+package cn.yurin.mcl.ui.page
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -19,25 +19,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import cn.yurin.minecraft_composable_launcher.core.Data
-import cn.yurin.minecraft_composable_launcher.core.isDarkMode
-import cn.yurin.minecraft_composable_launcher.core.seedColor
-import cn.yurin.minecraft_composable_launcher.ui.localization.language
+import cn.yurin.mcl.core.Data
+import cn.yurin.mcl.core.isDarkMode
+import cn.yurin.mcl.core.seedColor
+import cn.yurin.mcl.ui.localization.language
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
-import cn.yurin.minecraft_composable_launcher.ui.localization.Context
-import cn.yurin.minecraft_composable_launcher.ui.localization.Language
-import cn.yurin.minecraft_composable_launcher.ui.localization.SettingsPageDest
-import cn.yurin.minecraft_composable_launcher.ui.localization.chineseLang
-import cn.yurin.minecraft_composable_launcher.ui.localization.darkMode
-import cn.yurin.minecraft_composable_launcher.ui.localization.dest
-import cn.yurin.minecraft_composable_launcher.ui.localization.englishLang
-import cn.yurin.minecraft_composable_launcher.ui.localization.launch
-import cn.yurin.minecraft_composable_launcher.ui.localization.more
-import cn.yurin.minecraft_composable_launcher.ui.localization.personalization
-import cn.yurin.minecraft_composable_launcher.ui.localization.theme
+import cn.yurin.mcl.ui.localization.Context
+import cn.yurin.mcl.ui.localization.Language
+import cn.yurin.mcl.ui.localization.SettingsPageDest
+import cn.yurin.mcl.ui.localization.chineseLang
+import cn.yurin.mcl.ui.localization.darkMode
+import cn.yurin.mcl.ui.localization.dest
+import cn.yurin.mcl.ui.localization.englishLang
+import cn.yurin.mcl.ui.localization.launch
+import cn.yurin.mcl.ui.localization.more
+import cn.yurin.mcl.ui.localization.personalization
+import cn.yurin.mcl.ui.localization.theme
 
 @Composable
 context(_: Context, _: Data)

@@ -1,4 +1,4 @@
-package cn.yurin.minecraft_composable_launcher.ui.localization
+package cn.yurin.mcl.ui.localization
 
 object TopbarDest : Destination.Sign
 

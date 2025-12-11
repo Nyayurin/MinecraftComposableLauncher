@@ -4,4 +4,4 @@
 ./gradlew :generateExpectResourceCollectorsForCommonMain
 ./gradlew :generateActualResourceCollectorsForComposeJvmMain
 ./gradlew :assembleComposeJvmMainResources
-./gradlew :composeJvmRun "-DmainClass=cn.yurin.minecraft_composable_launcher.MainKt" --quiet
+./gradlew :composeJvmRun "-DmainClass=cn.yurin.mcl.MainKt" --quiet

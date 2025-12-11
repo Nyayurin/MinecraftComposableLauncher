@@ -1,14 +1,14 @@
-package cn.yurin.minecraft_composable_launcher.ui.page
+package cn.yurin.mcl.ui.page
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import cn.yurin.minecraft_composable_launcher.core.Data
-import cn.yurin.minecraft_composable_launcher.ui.localization.Context
-import cn.yurin.minecraft_composable_launcher.ui.localization.SettingsPageDest
-import cn.yurin.minecraft_composable_launcher.ui.localization.dest
+import cn.yurin.mcl.core.Data
+import cn.yurin.mcl.ui.localization.Context
+import cn.yurin.mcl.ui.localization.SettingsPageDest
+import cn.yurin.mcl.ui.localization.dest
 
 @Composable
 context(_: Context, _: Data)
