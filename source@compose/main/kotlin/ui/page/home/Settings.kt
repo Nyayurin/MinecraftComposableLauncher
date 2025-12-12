@@ -1,4 +1,4 @@
-package cn.yurin.mcl.ui.page
+package cn.yurin.mcl.ui.page.home
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
@@ -20,34 +20,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.Data
-import cn.yurin.mcl.ui.localization.language
+import cn.yurin.mcl.ui.SettingsPage
+import cn.yurin.mcl.ui.localization.*
+import cn.yurin.mcl.ui.localization.destination.SettingsDest
+import cn.yurin.mcl.ui.localization.destination.chineseLang
+import cn.yurin.mcl.ui.localization.destination.darkMode
+import cn.yurin.mcl.ui.localization.destination.englishLang
+import cn.yurin.mcl.ui.localization.destination.language
+import cn.yurin.mcl.ui.localization.destination.launch
+import cn.yurin.mcl.ui.localization.destination.personalization
+import cn.yurin.mcl.ui.localization.destination.theme
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
-import cn.yurin.mcl.ui.localization.Context
-import cn.yurin.mcl.ui.localization.Language
-import cn.yurin.mcl.ui.localization.SettingsPageDest
-import cn.yurin.mcl.ui.localization.chineseLang
-import cn.yurin.mcl.ui.localization.darkMode
-import cn.yurin.mcl.ui.localization.dest
-import cn.yurin.mcl.ui.localization.englishLang
-import cn.yurin.mcl.ui.localization.launch
-import cn.yurin.mcl.ui.localization.more
-import cn.yurin.mcl.ui.localization.personalization
-import cn.yurin.mcl.ui.localization.theme
 
 @Composable
 context(_: Context, _: Data)
-fun SettingsPage() = dest(SettingsPageDest) {
+fun Settings() = dest(SettingsDest) {
 	Row {
-		var selection by remember { mutableIntStateOf(0) }
+		var currentPage by remember { mutableStateOf<SettingsPage>(SettingsPage.Launch) }
 		Sidebar(
-			currentPage = selection,
-			onPageChanged = { selection = it },
+			currentPage = currentPage,
+			onPageChanged = { currentPage = it },
 		)
 		Content(
-			currentPage = selection,
+			currentPage = currentPage,
 		)
 	}
 }
@@ -55,25 +53,28 @@ fun SettingsPage() = dest(SettingsPageDest) {
 @Composable
 context(context: Context, _: Data)
 private fun RowScope.Sidebar(
-	currentPage: Int,
-	onPageChanged: (Int) -> Unit,
-) = dest(SettingsPageDest.SideBar) {
-	val pages = listOf(launch, personalization, more)
+	currentPage: SettingsPage,
+	onPageChanged: (SettingsPage) -> Unit,
+) = dest(SettingsDest.SideBar) {
+	val pages = listOf(SettingsPage.Launch, SettingsPage.Personalization)
 	NavigationRail(
 		containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
 		modifier = Modifier
 			.fillMaxHeight()
 			.weight(0.15F),
 	) {
-		pages.forEachIndexed { index, page ->
+		pages.forEach { page ->
 			NavigationRailItem(
-				selected = currentPage == index,
-				onClick = { onPageChanged(index) },
+				selected = currentPage == page,
+				onClick = { onPageChanged(page) },
 				icon = {},
 				label = {
 					AnimatedContent(context.language) {
 						Text(
-							text = page.language(it),
+							text = when (page) {
+								SettingsPage.Launch -> launch
+								SettingsPage.Personalization -> personalization
+							}.language(it),
 							color = MaterialTheme.colorScheme.onSurface,
 							style = MaterialTheme.typography.titleSmall,
 						)
@@ -87,13 +88,16 @@ private fun RowScope.Sidebar(
 @Composable
 context(_: Context, _: Data)
 private fun RowScope.Content(
-	currentPage: Int,
-) = dest(SettingsPageDest.Content) {
+	currentPage: SettingsPage,
+) = dest(SettingsDest.Content) {
 	AnimatedContent(
 		targetState = currentPage,
 		transitionSpec = {
-			slideIn(tween()) { IntOffset(0, (targetState compareTo initialState) * it.height) } togetherWith
-					slideOut(tween()) { IntOffset(0, (initialState compareTo targetState) * it.height) }
+			slideIn(tween()) {
+				IntOffset(0, (targetState.position compareTo initialState.position) * it.height)
+			} togetherWith slideOut(tween()) {
+				IntOffset(0, (initialState.position compareTo targetState.position) * it.height)
+			}
 		},
 		modifier = Modifier
 			.fillMaxHeight()
@@ -102,14 +106,12 @@ private fun RowScope.Content(
 	) {
 		Column(
 			verticalArrangement = Arrangement.spacedBy(32.dp),
-			modifier = Modifier
-				.verticalScroll(rememberScrollState()),
+			modifier = Modifier.verticalScroll(rememberScrollState()),
 		) {
 			Spacer(modifier = Modifier.height(0.dp))
 			when (it) {
-				0 -> Launch()
-				1 -> Personalization()
-				2 -> More()
+				SettingsPage.Launch -> Launch()
+				SettingsPage.Personalization -> Personalization()
 			}
 			Spacer(modifier = Modifier.height(0.dp))
 		}
@@ -118,12 +120,12 @@ private fun RowScope.Content(
 
 @Composable
 context(_: Context, _: Data)
-private fun Launch() = dest(SettingsPageDest.Content.Launch) {
+private fun Launch() = dest(SettingsDest.Content.Launch) {
 }
 
 @Composable
 context(context: Context, data: Data)
-private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
+private fun Personalization() = dest(SettingsDest.Content.Personalization) {
 	Row(
 		horizontalArrangement = Arrangement.spacedBy(32.dp),
 	) {
@@ -158,7 +160,7 @@ private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
 			},
 			modifier = Modifier.weight(0.5F),
 		) {
-			dest(SettingsPageDest.Content.Personalization.Language) {
+			dest(SettingsDest.Content.Personalization.Language) {
 				Language.entries.forEach { language ->
 					Row(
 						verticalAlignment = Alignment.CenterVertically,
@@ -171,13 +173,8 @@ private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
 						AnimatedContent(context.language) {
 							Text(
 								text = when (language) {
-									Language.Chinese -> chineseLang.language(
-										it
-									)
-
-									Language.English -> englishLang.language(
-										it
-									)
+									Language.Chinese -> chineseLang.language(it)
+									Language.English -> englishLang.language(it)
 								},
 								color = MaterialTheme.colorScheme.onSurface,
 								style = MaterialTheme.typography.bodyLarge,
@@ -188,12 +185,6 @@ private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
 			}
 		}
 	}
-}
-
-@Composable
-context(_: Context, _: Data)
-private fun More() = dest(SettingsPageDest.Content.More) {
-
 }
 
 @Composable
@@ -230,7 +221,7 @@ fun ColorPicker(
 	initialColor: Color,
 	onDarkChanged: (Boolean) -> Unit,
 	initialDark: Boolean,
-) = dest(SettingsPageDest.Content.Personalization.ColorPicker) {
+) = dest(SettingsDest.Content.Personalization.ColorPicker) {
 	val controller = rememberColorPickerController()
 	HsvColorPicker(
 		controller = controller,

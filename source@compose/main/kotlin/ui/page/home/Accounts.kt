@@ -1,4 +1,4 @@
-package cn.yurin.mcl.ui.page
+package cn.yurin.mcl.ui.page.home
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
@@ -17,6 +17,14 @@ import cn.yurin.mcl.core.Account
 import cn.yurin.mcl.core.Data
 import cn.yurin.mcl.core.login
 import cn.yurin.mcl.ui.localization.*
+import cn.yurin.mcl.ui.localization.destination.AccountsDest
+import cn.yurin.mcl.ui.localization.destination.cancel
+import cn.yurin.mcl.ui.localization.destination.content
+import cn.yurin.mcl.ui.localization.destination.login
+import cn.yurin.mcl.ui.localization.destination.loginAccount
+import cn.yurin.mcl.ui.localization.destination.offlineAccount
+import cn.yurin.mcl.ui.localization.destination.onlineAccount
+import cn.yurin.mcl.ui.localization.destination.title
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.awt.Desktop
@@ -26,7 +34,7 @@ import java.net.URI
 
 @Composable
 context(_: Context, _: Data)
-fun AccountsPage() = dest(AccountsPageDest) {
+fun Accounts() = dest(AccountsDest) {
 	Row {
 		Sidebar(
 		)
@@ -37,7 +45,7 @@ fun AccountsPage() = dest(AccountsPageDest) {
 
 @Composable
 context(context: Context, data: Data)
-private fun RowScope.Sidebar() = dest(AccountsPageDest.SideBar) {
+private fun RowScope.Sidebar() = dest(AccountsDest.SideBar) {
 	var showDialog by remember { mutableStateOf(false) }
 	var job by remember { mutableStateOf<Job?>(null) }
 	NavigationRail(
@@ -98,7 +106,7 @@ private fun RowScope.Sidebar() = dest(AccountsPageDest.SideBar) {
 		)
 	}
 	if (showDialog) {
-		dest(AccountsPageDest.LoginDialog) {
+		dest(AccountsDest.LoginDialog) {
 			AlertDialog(
 				onDismissRequest = { },
 				title = {
@@ -162,7 +170,7 @@ private fun RowScope.Sidebar() = dest(AccountsPageDest.SideBar) {
 @Composable
 context(_: Context, data: Data)
 private fun RowScope.Content(
-) = dest(AccountsPageDest.Content) {
+) = dest(AccountsDest.Content) {
 	Column(
 		modifier = Modifier
 			.weight(0.8F)
@@ -190,7 +198,7 @@ private fun RowScope.Content(
 context(_: Context, data: Data)
 private fun Card(
 	account: Account,
-) = dest(AccountsPageDest.Content) {
+) = dest(AccountsDest.Content) {
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()

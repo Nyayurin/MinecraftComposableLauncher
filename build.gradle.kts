@@ -5,7 +5,7 @@ plugins {
 	kotlin("multiplatform") version "2.2.21"
 	kotlin("plugin.serialization") version "2.2.21"
 	id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
-	id("org.jetbrains.compose") version "1.9.3"
+	id("org.jetbrains.compose") version "1.10.0-rc02"
 }
 
 group = "cn.yurin"
@@ -76,14 +76,15 @@ kotlin {
 		)
 
 		commonMain.dependencies {
-			implementation(compose.components.resources)
+			implementation("org.jetbrains.compose.components:components-resources:1.10.0-rc02")
 		}
 
 		composeMain.dependencies {
-			implementation(compose.runtime)
-			implementation(compose.ui)
-			implementation(compose.foundation)
-			implementation(compose.material3)
+			implementation("org.jetbrains.compose.runtime:runtime:1.10.0-rc02")
+			implementation("org.jetbrains.compose.ui:ui:1.10.0-rc02")
+			implementation("org.jetbrains.compose.foundation:foundation:1.10.0-rc02")
+			implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha05")
+
 			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
 			implementation("com.materialkolor:material-kolor:4.0.0")

@@ -1,6 +1,7 @@
 package cn.yurin.mcl.ui.localization
 
 import androidx.compose.runtime.mutableStateOf
+import cn.yurin.mcl.ui.localization.destination.*
 
 fun initContext() = buildContext {
 	language = mutableStateOf(Language.Chinese).value
@@ -36,15 +37,11 @@ private fun initTopbar() = TopbarDest {
 }
 
 context(_: ContextBuilder)
-private fun initLaunchPage() = LaunchPageDest {
-	LaunchPageDest.SideBar {
-		online {
-			chinese = "在线"
-			english = "Online"
-		}
-		offline {
-			chinese = "离线"
-			english = "Offline"
+private fun initLaunchPage() = LaunchDest {
+	LaunchDest.SideBar {
+		loginAccount {
+			chinese = "登录账户"
+			english = "Login Account"
 		}
 		launch {
 			chinese = "启动"
@@ -64,19 +61,19 @@ private fun initLaunchPage() = LaunchPageDest {
 		}
 	}
 
-	LaunchPageDest.Content {
+	LaunchDest.Content {
 
 	}
 
-	LaunchPageDest.VersionSelectPage {
-		LaunchPageDest.VersionSelectPage.SideBar {
+	LaunchDest.Versions {
+		LaunchDest.Versions.SideBar {
 			importFolder {
 				chinese = "导入文件夹"
 				english = "Import Folder"
 			}
 		}
 
-		LaunchPageDest.VersionSelectPage.Content {
+		LaunchDest.Versions.Content {
 			info {
 				chinese = "信息"
 				english = "Info"
@@ -90,8 +87,8 @@ private fun initLaunchPage() = LaunchPageDest {
 }
 
 context(_: ContextBuilder)
-private fun initAccountsPage() = AccountsPageDest {
-	AccountsPageDest.SideBar {
+private fun initAccountsPage() = AccountsDest {
+	AccountsDest.SideBar {
 		loginAccount {
 			chinese = "登录账户"
 			english = "Login Account"
@@ -106,7 +103,7 @@ private fun initAccountsPage() = AccountsPageDest {
 		}
 	}
 
-	AccountsPageDest.Content {
+	AccountsDest.Content {
 		onlineAccount {
 			chinese = "正版账户"
 			english = "Online Account"
@@ -117,7 +114,7 @@ private fun initAccountsPage() = AccountsPageDest {
 		}
 	}
 
-	AccountsPageDest.LoginDialog {
+	AccountsDest.LoginDialog {
 		title {
 			chinese = "登录微软账户"
 			english = "Login Microsoft Account"
@@ -156,16 +153,16 @@ private fun initAccountsPage() = AccountsPageDest {
 }
 
 context(_: ContextBuilder)
-private fun initDownloadsPage() = DownloadsPageDest {
-	DownloadsPageDest.SideBar {
+private fun initDownloadsPage() = DownloadsDest {
+	DownloadsDest.SideBar {
 		vanilla {
 			chinese = "原版"
 			english = "Vanilla"
 		}
 	}
 
-	DownloadsPageDest.Content {
-		DownloadsPageDest.Content.Vanilla {
+	DownloadsDest.Content {
+		DownloadsDest.Content.Vanilla {
 			latest {
 				chinese = "最新版"
 				english = "Latest"
@@ -193,7 +190,7 @@ private fun initDownloadsPage() = DownloadsPageDest {
 		}
 	}
 
-	DownloadsPageDest.DownloadDialog {
+	DownloadsDest.DownloadDialog {
 		titleDownloading {
 			chinese = "下载版本中..."
 			english = "Downloading version..."
@@ -230,8 +227,8 @@ private fun initDownloadsPage() = DownloadsPageDest {
 }
 
 context(_: ContextBuilder)
-private fun initSettingsPage() = SettingsPageDest {
-	SettingsPageDest.SideBar {
+private fun initSettingsPage() = SettingsDest {
+	SettingsDest.SideBar {
 		launch {
 			chinese = "启动"
 			english = "Launch"
@@ -240,18 +237,14 @@ private fun initSettingsPage() = SettingsPageDest {
 			chinese = "个性化"
 			english = "Personalization"
 		}
-		more {
-			chinese = "更多"
-			english = "More"
-		}
 	}
 
-	SettingsPageDest.Content {
-		SettingsPageDest.Content.Launch {
+	SettingsDest.Content {
+		SettingsDest.Content.Launch {
 
 		}
 
-		SettingsPageDest.Content.Personalization {
+		SettingsDest.Content.Personalization {
 			theme {
 				chinese = "主题"
 				english = "Theme"
@@ -261,14 +254,14 @@ private fun initSettingsPage() = SettingsPageDest {
 				english = "Language"
 			}
 
-			SettingsPageDest.Content.Personalization.ColorPicker {
+			SettingsDest.Content.Personalization.ColorPicker {
 				darkMode {
 					chinese = "深色模式"
 					english = "Dark mode"
 				}
 			}
 
-			SettingsPageDest.Content.Personalization.Language {
+			SettingsDest.Content.Personalization.Language {
 				chineseLang {
 					chinese = "中文"
 					english = "Chinese"
@@ -280,7 +273,7 @@ private fun initSettingsPage() = SettingsPageDest {
 			}
 		}
 
-		SettingsPageDest.Content.More {
+		SettingsDest.Content.More {
 
 		}
 	}

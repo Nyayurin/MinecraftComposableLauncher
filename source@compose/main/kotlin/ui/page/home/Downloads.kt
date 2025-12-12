@@ -1,4 +1,4 @@
-package cn.yurin.mcl.ui.page
+package cn.yurin.mcl.ui.page.home
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
@@ -16,7 +16,19 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.*
 import cn.yurin.mcl.network.VersionsManifest
+import cn.yurin.mcl.ui.DownloadsPage
 import cn.yurin.mcl.ui.localization.*
+import cn.yurin.mcl.ui.localization.destination.DownloadsDest
+import cn.yurin.mcl.ui.localization.destination.confirm
+import cn.yurin.mcl.ui.localization.destination.latest
+import cn.yurin.mcl.ui.localization.destination.oldAlpha
+import cn.yurin.mcl.ui.localization.destination.oldBeta
+import cn.yurin.mcl.ui.localization.destination.release
+import cn.yurin.mcl.ui.localization.destination.releaseAt
+import cn.yurin.mcl.ui.localization.destination.snapshot
+import cn.yurin.mcl.ui.localization.destination.titleDownloaded
+import cn.yurin.mcl.ui.localization.destination.titleDownloading
+import cn.yurin.mcl.ui.localization.destination.vanilla
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
 import io.github.vinceglb.filekit.absolutePath
@@ -30,15 +42,15 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 context(_: Context, _: Data)
-fun DownloadsPage() = dest(DownloadsPageDest) {
+fun Downloads() = dest(DownloadsDest) {
 	Row {
-		var selection by remember { mutableIntStateOf(0) }
+		var currentPage by remember { mutableStateOf<DownloadsPage>(DownloadsPage.Vanilla) }
 		Sidebar(
-			currentPage = selection,
-			onPageChanged = { selection = it },
+			currentPage = currentPage,
+			onPageChanged = { currentPage = it },
 		)
 		Content(
-			currentPage = selection,
+			currentPage = currentPage,
 		)
 	}
 }
@@ -46,32 +58,34 @@ fun DownloadsPage() = dest(DownloadsPageDest) {
 @Composable
 context(context: Context, data: Data)
 private fun RowScope.Sidebar(
-	currentPage: Int,
-	onPageChanged: (Int) -> Unit,
-) = dest(DownloadsPageDest.SideBar) {
-	val pages = listOf(vanilla)
+	currentPage: DownloadsPage,
+	onPageChanged: (DownloadsPage) -> Unit,
+) = dest(DownloadsDest.SideBar) {
+	val pages = listOf<DownloadsPage>(DownloadsPage.Vanilla)
 	NavigationRail(
 		containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
 		modifier = Modifier
 			.fillMaxHeight()
 			.weight(0.15F),
 	) {
-		pages.forEachIndexed { index, page ->
+		pages.forEach { page ->
 			NavigationRailItem(
-				selected = currentPage == index,
+				selected = currentPage == page,
 				onClick = {
-					if (currentPage == index) {
+					if (currentPage == page) {
 						data.scope.launch(Dispatchers.IO) {
 							refreshVersionsManifest()
 						}
 					}
-					onPageChanged(index)
+					onPageChanged(page)
 				},
 				icon = {},
 				label = {
 					AnimatedContent(context.language) {
 						Text(
-							text = page.language(it),
+							text = when (page) {
+								DownloadsPage.Vanilla -> vanilla
+							}.language(it),
 							color = MaterialTheme.colorScheme.onSurface,
 							style = MaterialTheme.typography.titleSmall,
 						)
@@ -85,8 +99,8 @@ private fun RowScope.Sidebar(
 @Composable
 context(_: Context, data: Data)
 private fun RowScope.Content(
-	currentPage: Int,
-) = dest(SettingsPageDest.Content) {
+	currentPage: DownloadsPage,
+) = dest(DownloadsDest.Content) {
 	val launcher = rememberDirectoryPickerLauncher { file ->
 		if (file != null) {
 			if (!data.folders.any { it.path == file.absolutePath() }) {
@@ -117,8 +131,11 @@ private fun RowScope.Content(
 		AnimatedContent(
 			targetState = currentPage,
 			transitionSpec = {
-				slideIn(tween()) { IntOffset(0, (targetState compareTo initialState) * it.height) } togetherWith
-						slideOut(tween()) { IntOffset(0, (initialState compareTo targetState) * it.height) }
+				slideIn(tween()) {
+					IntOffset(0, (targetState.position compareTo initialState.position) * it.height)
+				} togetherWith slideOut(tween()) {
+					IntOffset(0, (initialState.position compareTo targetState.position) * it.height)
+				}
 			},
 			modifier = Modifier
 				.fillMaxSize()
@@ -131,7 +148,7 @@ private fun RowScope.Content(
 			) {
 				Spacer(modifier = Modifier.height(0.dp))
 				when (it) {
-					0 -> Vanilla(
+					DownloadsPage.Vanilla -> Vanilla(
 						onDownloadVersion = { version ->
 							if (data.currentFolder == null) {
 								launcher.launch()
@@ -191,7 +208,7 @@ private fun RowScope.Content(
 				.fillMaxHeight(),
 		)
 		if (showDownloadPage) {
-			dest(DownloadsPageDest.DownloadDialog) {
+			dest(DownloadsDest.DownloadDialog) {
 				AlertDialog(
 					onDismissRequest = { showDownloadPage = false },
 					title = {
@@ -268,7 +285,7 @@ private fun RowScope.Content(
 context(_: Context, data: Data)
 private fun Vanilla(
 	onDownloadVersion: (VersionsManifest.Version) -> Unit,
-) = dest(DownloadsPageDest.Content.Vanilla) {
+) = dest(DownloadsDest.Content.Vanilla) {
 	data.scope.launch(Dispatchers.IO) {
 		refreshVersionsManifest()
 	}
@@ -396,7 +413,7 @@ private fun FoldableCard(
 		) {
 			title()
 			IconButton(
-				onClick = { fold = !fold }
+				onClick = { fold = !fold },
 			) {
 				Icon(
 					painter = painterResource(Res.drawable.arrow_drop_up_24px),
@@ -462,7 +479,7 @@ private fun VersionItem(
 	version: VersionsManifest.Version,
 	detail: (VersionsManifest.Version) -> String,
 	onClick: (VersionsManifest.Version) -> Unit,
-) = dest(DownloadsPageDest.Content.Vanilla) {
+) = dest(DownloadsDest.Content.Vanilla) {
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()

@@ -5,15 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import cn.yurin.mcl.network.VersionsManifest
-import cn.yurin.mcl.ui.localization.Context
-import cn.yurin.mcl.ui.localization.DownloadsPageDest
-import cn.yurin.mcl.ui.localization.assetIndex
-import cn.yurin.mcl.ui.localization.assets
-import cn.yurin.mcl.ui.localization.client
-import cn.yurin.mcl.ui.localization.current
-import cn.yurin.mcl.ui.localization.dest
-import cn.yurin.mcl.ui.localization.libraries
-import cn.yurin.mcl.ui.localization.manifest
+import cn.yurin.mcl.ui.localization.*
+import cn.yurin.mcl.ui.localization.destination.DownloadsDest
+import cn.yurin.mcl.ui.localization.destination.assetIndex
+import cn.yurin.mcl.ui.localization.destination.assets
+import cn.yurin.mcl.ui.localization.destination.client
+import cn.yurin.mcl.ui.localization.destination.libraries
+import cn.yurin.mcl.ui.localization.destination.manifest
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -23,12 +21,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.json.Json
@@ -111,7 +104,7 @@ suspend fun downloadManifest(
 	onInitDownloadList: (String, Int) -> Unit,
 	onDownloaded: (String) -> Unit,
 	onDownloadError: (Throwable) -> Unit,
-): VersionManifest? = dest(DownloadsPageDest.DownloadDialog) {
+): VersionManifest? = dest(DownloadsDest.DownloadDialog) {
 	runCatching {
 		val file = File(data.currentFolder!!.path, "versions/${version.id}/${version.id}.json")
 		if (file.exists()) {
@@ -139,7 +132,7 @@ suspend fun completeVersion(
 	onInitDownloadList: (String, Int) -> Unit,
 	onDownloaded: (String) -> Unit,
 	onDownloadError: (Throwable) -> Unit,
-) = dest(DownloadsPageDest.DownloadDialog) {
+) = dest(DownloadsDest.DownloadDialog) {
 	val semaphore = Semaphore(Runtime.getRuntime().availableProcessors())
 	val clientJob = scope.launch {
 		runCatching {

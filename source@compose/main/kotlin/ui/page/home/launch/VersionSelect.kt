@@ -1,4 +1,4 @@
-package cn.yurin.mcl.ui.page.launch
+package cn.yurin.mcl.ui.page.home.launch
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -15,6 +15,10 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.*
 import cn.yurin.mcl.ui.localization.*
+import cn.yurin.mcl.ui.localization.destination.LaunchDest
+import cn.yurin.mcl.ui.localization.destination.importFolder
+import cn.yurin.mcl.ui.localization.destination.info
+import cn.yurin.mcl.ui.localization.destination.regularVersion
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_back_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
@@ -26,7 +30,7 @@ import java.io.File
 
 @Composable
 context(_: Context, _: Data)
-fun VersionSelectPage(onBack: () -> Unit) = dest(LaunchPageDest.VersionSelectPage) {
+fun Versions(onBack: () -> Unit) = dest(LaunchDest.Versions) {
 	Row {
 		Sidebar(
 			onBack = onBack,
@@ -41,7 +45,7 @@ fun VersionSelectPage(onBack: () -> Unit) = dest(LaunchPageDest.VersionSelectPag
 context(_: Context, data: Data)
 private fun RowScope.Sidebar(
 	onBack: () -> Unit,
-) = dest(LaunchPageDest.VersionSelectPage.SideBar) {
+) = dest(LaunchDest.Versions.SideBar) {
 	val launcher = rememberDirectoryPickerLauncher { file ->
 		if (file != null) {
 			if (!data.folders.any { it.path == file.absolutePath() }) {
@@ -145,7 +149,7 @@ private fun RowScope.Sidebar(
 context(_: Context, data: Data)
 private fun RowScope.Content(
 	onBack: () -> Unit,
-) = dest(LaunchPageDest.VersionSelectPage.Content) {
+) = dest(LaunchDest.Versions.Content) {
 	if (data.currentFolder == null) {
 		Spacer(
 			modifier = Modifier.weight(0.8F),
