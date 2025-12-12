@@ -17,19 +17,16 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.Data
-import cn.yurin.mcl.core.isDarkMode
 import cn.yurin.mcl.core.refreshVersionsManifest
-import cn.yurin.mcl.core.seedColor
 import cn.yurin.mcl.ui.localization.*
-import cn.yurin.mcl.ui.page.DownloadsPage
-import cn.yurin.mcl.ui.page.LaunchPage
-import cn.yurin.mcl.ui.page.MorePage
-import cn.yurin.mcl.ui.page.SettingsPage
+import cn.yurin.mcl.ui.page.*
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.close_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.minimize_24px
 import org.jetbrains.compose.resources.painterResource
+import kotlin.uuid.ExperimentalUuidApi
 
+@OptIn(ExperimentalUuidApi::class)
 @Composable
 fun App(
 	windowScale: Float,
@@ -38,16 +35,17 @@ fun App(
 	exitApplication: () -> Unit,
 	minimizeWindow: () -> Unit,
 ) = context(remember { initContext() }, remember { Data() }) {
+	val data = contextOf<Data>()
 	LaunchedEffect(Unit) {
 		refreshVersionsManifest()
 	}
-	val scrollbarStyle = if (isDarkMode ?: isSystemInDarkTheme()) darkScrollbarStyle() else lightScrollbarStyle()
+	val scrollbarStyle = if (data.isDarkMode ?: isSystemInDarkTheme()) darkScrollbarStyle() else lightScrollbarStyle()
 	CompositionLocalProvider(
 		LocalScrollbarStyle provides scrollbarStyle,
 	) {
 		Theme(
-			seedColor = seedColor,
-			isDark = isDarkMode ?: isSystemInDarkTheme(),
+			seedColor = data.seedColor,
+			isDark = data.isDarkMode ?: isSystemInDarkTheme(),
 		) {
 			Surface(
 				color = MaterialTheme.colorScheme.background,
@@ -77,10 +75,13 @@ fun App(
 						},
 					) {
 						when (it) {
-							0 -> LaunchPage()
-							1 -> DownloadsPage()
-							2 -> SettingsPage()
-							3 -> MorePage()
+							0 -> LaunchPage(
+								onChangeToAccountPage = { page = 1 }
+							)
+							1 -> AccountsPage()
+							2 -> DownloadsPage()
+							3 -> SettingsPage()
+							4 -> MorePage()
 						}
 					}
 				}
@@ -113,7 +114,7 @@ fun TopBar(
 					.padding(start = 8.dp)
 					.align(Alignment.CenterStart),
 			)
-			val pages = listOf(launch, downloads, settings, more)
+			val pages = listOf(launch, accounts, downloads, settings, more)
 			SingleChoiceSegmentedButtonRow(
 				space = 8.dp,
 				modifier = Modifier.align(Alignment.Center),

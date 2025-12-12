@@ -28,24 +28,24 @@ import java.io.File
 context(_: Context, _: Data)
 fun VersionSelectPage(onBack: () -> Unit) = dest(LaunchPageDest.VersionSelectPage) {
 	Row {
-		VersionSelectSidebar(
+		Sidebar(
 			onBack = onBack,
 		)
-		VersionSelectContent(
+		Content(
 			onBack = onBack,
 		)
 	}
 }
 
 @Composable
-context(_: Context, _: Data)
-private fun RowScope.VersionSelectSidebar(
+context(_: Context, data: Data)
+private fun RowScope.Sidebar(
 	onBack: () -> Unit,
 ) = dest(LaunchPageDest.VersionSelectPage.SideBar) {
 	val launcher = rememberDirectoryPickerLauncher { file ->
 		if (file != null) {
-			if (!folders.any { it.path == file.absolutePath() }) {
-				folders += GameFolder.DotMinecraft(
+			if (!data.folders.any { it.path == file.absolutePath() }) {
+				data.folders += GameFolder.DotMinecraft(
 					name = file.name,
 					path = file.absolutePath(),
 					versions = (File(file.file, "versions").listFiles() ?: emptyArray()).filter { file ->
@@ -58,17 +58,17 @@ private fun RowScope.VersionSelectSidebar(
 						Version(
 							name = version.name,
 							path = version.absolutePath,
-							manifest = json.decodeFromString(File(version, "${version.name}.json").readText())
+							manifest = data.json.decodeFromString(File(version, "${version.name}.json").readText())
 						)
 					}.sortedByDescending {
 						it.manifest.releaseTime
 					}
 				)
-				if (currentFolder == null) {
-					currentFolder = folders.first()
+				if (data.currentFolder == null) {
+					data.currentFolder = data.folders.first()
 				}
-				if (currentVersion == null) {
-					currentVersion = currentFolder!!.versions.firstOrNull()
+				if (data.currentVersion == null) {
+					data.currentVersion = data.currentFolder!!.versions.firstOrNull()
 				}
 			}
 		}
@@ -95,7 +95,7 @@ private fun RowScope.VersionSelectSidebar(
 		Spacer(
 			modifier = Modifier.height(16.dp),
 		)
-		AnimatedContent(folders) { folders ->
+		AnimatedContent(data.folders) { folders ->
 			Column(
 				horizontalAlignment = Alignment.CenterHorizontally,
 				verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -103,7 +103,7 @@ private fun RowScope.VersionSelectSidebar(
 				folders.forEach { folder ->
 					NavigationRailItem(
 						selected = true,
-						onClick = { currentFolder = folder },
+						onClick = { data.currentFolder = folder },
 						icon = {},
 						label = {
 							Text(
@@ -142,22 +142,22 @@ private fun RowScope.VersionSelectSidebar(
 }
 
 @Composable
-context(_: Context, _: Data)
-private fun RowScope.VersionSelectContent(
+context(_: Context, data: Data)
+private fun RowScope.Content(
 	onBack: () -> Unit,
 ) = dest(LaunchPageDest.VersionSelectPage.Content) {
-	if (currentFolder == null) {
+	if (data.currentFolder == null) {
 		Spacer(
 			modifier = Modifier.weight(0.8F),
 		)
 	}
 	AnimatedVisibility(
-		visible = currentFolder != null,
+		visible = data.currentFolder != null,
 		modifier = Modifier.weight(0.8F),
 	) {
-		var folder by remember { mutableStateOf(currentFolder!!) }
-		remember(currentFolder) {
-			currentFolder?.let { folder = it }
+		var folder by remember { mutableStateOf(data.currentFolder!!) }
+		remember(data.currentFolder) {
+			data.currentFolder?.let { folder = it }
 		}
 		Box(
 			modifier = Modifier.fillMaxHeight(),
@@ -212,7 +212,7 @@ private fun RowScope.VersionSelectContent(
 										)
 									},
 									onClick = {
-										currentVersion = version
+										data.currentVersion = version
 										onBack()
 									},
 								)

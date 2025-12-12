@@ -6,6 +6,9 @@ context(_: DestOrBuilderScope, _: TopbarDest)
 val launch get() = property("launch")
 
 context(_: DestOrBuilderScope, _: TopbarDest)
+val accounts get() = property("accounts")
+
+context(_: DestOrBuilderScope, _: TopbarDest)
 val downloads get() = property("downloads")
 
 context(_: DestOrBuilderScope, _: TopbarDest)
@@ -51,12 +54,45 @@ val regularVersion get() = property("regularVersion")
 context(_: DestOrBuilderScope, _: LaunchPageDest.VersionSelectPage.Content)
 val info get() = property("info")
 
+object AccountsPageDest : Destination.Sign {
+	object SideBar : Destination.Sign
+	object Content : Destination.Sign
+	object LoginDialog : Destination.Sign
+}
+
+context(_: DestOrBuilderScope, _: AccountsPageDest.SideBar)
+val loginAccount get() = property("loginAccount")
+
+context(_: DestOrBuilderScope, _: AccountsPageDest.SideBar)
+val onlineAccount get() = property("onlineAccount")
+
+context(_: DestOrBuilderScope, _: AccountsPageDest.SideBar)
+val offlineAccount get() = property("offlineAccount")
+
+context(_: DestOrBuilderScope, _: AccountsPageDest.Content)
+val onlineAccount get() = property("onlineAccount")
+
+context(_: DestOrBuilderScope, _: AccountsPageDest.Content)
+val offlineAccount get() = property("offlineAccount")
+
+context(_: DestOrBuilderScope, _: AccountsPageDest.LoginDialog)
+val title get() = property("title")
+
+context(_: DestOrBuilderScope, _: AccountsPageDest.LoginDialog)
+val content get() = property("content")
+
+context(_: DestOrBuilderScope, _: AccountsPageDest.LoginDialog)
+val login get() = property("login")
+
+context(_: DestOrBuilderScope, _: AccountsPageDest.LoginDialog)
+val cancel get() = property("cancel")
+
 object DownloadsPageDest : Destination.Sign {
 	object SideBar : Destination.Sign
 	object Content : Destination.Sign {
 		object Vanilla : Destination.Sign
 	}
-	object DownloadAlert : Destination.Sign
+	object DownloadDialog : Destination.Sign
 }
 
 context(_: DestOrBuilderScope, _: DownloadsPageDest.SideBar)
@@ -80,28 +116,28 @@ val oldAlpha get() = property("oldAlpha")
 context(_: DestOrBuilderScope, _: DownloadsPageDest.Content.Vanilla)
 val releaseAt get() = property("releaseAt")
 
-context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadAlert)
+context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadDialog)
 val titleDownloading get() = property("titleDownloading")
 
-context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadAlert)
+context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadDialog)
 val titleDownloaded get() = property("titleDownloaded")
 
-context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadAlert)
+context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadDialog)
 val manifest get() = property("manifest")
 
-context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadAlert)
+context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadDialog)
 val client get() = property("client")
 
-context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadAlert)
+context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadDialog)
 val libraries get() = property("libraries")
 
-context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadAlert)
+context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadDialog)
 val assetIndex get() = property("assetIndex")
 
-context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadAlert)
+context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadDialog)
 val assets get() = property("assets")
 
-context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadAlert)
+context(_: DestOrBuilderScope, _: DownloadsPageDest.DownloadDialog)
 val confirm get() = property("confirm")
 
 object SettingsPageDest : Destination.Sign {

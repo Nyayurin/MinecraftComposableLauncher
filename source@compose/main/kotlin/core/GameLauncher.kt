@@ -10,6 +10,7 @@ fun buildGameProcess(
 	gameDir: String,
 	assetDir: String,
 	assetIndex: String,
+	username: String?,
 	uuid: String,
 	accessToken: String,
 	version: String,
@@ -27,11 +28,15 @@ fun buildGameProcess(
 		assetDir,
 		"--assetIndex",
 		assetIndex,
+		"--username",
+		username,
 		"--uuid",
 		uuid,
 		"--accessToken",
 		accessToken,
 		"--version",
 		version,
+		"--versionType",
+		"MCL",
 	)
 }

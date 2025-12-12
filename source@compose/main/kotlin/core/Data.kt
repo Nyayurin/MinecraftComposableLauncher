@@ -26,6 +26,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
@@ -40,11 +41,13 @@ class Data {
 	var folders by mutableStateOf<List<GameFolder>>(emptyList())
 	var currentFolder by mutableStateOf<GameFolder?>(null)
 	var currentVersion by mutableStateOf<Version?>(null)
+	var accounts by mutableStateOf<List<Account>>(emptyList())
+	var currentAccount: Account? by mutableStateOf(null)
 
 	val json = Json {
 		ignoreUnknownKeys = true
 	}
-	val httpClient = HttpClient(CIO) {
+	val client = HttpClient(CIO) {
 		install(ContentNegotiation) {
 			json()
 		}
@@ -58,25 +61,69 @@ class Data {
 	val scope = CoroutineScope(Dispatchers.IO)
 }
 
-context(_: Data, _: Context)
+context(data: Data, _: Context)
+suspend fun login(
+	onLoginRequest: (String, String) -> Unit,
+): Account? {
+	runCatching {
+		// 获取设备码并申请用户授权
+		val response = getDeviceCode()
+		onLoginRequest(response.userCode, response.verificationUri)
+		var status: AuthorizationStatus.Success? = null
+		// 每 5 秒查询授权状态, 直到用户同意或拒绝授权
+		while (true) {
+			delay(response.interval * 1000L)
+			when (val tempStatus = checkAuthorizationStatus(response.deviceCode)) {
+				is AuthorizationStatus.Success -> {
+					status = tempStatus
+					break
+				}
+
+				is AuthorizationStatus.Failure -> if (tempStatus.error !in listOf("authorization_pending", "slow_down")) break
+			}
+		}
+		// XboxLive 登录
+		val xblResponse = xblAuthorization(status!!.accessToken)
+		// XSTS 登录
+		val xstsResponse = xstsAuthorization(xblResponse.token)
+		// Minecraft 登录
+		val minecraftResponse = getMinecraftAccessToken(xstsResponse.token, xstsResponse.displayClaims.xui.first().uhs)
+		// 查询用户是否购买 Minecraft
+		if (checkHasMinecraft(minecraftResponse.accessToken).items.isNotEmpty()) {
+			// 获取用户 Minecraft 档案信息
+			val profile = getMinecraftProfile(minecraftResponse.accessToken)
+			// 现在你终于可以完成一次 Minecraft 正版登录了
+			return Account.Online(
+				name = profile.name,
+				token = minecraftResponse.accessToken,
+				uuid = profile.id,
+				accessToken = status.accessToken,
+				refreshToken = status.refreshToken,
+			)
+		}
+	}
+	return null
+}
+
+context(data: Data, _: Context)
 suspend fun downloadManifest(
 	version: VersionsManifest.Version,
 	onInitDownloadList: (String, Int) -> Unit,
 	onDownloaded: (String) -> Unit,
 	onDownloadError: (Throwable) -> Unit,
-): VersionManifest? = dest(DownloadsPageDest.DownloadAlert) {
+): VersionManifest? = dest(DownloadsPageDest.DownloadDialog) {
 	runCatching {
-		val file = File(currentFolder!!.path, "versions/${version.id}/${version.id}.json")
+		val file = File(data.currentFolder!!.path, "versions/${version.id}/${version.id}.json")
 		if (file.exists()) {
-			return json.decodeFromString(file.readText())
+			return data.json.decodeFromString(file.readText())
 		}
 		onInitDownloadList(manifest.current, 1)
 		file.parentFile.mkdirs()
-		val response = httpClient.get(version.url)
+		val response = data.client.get(version.url)
 		if (response.status == HttpStatusCode.OK) {
 			val manifestRaw = response.bodyAsText()
 			file.writeText(manifestRaw)
-			val versionManifest = json.decodeFromString<VersionManifest>(manifestRaw)
+			val versionManifest = data.json.decodeFromString<VersionManifest>(manifestRaw)
 			onDownloaded(manifest.current)
 			return versionManifest
 		}
@@ -85,22 +132,22 @@ suspend fun downloadManifest(
 	return null
 }
 
-context(_: Data, scope: CoroutineScope, _: Context)
+context(data: Data, scope: CoroutineScope, _: Context)
 suspend fun completeVersion(
 	version: VersionsManifest.Version,
 	manifest: VersionManifest,
 	onInitDownloadList: (String, Int) -> Unit,
 	onDownloaded: (String) -> Unit,
 	onDownloadError: (Throwable) -> Unit,
-) = dest(DownloadsPageDest.DownloadAlert) {
+) = dest(DownloadsPageDest.DownloadDialog) {
 	val semaphore = Semaphore(Runtime.getRuntime().availableProcessors())
 	val clientJob = scope.launch {
 		runCatching {
 			semaphore.withPermit {
-				val file = File(currentFolder!!.path, "versions/${version.id}/${version.id}.jar")
+				val file = File(data.currentFolder!!.path, "versions/${version.id}/${version.id}.jar")
 				if (!file.exists()) {
 					onInitDownloadList(client.current, 1)
-					val response = httpClient.get(manifest.downloads.client.url)
+					val response = data.client.get(manifest.downloads.client.url)
 					if (response.status != HttpStatusCode.OK) {
 						onDownloadError(Exception("Failed to download jar ${manifest.downloads.client.url}: ${response.status}"))
 						return@runCatching
@@ -119,7 +166,7 @@ suspend fun completeVersion(
 			else -> false
 		}
 		when (filter && library.downloads != null) {
-			true -> !File(currentFolder!!.path, "libraries/${library.downloads.artifact.path}").exists()
+			true -> !File(data.currentFolder!!.path, "libraries/${library.downloads.artifact.path}").exists()
 			else -> false
 		}
 	}.also {
@@ -130,9 +177,9 @@ suspend fun completeVersion(
 		scope.launch {
 			runCatching {
 				semaphore.withPermit {
-					val file = File(currentFolder!!.path, "libraries/${library.downloads!!.artifact.path}")
+					val file = File(data.currentFolder!!.path, "libraries/${library.downloads!!.artifact.path}")
 					file.parentFile.mkdirs()
-					val response = httpClient.get(library.downloads.artifact.url)
+					val response = data.client.get(library.downloads.artifact.url)
 					if (response.status != HttpStatusCode.OK) {
 						onDownloadError(Exception("Failed to download library ${response.call.request.url}: ${response.status}"))
 						return@launch
@@ -147,21 +194,21 @@ suspend fun completeVersion(
 	val assetIndex = scope.async {
 		runCatching {
 			semaphore.withPermit {
-				val file = File(currentFolder!!.path, "assets/indexes/${manifest.assetIndex.id}.json")
+				val file = File(data.currentFolder!!.path, "assets/indexes/${manifest.assetIndex.id}.json")
 				if (!file.exists()) {
 					onInitDownloadList(assetIndex.current, 1)
 					file.parentFile.mkdirs()
-					val assetIndexRaw = httpClient.get(manifest.assetIndex.url).bodyAsText()
+					val assetIndexRaw = data.client.get(manifest.assetIndex.url).bodyAsText()
 					file.writeText(assetIndexRaw)
 					onDownloaded(assetIndex.current)
 				}
-				json.decodeFromString<AssetIndex>(file.readText())
+				data.json.decodeFromString<AssetIndex>(file.readText())
 			}
 		}.onFailure { onDownloadError(it) }
 	}.await().getOrNull()
 
 	val assesJobs = assetIndex?.objects?.values?.filter { item ->
-		val file = File(currentFolder!!.path, "assets/objects/${item.hash.substring(0, 2)}/${item.hash}")
+		val file = File(data.currentFolder!!.path, "assets/objects/${item.hash.substring(0, 2)}/${item.hash}")
 		!file.exists()
 	}?.also { items ->
 		if (items.isNotEmpty()) {
@@ -171,9 +218,9 @@ suspend fun completeVersion(
 		scope.launch {
 			runCatching {
 				semaphore.withPermit {
-					val file = File(currentFolder!!.path, "assets/objects/${item.hash.substring(0, 2)}/${item.hash}")
+					val file = File(data.currentFolder!!.path, "assets/objects/${item.hash.substring(0, 2)}/${item.hash}")
 					file.parentFile.mkdirs()
-					val response = httpClient.get("https://resources.download.minecraft.net/${item.hash.substring(0, 2)}/${item.hash}")
+					val response = data.client.get("https://resources.download.minecraft.net/${item.hash.substring(0, 2)}/${item.hash}")
 					if (response.status != HttpStatusCode.OK) {
 						onDownloadError(Exception("Failed to download asset ${response.call.request.url}: ${response.status}"))
 						return@launch
@@ -190,12 +237,12 @@ suspend fun completeVersion(
 	assesJobs?.joinAll()
 }
 
-context(_: Data)
+context(data: Data)
 suspend fun refreshVersionsManifest() {
 	runCatching {
-		val response = httpClient.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
+		val response = data.client.get("https://piston-meta.mojang.com/mc/game/version_manifest.json")
 		if (response.status == HttpStatusCode.OK) {
-			versionsManifest = response.body<VersionsManifest>()
+			data.versionsManifest = response.body<VersionsManifest>()
 		} else {
 			println("Failed to get version manifest: ${response.status}")
 		}
@@ -204,13 +251,13 @@ suspend fun refreshVersionsManifest() {
 	}
 }
 
-context(_: Data)
+context(data: Data)
 fun refreshFolders() {
-	folders = folders.map { it.refresh() }
-	currentFolder = currentFolder?.refresh()
+	data.folders = data.folders.map { it.refresh() }
+	data.currentFolder = data.currentFolder?.refresh()
 }
 
-context(_: Data)
+context(data: Data)
 private fun GameFolder.refresh() = when (this) {
 	is GameFolder.DotMinecraft -> copy(
 		versions = (File(path, "versions").listFiles() ?: emptyArray()).filter { file ->
@@ -223,7 +270,7 @@ private fun GameFolder.refresh() = when (this) {
 			Version(
 				name = version.name,
 				path = version.absolutePath,
-				manifest = json.decodeFromString(File(version, "${version.name}.json").readText())
+				manifest = data.json.decodeFromString(File(version, "${version.name}.json").readText())
 			)
 		}.sortedByDescending {
 			it.manifest.releaseTime
@@ -232,57 +279,3 @@ private fun GameFolder.refresh() = when (this) {
 
 	is GameFolder.MCL -> TODO()
 }
-
-context(data: Data)
-var seedColor
-	get() = data.seedColor
-	set(value) {
-		data.seedColor = value
-	}
-
-context(data: Data)
-var isDarkMode
-	get() = data.isDarkMode
-	set(value) {
-		data.isDarkMode = value
-	}
-
-context(data: Data)
-var versionsManifest
-	get() = data.versionsManifest
-	set(value) {
-		data.versionsManifest = value
-	}
-
-context(data: Data)
-var folders
-	get() = data.folders
-	set(value) {
-		data.folders = value
-	}
-
-context(data: Data)
-var currentFolder
-	get() = data.currentFolder
-	set(value) {
-		data.currentFolder = value
-	}
-
-context(data: Data)
-var currentVersion
-	get() = data.currentVersion
-	set(value) {
-		data.currentVersion = value
-	}
-
-context(data: Data)
-val json
-	get() = data.json
-
-context(data: Data)
-val httpClient
-	get() = data.httpClient
-
-context(data: Data)
-val scope
-	get() = data.scope

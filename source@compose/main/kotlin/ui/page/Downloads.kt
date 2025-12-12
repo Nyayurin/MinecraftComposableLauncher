@@ -30,7 +30,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 context(_: Context, _: Data)
-fun DownloadsPage() = dest(SettingsPageDest) {
+fun DownloadsPage() = dest(DownloadsPageDest) {
 	Row {
 		var selection by remember { mutableIntStateOf(0) }
 		Sidebar(
@@ -44,7 +44,7 @@ fun DownloadsPage() = dest(SettingsPageDest) {
 }
 
 @Composable
-context(context: Context, _: Data)
+context(context: Context, data: Data)
 private fun RowScope.Sidebar(
 	currentPage: Int,
 	onPageChanged: (Int) -> Unit,
@@ -61,7 +61,7 @@ private fun RowScope.Sidebar(
 				selected = currentPage == index,
 				onClick = {
 					if (currentPage == index) {
-						scope.launch(Dispatchers.IO) {
+						data.scope.launch(Dispatchers.IO) {
 							refreshVersionsManifest()
 						}
 					}
@@ -83,24 +83,24 @@ private fun RowScope.Sidebar(
 }
 
 @Composable
-context(_: Context, _: Data)
+context(_: Context, data: Data)
 private fun RowScope.Content(
 	currentPage: Int,
 ) = dest(SettingsPageDest.Content) {
 	val launcher = rememberDirectoryPickerLauncher { file ->
 		if (file != null) {
-			if (!folders.any { it.path == file.absolutePath() }) {
-				folders += GameFolder.DotMinecraft(
+			if (!data.folders.any { it.path == file.absolutePath() }) {
+				data.folders += GameFolder.DotMinecraft(
 					name = file.name,
 					path = file.absolutePath(),
 					versions = emptyList()
 				)
-				if (currentFolder == null) {
-					currentFolder = folders.first()
+				if (data.currentFolder == null) {
+					data.currentFolder = data.folders.first()
 				}
 				refreshFolders()
-				if (currentVersion == null) {
-					currentVersion = currentFolder!!.versions.firstOrNull()
+				if (data.currentVersion == null) {
+					data.currentVersion = data.currentFolder!!.versions.firstOrNull()
 				}
 			}
 		}
@@ -133,10 +133,10 @@ private fun RowScope.Content(
 				when (it) {
 					0 -> Vanilla(
 						onDownloadVersion = { version ->
-							if (currentFolder == null) {
+							if (data.currentFolder == null) {
 								launcher.launch()
 							} else {
-								scope.launch(Dispatchers.IO) {
+								data.scope.launch(Dispatchers.IO) {
 									showDownloadPage = true
 									downloadList.clear()
 									downloadFinished = false
@@ -191,7 +191,7 @@ private fun RowScope.Content(
 				.fillMaxHeight(),
 		)
 		if (showDownloadPage) {
-			dest(DownloadsPageDest.DownloadAlert) {
+			dest(DownloadsPageDest.DownloadDialog) {
 				AlertDialog(
 					onDismissRequest = { showDownloadPage = false },
 					title = {
@@ -265,17 +265,17 @@ private fun RowScope.Content(
 }
 
 @Composable
-context(_: Context, _: Data)
+context(_: Context, data: Data)
 private fun Vanilla(
 	onDownloadVersion: (VersionsManifest.Version) -> Unit,
 ) = dest(DownloadsPageDest.Content.Vanilla) {
-	scope.launch(Dispatchers.IO) {
+	data.scope.launch(Dispatchers.IO) {
 		refreshVersionsManifest()
 	}
-	AnimatedVisibility(versionsManifest != null) {
-		var manifest by remember { mutableStateOf(versionsManifest!!) }
-		remember(versionsManifest) {
-			versionsManifest?.let { manifest = it }
+	AnimatedVisibility(data.versionsManifest != null) {
+		var manifest by remember { mutableStateOf(data.versionsManifest!!) }
+		remember(data.versionsManifest) {
+			data.versionsManifest?.let { manifest = it }
 		}
 		val versions = manifest.versions.groupBy { version -> version.type }
 		Column(
@@ -355,12 +355,11 @@ private fun Vanilla(
 context(_: Context, _: Data)
 private fun Card(
 	title: @Composable () -> Unit,
-	modifier: Modifier = Modifier.fillMaxWidth(),
 	content: @Composable context(Context) ColumnScope.() -> Unit,
 ) {
 	Column(
 		verticalArrangement = Arrangement.spacedBy(16.dp),
-		modifier = modifier
+		modifier = Modifier
 			.clip(RoundedCornerShape(16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainerHighest)
 			.padding(16.dp),
@@ -381,12 +380,11 @@ private fun Card(
 context(_: Context, _: Data)
 private fun FoldableCard(
 	title: @Composable () -> Unit,
-	modifier: Modifier = Modifier.fillMaxWidth(),
 	content: @Composable context(Context) ColumnScope.() -> Unit,
 ) {
 	var fold by remember { mutableStateOf(true) }
 	Column(
-		modifier = modifier
+		modifier = Modifier
 			.clip(RoundedCornerShape(16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainerHighest)
 			.padding(16.dp),
@@ -404,7 +402,7 @@ private fun FoldableCard(
 					painter = painterResource(Res.drawable.arrow_drop_up_24px),
 					tint = MaterialTheme.colorScheme.onSurface,
 					contentDescription = null,
-					modifier = modifier
+					modifier = Modifier
 						.size(64.dp)
 						.rotate(
 							animateFloatAsState(
@@ -418,7 +416,7 @@ private fun FoldableCard(
 			}
 		}
 		AnimatedVisibility(!fold) {
-			Spacer(modifier = modifier.height(16.dp))
+			Spacer(modifier = Modifier.height(16.dp))
 			Column(
 				verticalArrangement = Arrangement.spacedBy(16.dp),
 				modifier = Modifier

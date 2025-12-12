@@ -20,8 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.Data
-import cn.yurin.mcl.core.isDarkMode
-import cn.yurin.mcl.core.seedColor
 import cn.yurin.mcl.ui.localization.language
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
@@ -124,7 +122,7 @@ private fun Launch() = dest(SettingsPageDest.Content.Launch) {
 }
 
 @Composable
-context(context: Context, _: Data)
+context(context: Context, data: Data)
 private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
 	Row(
 		horizontalArrangement = Arrangement.spacedBy(32.dp),
@@ -142,10 +140,10 @@ private fun Personalization() = dest(SettingsPageDest.Content.Personalization) {
 			modifier = Modifier.weight(0.5F),
 		) {
 			ColorPicker(
-				onColorChanged = { seedColor = it.color },
-				initialColor = seedColor,
-				onDarkChanged = { isDarkMode = it },
-				initialDark = isDarkMode ?: isSystemInDarkTheme(),
+				onColorChanged = { data.seedColor = it.color },
+				initialColor = data.seedColor,
+				onDarkChanged = { data.isDarkMode = it },
+				initialDark = data.isDarkMode ?: isSystemInDarkTheme(),
 			)
 		}
 		Card(

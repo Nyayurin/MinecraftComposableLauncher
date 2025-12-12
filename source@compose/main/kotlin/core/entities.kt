@@ -36,3 +36,23 @@ data class AssetIndex(
 		val size: Int,
 	)
 }
+
+sealed class Account {
+	abstract val name: String
+	abstract val token: String
+	abstract val uuid: String
+
+	data class Online(
+		override val name: String,
+		override val token: String,
+		override val uuid: String,
+		val accessToken: String,
+		val refreshToken: String?,
+	) : Account()
+
+	data class Offline(
+		override val name: String,
+		override val token: String,
+		override val uuid: String,
+	) : Account()
+}

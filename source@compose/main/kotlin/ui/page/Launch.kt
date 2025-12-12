@@ -13,16 +13,14 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.Data
 import cn.yurin.mcl.core.buildGameProcess
-import cn.yurin.mcl.core.currentFolder
-import cn.yurin.mcl.core.currentVersion
 import cn.yurin.mcl.ui.localization.*
 import cn.yurin.mcl.ui.page.launch.VersionSelectPage
 import kotlinx.coroutines.*
 import java.io.File
 
 @Composable
-context(_: Context, _: Data)
-fun LaunchPage() {
+context(_: Context, data: Data)
+fun LaunchPage(onChangeToAccountPage: () -> Unit) {
 	val scope = remember { CoroutineScope(Dispatchers.IO) }
 	var currentPage by remember { mutableIntStateOf(0) }
 	AnimatedContent(
@@ -40,10 +38,12 @@ fun LaunchPage() {
 				Row {
 					Sidebar(
 						onLaunchClick = {
-							when (currentVersion) {
-								null -> currentPage = 1
+							when {
+								data.currentVersion == null -> currentPage = 1
+								data.currentAccount == null -> onChangeToAccountPage()
 								else -> scope.launch(Dispatchers.IO) {
-									val currentVersion = currentVersion!!
+									val currentVersion = data.currentVersion!!
+									val currentAccount = data.currentAccount!!
 									val libraries = listOf(
 										*currentVersion.manifest.libraries.filter { library ->
 											when (library.rule?.os?.name) {
@@ -53,7 +53,7 @@ fun LaunchPage() {
 											}
 										}.mapNotNull { library ->
 											library.downloads?.artifact?.path?.let { path ->
-												File("${currentFolder!!.path}/libraries", path).absolutePath
+												File("${data.currentFolder!!.path}/libraries", path).absolutePath
 											}
 										}.toTypedArray(),
 										File(currentVersion.path, "${currentVersion.name}.jar").absolutePath
@@ -65,11 +65,12 @@ fun LaunchPage() {
 										classpath = libraries,
 										minecraftJar = File(currentVersion.path, "${currentVersion.name}.jar").absolutePath,
 										mainClass = currentVersion.manifest.mainClass,
-										gameDir = currentFolder!!.path,
-										assetDir = "${currentFolder!!.path}/assets",
+										gameDir = data.currentFolder!!.path,
+										assetDir = "${data.currentFolder!!.path}/assets",
 										assetIndex = currentVersion.manifest.assetIndex.id,
-										uuid = "83e0c8867af43b2a8eedcede1fd64ce0",
-										accessToken = "8a8bf5456a914d1bb73ec634b260a385",
+										username = currentAccount.name,
+										uuid = currentAccount.uuid,
+										accessToken = currentAccount.token,
 										version = currentVersion.manifest.id,
 									).start()
 									val error = scope.async(Dispatchers.IO) {
@@ -104,7 +105,7 @@ fun LaunchPage() {
 }
 
 @Composable
-context(_: Context, _: Data)
+context(_: Context, data: Data)
 private fun RowScope.Sidebar(
 	onLaunchClick: () -> Unit,
 	onVersionSelectClick: () -> Unit,
@@ -158,38 +159,12 @@ private fun RowScope.Sidebar(
 				}
 			}
 		}
-		AnimatedContent(
-			targetState = selection,
-			transitionSpec = {
-				slideIn(tween()) { IntOffset((targetState compareTo initialState) * it.width, 0) } togetherWith
-						slideOut(tween()) { IntOffset((initialState compareTo targetState) * it.width, 0) }
-			},
-			modifier = Modifier
-				.fillMaxWidth()
-				.align(Alignment.Center),
-		) {
-			when (it) {
-				0 -> Box(
-					contentAlignment = Alignment.Center,
-				) {
-					Text(
-						text = "Online User",
-						color = MaterialTheme.colorScheme.onSurface,
-						style = MaterialTheme.typography.bodyLarge,
-					)
-				}
-
-				else -> Box(
-					contentAlignment = Alignment.Center,
-				) {
-					Text(
-						text = "Offline User",
-						color = MaterialTheme.colorScheme.onSurface,
-						style = MaterialTheme.typography.bodyLarge,
-					)
-				}
-			}
-		}
+		Text(
+			text = data.currentAccount?.name ?: "Please login",
+			color = MaterialTheme.colorScheme.onSurface,
+			style = MaterialTheme.typography.bodyLarge,
+			modifier = Modifier.align(Alignment.Center)
+		)
 		Box(
 			contentAlignment = Alignment.BottomCenter,
 			modifier = Modifier.align(Alignment.BottomCenter),
@@ -215,7 +190,7 @@ private fun RowScope.Sidebar(
 							style = MaterialTheme.typography.bodyLarge,
 						)
 						Text(
-							text = currentVersion?.manifest?.id ?: selectVersion.current,
+							text = data.currentVersion?.manifest?.id ?: selectVersion.current,
 							color = MaterialTheme.colorScheme.onPrimary,
 							style = MaterialTheme.typography.bodySmall,
 						)
