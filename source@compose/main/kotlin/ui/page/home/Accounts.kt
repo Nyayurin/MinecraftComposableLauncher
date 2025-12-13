@@ -47,8 +47,8 @@ fun Accounts() = dest(AccountsDest) {
 context(context: Context, data: Data)
 private fun RowScope.Sidebar() = dest(AccountsDest.SideBar) {
 	var job by remember { mutableStateOf<Job?>(null) }
-	val onlineDialog = remember {
-		onlineDialog(
+	val onlineDialogProvider = remember {
+		onlineDialogProvider(
 			onLogin = {
 				job = data.scope.launch {
 					login(
@@ -71,8 +71,8 @@ private fun RowScope.Sidebar() = dest(AccountsDest.SideBar) {
 			},
 		)
 	}
-	val offlineDialog = remember {
-		offlineDialog(
+	val offlineDialogProvider = remember {
+		offlineDialogProvider(
 			onLogin = { name ->
 				val account = Account.Offline(name, Uuid.random().toString(), UUID.nameUUIDFromBytes("OfflinePlayer:$name".toByteArray(Charsets.UTF_8)).toString())
 				data.dialogProvider = null
@@ -110,7 +110,7 @@ private fun RowScope.Sidebar() = dest(AccountsDest.SideBar) {
 			modifier = Modifier.height(16.dp),
 		)
 		FilledTonalButton(
-			onClick = { data.dialogProvider = onlineDialog },
+			onClick = { data.dialogProvider = onlineDialogProvider },
 			shape = RoundedCornerShape(12.dp),
 			colors = ButtonDefaults.filledTonalButtonColors(
 				containerColor = MaterialTheme.colorScheme.primary,
@@ -124,7 +124,7 @@ private fun RowScope.Sidebar() = dest(AccountsDest.SideBar) {
 			)
 		}
 		FilledTonalButton(
-			onClick = { data.dialogProvider = offlineDialog },
+			onClick = { data.dialogProvider = offlineDialogProvider },
 			shape = RoundedCornerShape(12.dp),
 			colors = ButtonDefaults.filledTonalButtonColors(
 				containerColor = MaterialTheme.colorScheme.primary,
@@ -160,7 +160,15 @@ private fun RowScope.Content(
 			Spacer(
 				modifier = Modifier.height(32.dp),
 			)
-			accounts.forEach { account ->
+			accounts.filterIsInstance<Account.Online>().forEach { account ->
+				Card(
+					account = account,
+				)
+				Spacer(
+					modifier = Modifier.height(32.dp),
+				)
+			}
+			accounts.filterIsInstance<Account.Offline>().forEach { account ->
 				Card(
 					account = account,
 				)
@@ -173,7 +181,7 @@ private fun RowScope.Content(
 }
 
 context(_: Context)
-private fun onlineDialog(
+private fun onlineDialogProvider(
 	onLogin: () -> Unit,
 	onCancelLogin: () -> Unit,
 ): @Composable () -> AlertDialog = {
@@ -222,7 +230,7 @@ private fun onlineDialog(
 }
 
 context(_: Context)
-private fun offlineDialog(
+private fun offlineDialogProvider(
 	onLogin: (String) -> Unit,
 	onCancelLogin: () -> Unit,
 ): @Composable () -> AlertDialog = {

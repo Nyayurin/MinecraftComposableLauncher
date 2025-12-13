@@ -1,15 +1,7 @@
 package cn.yurin.mcl.ui.page.home.launch
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
@@ -25,12 +17,7 @@ import cn.yurin.mcl.ui.LaunchPages
 import cn.yurin.mcl.ui.localization.Context
 import cn.yurin.mcl.ui.localization.current
 import cn.yurin.mcl.ui.localization.dest
-import cn.yurin.mcl.ui.localization.destination.LaunchDest
-import cn.yurin.mcl.ui.localization.destination.launch
-import cn.yurin.mcl.ui.localization.destination.loginAccount
-import cn.yurin.mcl.ui.localization.destination.selectVersion
-import cn.yurin.mcl.ui.localization.destination.settings
-import cn.yurin.mcl.ui.localization.destination.versions
+import cn.yurin.mcl.ui.localization.destination.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -46,40 +33,58 @@ fun Home(
 	Row {
 		Sidebar(
 			onLaunchClick = {
+				val osName = System.getProperty("os.name").lowercase()
+				val classpathSeparator = when {
+					"win" in osName -> ";"
+					else -> ":"
+				}
 				when {
 					data.currentVersion == null -> onChangePage(LaunchPages.Versions)
 					data.currentAccount == null -> onChangeToAccountPage()
 					else -> data.scope.launch(Dispatchers.IO) {
+						val currentFolder = data.currentFolder!!
 						val currentVersion = data.currentVersion!!
 						val currentAccount = data.currentAccount!!
 						val libraries = listOf(
 							*currentVersion.manifest.libraries.filter { library ->
 								when (library.rule?.os?.name) {
 									null -> true
-									in System.getProperty("os.name").lowercase() -> true
+									in osName -> true
 									else -> false
 								}
-							}.mapNotNull { library ->
+							}.map { library ->
 								library.downloads?.artifact?.path?.let { path ->
-									File("${data.currentFolder!!.path}/libraries", path).absolutePath
+									File("${currentFolder.path}/libraries", path).absolutePath
+								} ?: run {
+									val (groupId, artifactId, version) = library.name.split(":")
+									val groups = groupId.split(".")
+									File("${currentFolder.path}/libraries", "${groups.joinToString("/")}/$artifactId/$version/$artifactId-$version.jar").absolutePath
 								}
 							}.toTypedArray(),
 							File(currentVersion.path, "${currentVersion.name}.jar").absolutePath
 						)
 						val process = buildGameProcess(
 							java = "java",
-							launcherBrand = "Minecraft Composable Launcher",
-							launcherVersion = "1.0.0",
-							classpath = libraries,
-							minecraftJar = File(currentVersion.path, "${currentVersion.name}.jar").absolutePath,
 							mainClass = currentVersion.manifest.mainClass,
-							gameDir = data.currentFolder!!.path,
-							assetDir = "${data.currentFolder!!.path}/assets",
-							assetIndex = currentVersion.manifest.assetIndex.id,
-							username = currentAccount.name,
-							uuid = currentAccount.uuid,
-							accessToken = currentAccount.token,
-							version = currentVersion.manifest.id,
+							arguments = currentVersion.manifest.arguments,
+							variables = mapOf(
+								"auth_player_name" to currentAccount.name,
+								"version_name" to currentVersion.manifest.id,
+								"game_directory" to currentFolder.path,
+								"assets_root" to "${currentFolder.path}/assets",
+								"assets_index_name" to currentVersion.manifest.assetIndex.id,
+								"auth_uuid" to currentAccount.uuid,
+								"auth_access_token" to currentAccount.token,
+								"user_type" to "msa",
+								"version_type" to "MCL 1.0.0",
+								"natives_directory" to File(currentVersion.path, "natives").absolutePath,
+								"launcher_name" to "Minecraft Composable Launcher",
+								"launcher_version" to "1.0.0",
+								"classpath" to listOf(*libraries.toTypedArray(), File(currentVersion.path, "${currentVersion.name}.jar").absolutePath).joinToString(classpathSeparator),
+								"classpath_separator" to classpathSeparator,
+								"library_directory" to File(currentFolder.path, "libraries").absolutePath,
+							),
+							features = mapOf(),
 						).start()
 						val error = async(Dispatchers.IO) {
 							while (process.isAlive) {

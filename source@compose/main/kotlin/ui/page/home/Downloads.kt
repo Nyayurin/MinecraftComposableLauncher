@@ -122,8 +122,8 @@ private fun RowScope.Content(
 	val downloadList = remember { mutableStateListOf<Pair<String, Pair<Int, Int>>>() }
 	var downloadFinished by remember { mutableStateOf(false) }
 	val scrollState = rememberScrollState()
-	val downloadDialog = remember {
-		downloadDialog(
+	val downloadDialogProvider = remember {
+		downloadDialogProvider(
 			onConfirm = { data.dialogProvider = null },
 			downloadFinished = downloadFinished,
 			downloadList = downloadList,
@@ -160,7 +160,7 @@ private fun RowScope.Content(
 								launcher.launch()
 							} else {
 								data.scope.launch(Dispatchers.IO) {
-									data.dialogProvider = downloadDialog
+									data.dialogProvider = downloadDialogProvider
 									downloadList.clear()
 									downloadFinished = false
 									println("Downloading version ${version.id}")
@@ -217,7 +217,7 @@ private fun RowScope.Content(
 }
 
 context(_: Context)
-private fun downloadDialog(
+private fun downloadDialogProvider(
 	onConfirm: () -> Unit,
 	downloadFinished: Boolean,
 	downloadList: List<Pair<String, Pair<Int, Int>>>,

@@ -5,6 +5,7 @@ import androidx.compose.ui.graphics.toArgb
 import cn.yurin.mcl.core.Account
 import cn.yurin.mcl.core.Data
 import cn.yurin.mcl.core.GameFolder
+import cn.yurin.mcl.core.refreshFolders
 import kotlinx.serialization.json.Json
 
 private val settings = getSettings("data")
@@ -112,4 +113,5 @@ fun readData() = Data().apply {
 		println(e)
 		e.printStackTrace()
 	}
+	refreshFolders()
 }

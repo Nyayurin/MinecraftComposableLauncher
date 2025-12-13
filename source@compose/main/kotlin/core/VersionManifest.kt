@@ -22,17 +22,11 @@ data class VersionManifest(
 ) {
 	@Serializable
 	data class Arguments(
-		val game: List<Either<String, GameArgument>>,
-		val jvm: List<Either<String, JvmArgument>>,
+		val game: List<Either<String, Argument>>,
+		val jvm: List<Either<String, Argument>>,
 	) {
 		@Serializable
-		data class GameArgument(
-			val rules: List<Rule>,
-			val value: Either<String, List<String>>,
-		)
-
-		@Serializable
-		data class JvmArgument(
+		data class Argument(
 			val rules: List<Rule>,
 			val value: Either<String, List<String>>,
 		)
@@ -73,6 +67,7 @@ data class VersionManifest(
 	@Serializable
 	data class Library(
 		val downloads: Downloads? = null,
+		val url: String? = null,
 		val name: String,
 		val rule: Rule? = null,
 	) {
@@ -114,10 +109,12 @@ data class VersionManifest(
 	data class Rule(
 		val action: String,
 		val os: Os? = null,
+		val features: Map<String, Boolean>? = null,
 	) {
 		@Serializable
 		data class Os(
 			val name: String? = null,
+			val arch: String? = null,
 		)
 	}
 }
