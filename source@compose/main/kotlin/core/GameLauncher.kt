@@ -23,6 +23,10 @@ fun buildGameProcess(
 					}
 				}
 			}
+			// Only Apple Can Do
+			if ("osx" in System.getProperty("os.name").lowercase()) {
+				add("-XstartOnFirstThread")
+			}
 			arguments.jvm.forEach(::process)
 			add(mainClass)
 			arguments.game.forEach(::process)
