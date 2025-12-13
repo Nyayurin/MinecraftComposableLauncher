@@ -33,32 +33,34 @@ fun Home(
 	minimizeWindow: () -> Unit,
 ) {
 	var currentPage by remember { mutableStateOf<HomePage>(HomePage.Launch) }
-	TopBar(
-		currentPage = currentPage,
-		onPageChanges = { currentPage = it },
-		windowDraggableArea = windowDraggableArea,
-		exitApplication = exitApplication,
-		minimizeWindow = minimizeWindow,
-	)
-	AnimatedContent(
-		targetState = currentPage,
-		transitionSpec = {
-			slideIn(tween()) {
-				IntOffset((targetState.position compareTo initialState.position) * it.width, 0)
-			} togetherWith slideOut(tween()) {
-				IntOffset((initialState.position compareTo targetState.position) * it.width, 0)
-			}
-		},
-	) {
-		when (it) {
-			HomePage.Launch -> Launch(
-				onChangeToAccountPage = { currentPage = HomePage.Accounts },
-			)
+	Column {
+		TopBar(
+			currentPage = currentPage,
+			onPageChanges = { currentPage = it },
+			windowDraggableArea = windowDraggableArea,
+			exitApplication = exitApplication,
+			minimizeWindow = minimizeWindow,
+		)
+		AnimatedContent(
+			targetState = currentPage,
+			transitionSpec = {
+				slideIn(tween()) {
+					IntOffset((targetState.position compareTo initialState.position) * it.width, 0)
+				} togetherWith slideOut(tween()) {
+					IntOffset((initialState.position compareTo targetState.position) * it.width, 0)
+				}
+			},
+		) {
+			when (it) {
+				HomePage.Launch -> Launch(
+					onChangeToAccountPage = { currentPage = HomePage.Accounts },
+				)
 
-			HomePage.Accounts -> Accounts()
-			HomePage.Downloads -> Downloads()
-			HomePage.Settings -> Settings()
-			HomePage.More -> More()
+				HomePage.Accounts -> Accounts()
+				HomePage.Downloads -> Downloads()
+				HomePage.Settings -> Settings()
+				HomePage.More -> More()
+			}
 		}
 	}
 }
@@ -88,28 +90,30 @@ private fun TopBar(
 					.align(Alignment.CenterStart),
 			)
 			val pages = listOf(HomePage.Launch, HomePage.Accounts, HomePage.Downloads, HomePage.Settings, HomePage.More)
-			SingleChoiceSegmentedButtonRow(
-				space = 8.dp,
+			AnimatedContent(
+				targetState = context.language,
 				modifier = Modifier.align(Alignment.Center),
-			) {
-				pages.forEachIndexed { index, page ->
-					SegmentedButton(
-						selected = currentPage == page,
-						onClick = { onPageChanges(page) },
-						shape = SegmentedButtonDefaults.itemShape(
-							index = index,
-							count = pages.size
-						),
-						colors = SegmentedButtonDefaults.colors(
-							activeContainerColor = MaterialTheme.colorScheme.primary,
-							activeContentColor = MaterialTheme.colorScheme.onPrimary,
-							activeBorderColor = MaterialTheme.colorScheme.primary,
-							inactiveContainerColor = MaterialTheme.colorScheme.primaryContainer,
-							inactiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-							inactiveBorderColor = MaterialTheme.colorScheme.primary,
-						),
-						label = {
-							AnimatedContent(context.language) {
+			) { language ->
+				SingleChoiceSegmentedButtonRow(
+					space = 8.dp,
+				) {
+					pages.forEachIndexed { index, page ->
+						SegmentedButton(
+							selected = currentPage == page,
+							onClick = { onPageChanges(page) },
+							shape = SegmentedButtonDefaults.itemShape(
+								index = index,
+								count = pages.size
+							),
+							colors = SegmentedButtonDefaults.colors(
+								activeContainerColor = MaterialTheme.colorScheme.primary,
+								activeContentColor = MaterialTheme.colorScheme.onPrimary,
+								activeBorderColor = MaterialTheme.colorScheme.primary,
+								inactiveContainerColor = MaterialTheme.colorScheme.primaryContainer,
+								inactiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+								inactiveBorderColor = MaterialTheme.colorScheme.primary,
+							),
+							label = {
 								Text(
 									text = when (page) {
 										HomePage.Launch -> launch
@@ -117,7 +121,7 @@ private fun TopBar(
 										HomePage.Downloads -> downloads
 										HomePage.Settings -> settings
 										HomePage.More -> more
-									}.language(it),
+									}.language(language),
 									color = animateColorAsState(
 										when (currentPage == page) {
 											true -> MaterialTheme.colorScheme.onPrimary
@@ -127,8 +131,8 @@ private fun TopBar(
 									style = MaterialTheme.typography.titleSmall,
 								)
 							}
-						}
-					)
+						)
+					}
 				}
 			}
 			Row(

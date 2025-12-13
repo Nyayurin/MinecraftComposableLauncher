@@ -2,6 +2,7 @@ package cn.yurin.mcl.ui.page.home.launch
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -12,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.*
 import cn.yurin.mcl.ui.localization.*
@@ -211,10 +213,21 @@ private fun RowScope.Content(
 									title = {
 										Text(
 											text = version.name,
-											color = MaterialTheme.colorScheme.onSurface,
+											color = animateColorAsState(
+												when (data.currentVersion == version) {
+													true -> MaterialTheme.colorScheme.onPrimary
+													else -> MaterialTheme.colorScheme.onSurface
+												}
+											).value,
 											style = MaterialTheme.typography.bodyLarge,
 										)
 									},
+									color = animateColorAsState(
+										when (data.currentVersion == version) {
+											true -> MaterialTheme.colorScheme.primary
+											else -> MaterialTheme.colorScheme.surfaceContainer
+										}
+									).value,
 									onClick = {
 										data.currentVersion = version
 										onBack()
@@ -321,14 +334,15 @@ private fun FoldableCard(
 context(_: Context, _: Data)
 private fun VersionItem(
 	title: @Composable () -> Unit,
+	color: Color = MaterialTheme.colorScheme.surfaceContainer,
 	onClick: () -> Unit,
 ) {
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
 			.clip(RoundedCornerShape(16.dp))
-			.background(MaterialTheme.colorScheme.surfaceContainer)
-			.clickable { onClick() }
+			.background(color)
+			.clickable(onClick = onClick)
 			.padding(12.dp),
 	) {
 		title()

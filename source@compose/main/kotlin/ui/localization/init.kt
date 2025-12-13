@@ -1,10 +1,10 @@
 package cn.yurin.mcl.ui.localization
 
-import androidx.compose.runtime.mutableStateOf
+import cn.yurin.mcl.storage.readContext
 import cn.yurin.mcl.ui.localization.destination.*
 
 fun initContext() = buildContext {
-	language = mutableStateOf(Language.Chinese).value
+	readContext()
 	initTopbar()
 	initLaunchPage()
 	initAccountsPage()
@@ -115,12 +115,13 @@ private fun initAccountsPage() = AccountsDest {
 	}
 
 	AccountsDest.LoginDialog {
-		title {
-			chinese = "登录微软账户"
-			english = "Login Microsoft Account"
-		}
-		content {
-			chinese = """
+		AccountsDest.LoginDialog.Online {
+			title {
+				chinese = "登录微软账户"
+				english = "Login Microsoft Account"
+			}
+			content {
+				chinese = """
 				请按以下步骤登录账户:
 				  1. 点击 "登录" 按钮
 				  2. 在弹出的网页中输入登录代码(MCL 会自动复制到剪贴板, 你只需要在输入框内粘贴即可), 并点击 "允许访问"
@@ -130,7 +131,7 @@ private fun initAccountsPage() = AccountsDest {
 				若网站提示 "出现错误" 或账户添加失败时, 请按照以上步骤重新登录
 				若设备网络环境不佳, 可能会导致网页加载缓慢甚至无法加载, 请使用网络代理并重试
 			""".trimIndent()
-			english = """
+				english = """
 				请按以下步骤登录账户:
 				  1. 点击 "登录" 按钮
 				  2. 在弹出的网页中输入登录代码(MCL 会自动复制到剪贴板, 你只需要在输入框内粘贴即可), 并点击 "允许访问"
@@ -140,14 +141,34 @@ private fun initAccountsPage() = AccountsDest {
 				若网站提示 "出现错误" 或账户添加失败时, 请按照以上步骤重新登录
 				若设备网络环境不佳, 可能会导致网页加载缓慢甚至无法加载, 请使用网络代理并重试
 			""".trimIndent()
+			}
+			login {
+				chinese = "登录"
+				english = "Login"
+			}
+			cancel {
+				chinese = "取消"
+				english = "Cancel"
+			}
 		}
-		login {
-			chinese = "登录"
-			english = "Login"
-		}
-		cancel {
-			chinese = "取消"
-			english = "Cancel"
+
+		AccountsDest.LoginDialog.Offline {
+			title {
+				chinese = "登录离线账户"
+				english = "Login Offline Account"
+			}
+			content {
+				chinese = "用户名"
+				english = "Username"
+			}
+			login {
+				chinese = "登录"
+				english = "Login"
+			}
+			cancel {
+				chinese = "取消"
+				english = "Cancel"
+			}
 		}
 	}
 }

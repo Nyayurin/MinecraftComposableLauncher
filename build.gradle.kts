@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "cn.yurin"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
 	google()
@@ -86,23 +86,24 @@ kotlin {
 			implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha05")
 
 			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
 			implementation("com.materialkolor:material-kolor:4.0.0")
 			implementation("com.github.skydoves:colorpicker-compose:1.1.2")
-			implementation("io.ktor:ktor-client-core-jvm:3.3.3")
-			implementation("io.ktor:ktor-client-cio-jvm:3.3.3")
-			implementation("io.ktor:ktor-client-content-negotiation-jvm:3.3.3")
-			implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:3.3.3")
+			implementation("io.ktor:ktor-client-core:3.3.3")
+			implementation("io.ktor:ktor-client-cio:3.3.3")
+			implementation("io.ktor:ktor-client-content-negotiation:3.3.3")
+			implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.3")
 			implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 			implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
-			implementation("ch.qos.logback:logback-classic:1.5.21")
 			implementation("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
+			implementation("com.russhwolf:multiplatform-settings:1.3.0")
 		}
 
 		composeJvmMain.dependencies {
 			implementation(compose.desktop.currentOs) {
 				exclude("org.jetbrains.compose.material", "material")
 			}
+			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.10.2")
+			implementation("ch.qos.logback:logback-classic:1.5.21")
 			implementation("net.java.dev.jna:jna:5.14.0")
 			implementation("net.java.dev.jna:jna-platform:5.14.0")
 		}
@@ -139,6 +140,10 @@ compose.desktop {
 			linux {
 				modules("jdk.security.auth")
 			}
+		}
+
+		buildTypes.release.proguard {
+			configurationFiles.from(project.file("source@compose/main@jvm/rules.pro"))
 		}
 	}
 }

@@ -26,25 +26,25 @@ jobs:
           ./gradlew :generateActualResourceCollectorsForComposeJvmMain
           ./gradlew :assembleComposeJvmMainResources
       - name: package windowsUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
+        run: ./gradlew :packageReleaseUberJarForCurrentOS
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-windows-uberjar-amd64
           path: build/compose/jars/*
       - name: package windowsAppImage
-        run: ./gradlew :packageAppImage
+        run: ./gradlew :packageReleaseAppImage
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-windows-portable-amd64
           path: build/compose/binaries/main/app/*
       - name: package windowsMsi
-        run: ./gradlew :packageMsi
+        run: ./gradlew :packageReleaseMsi
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-windows-installer-msi-amd64
           path: build/compose/binaries/main/msi/*
       - name: package windowsExe
-        run: ./gradlew :packageExe
+        run: ./gradlew :packageReleaseExe
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-windows-installer-exe-amd64
@@ -70,25 +70,25 @@ jobs:
           ./gradlew :generateActualResourceCollectorsForComposeJvmMain
           ./gradlew :assembleComposeJvmMainResources
       - name: package windowsUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
+        run: ./gradlew :packageReleaseUberJarForCurrentOS
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-windows-uberjar-aarch64
           path: build/compose/jars/*
       - name: package windowsAppImage
-        run: ./gradlew :packageAppImage
+        run: ./gradlew :packageReleaseAppImage
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-windows-portable-aarch64
           path: build/compose/binaries/main/app/*
       - name: package windowsMsi
-        run: ./gradlew :packageMsi
+        run: ./gradlew :packageReleaseMsi
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-windows-installer-msi-aarch64
           path: build/compose/binaries/main/msi/*
       - name: package windowsExe
-        run: ./gradlew :packageExe
+        run: ./gradlew :packageReleaseExe
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-windows-installer-exe-aarch64
@@ -114,25 +114,25 @@ jobs:
           ./gradlew :generateActualResourceCollectorsForComposeJvmMain
           ./gradlew :assembleComposeJvmMainResources
       - name: package linuxUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
+        run: ./gradlew :packageReleaseUberJarForCurrentOS
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-linux-uberjar-amd64
           path: build/compose/jars/*
       - name: package linuxAppImage
-        run: ./gradlew :packageAppImage
+        run: ./gradlew :packageReleaseAppImage
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-linux-portable-amd64
           path: build/compose/binaries/main/app/*
       - name: package linuxDeb
-        run: ./gradlew :packageDeb
+        run: ./gradlew :packageReleaseDeb
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-linux-installer-deb-amd64
           path: build/compose/binaries/main/deb/*
       - name: package linuxRpm
-        run: ./gradlew :packageRpm
+        run: ./gradlew :packageReleaseRpm
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-linux-installer-rpm-amd64
@@ -158,25 +158,25 @@ jobs:
           ./gradlew :generateActualResourceCollectorsForComposeJvmMain
           ./gradlew :assembleComposeJvmMainResources
       - name: package linuxUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
+        run: ./gradlew :packageReleaseUberJarForCurrentOS
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-linux-uberjar-aarch64
           path: build/compose/jars/*
       - name: package linuxAppImage
-        run: ./gradlew :packageAppImage
+        run: ./gradlew :packageReleaseAppImage
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-linux-portable-aarch64
           path: build/compose/binaries/main/app/*
       - name: package linuxDeb
-        run: ./gradlew :packageDeb
+        run: ./gradlew :packageReleaseDeb
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-linux-installer-deb-aarch64
           path: build/compose/binaries/main/deb/*
       - name: package linuxRpm
-        run: ./gradlew :packageRpm
+        run: ./gradlew :packageReleaseRpm
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-linux-installer-rpm-aarch64
@@ -202,13 +202,13 @@ jobs:
           ./gradlew :generateActualResourceCollectorsForComposeJvmMain
           ./gradlew :assembleComposeJvmMainResources
       - name: package macosUberJar
-        run: ./gradlew :packageUberJarForCurrentOS
+        run: ./gradlew :packageReleaseUberJarForCurrentOS
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-macos-uberjar-aarch64
           path: build/compose/jars/*
       - name: package macosDmg
-        run: ./gradlew :packageDmg
+        run: ./gradlew :packageReleaseDmg
       - uses: actions/upload-artifact@v4
         with:
           name: MCL-macos-installer-dmg-aarch64

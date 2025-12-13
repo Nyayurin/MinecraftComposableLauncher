@@ -2,23 +2,27 @@ package cn.yurin.mcl.core
 
 import kotlinx.serialization.Serializable
 
+@Serializable
 data class Version(
 	val name: String,
 	val path: String,
 	val manifest: VersionManifest,
 )
 
+@Serializable
 sealed class GameFolder {
 	abstract val name: String
 	abstract val path: String
 	abstract val versions: List<Version>
 
+	@Serializable
 	data class DotMinecraft(
 		override val name: String,
 		override val path: String,
 		override val versions: List<Version>,
 	) : GameFolder()
 
+	@Serializable
 	data class MCL(
 		override val name: String,
 		override val path: String,
@@ -37,11 +41,13 @@ data class AssetIndex(
 	)
 }
 
+@Serializable
 sealed class Account {
 	abstract val name: String
 	abstract val token: String
 	abstract val uuid: String
 
+	@Serializable
 	data class Online(
 		override val name: String,
 		override val token: String,
@@ -50,6 +56,7 @@ sealed class Account {
 		val refreshToken: String?,
 	) : Account()
 
+	@Serializable
 	data class Offline(
 		override val name: String,
 		override val token: String,

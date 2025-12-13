@@ -1,17 +1,16 @@
 package cn.yurin.mcl.core
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import cn.yurin.mcl.network.VersionsManifest
-import cn.yurin.mcl.ui.localization.*
-import cn.yurin.mcl.ui.localization.destination.DownloadsDest
-import cn.yurin.mcl.ui.localization.destination.assetIndex
-import cn.yurin.mcl.ui.localization.destination.assets
-import cn.yurin.mcl.ui.localization.destination.client
-import cn.yurin.mcl.ui.localization.destination.libraries
-import cn.yurin.mcl.ui.localization.destination.manifest
+import cn.yurin.mcl.ui.localization.Context
+import cn.yurin.mcl.ui.localization.current
+import cn.yurin.mcl.ui.localization.dest
+import cn.yurin.mcl.ui.localization.destination.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -37,6 +36,8 @@ class Data {
 	var accounts by mutableStateOf<List<Account>>(emptyList())
 	var currentAccount: Account? by mutableStateOf(null)
 
+	var dialogProvider by mutableStateOf<(@Composable () -> AlertDialog)?>(null)
+
 	val json = Json {
 		ignoreUnknownKeys = true
 	}
@@ -53,6 +54,16 @@ class Data {
 	}
 	val scope = CoroutineScope(Dispatchers.IO)
 }
+
+data class AlertDialog(
+	val onDismissRequest: () -> Unit,
+	val confirmButton: @Composable () -> Unit,
+	val modifier: Modifier = Modifier,
+	val dismissButton: @Composable (() -> Unit)? = null,
+	val icon: @Composable (() -> Unit)? = null,
+	val title: @Composable (() -> Unit)? = null,
+	val content: @Composable (() -> Unit)? = null,
+)
 
 context(data: Data, _: Context)
 suspend fun login(

@@ -119,15 +119,21 @@ private fun RowScope.Content(
 			}
 		}
 	}
+	val downloadList = remember { mutableStateListOf<Pair<String, Pair<Int, Int>>>() }
+	var downloadFinished by remember { mutableStateOf(false) }
+	val scrollState = rememberScrollState()
+	val downloadDialog = remember {
+		downloadDialog(
+			onConfirm = { data.dialogProvider = null },
+			downloadFinished = downloadFinished,
+			downloadList = downloadList,
+		)
+	}
 	Box(
 		modifier = Modifier
 			.fillMaxHeight()
 			.weight(0.85F),
 	) {
-		var showDownloadPage by remember { mutableStateOf(false) }
-		val downloadList = remember { mutableStateListOf<Pair<String, Pair<Int, Int>>>() }
-		var downloadFinished by remember { mutableStateOf(false) }
-		val scrollState = rememberScrollState()
 		AnimatedContent(
 			targetState = currentPage,
 			transitionSpec = {
@@ -154,7 +160,7 @@ private fun RowScope.Content(
 								launcher.launch()
 							} else {
 								data.scope.launch(Dispatchers.IO) {
-									showDownloadPage = true
+									data.dialogProvider = downloadDialog
 									downloadList.clear()
 									downloadFinished = false
 									println("Downloading version ${version.id}")
@@ -207,77 +213,81 @@ private fun RowScope.Content(
 				.align(Alignment.CenterEnd)
 				.fillMaxHeight(),
 		)
-		if (showDownloadPage) {
-			dest(DownloadsDest.DownloadDialog) {
-				AlertDialog(
-					onDismissRequest = { showDownloadPage = false },
-					title = {
-						Text(
-							text = when (downloadFinished) {
-								true -> titleDownloaded.current
-								else -> titleDownloading.current
-							},
-							color = MaterialTheme.colorScheme.onSurface,
-							style = MaterialTheme.typography.titleSmall,
-						)
+	}
+}
+
+context(_: Context)
+private fun downloadDialog(
+	onConfirm: () -> Unit,
+	downloadFinished: Boolean,
+	downloadList: List<Pair<String, Pair<Int, Int>>>,
+): @Composable () -> AlertDialog = {
+	dest(DownloadsDest.DownloadDialog) {
+		AlertDialog(
+			onDismissRequest = {  },
+			title = {
+				Text(
+					text = when (downloadFinished) {
+						true -> titleDownloaded.current
+						else -> titleDownloading.current
 					},
-					icon = null,
-					confirmButton = {
-						TextButton(
-							onClick = { showDownloadPage = false }
+					color = MaterialTheme.colorScheme.onSurface,
+					style = MaterialTheme.typography.titleSmall,
+				)
+			},
+			confirmButton = {
+				TextButton(
+					onClick = onConfirm,
+				) {
+					Text(
+						text = confirm.current,
+						color = MaterialTheme.colorScheme.onSurface,
+						style = MaterialTheme.typography.titleSmall,
+					)
+				}
+			},
+			content = {
+				Column(
+					verticalArrangement = Arrangement.spacedBy(16.dp),
+				) {
+					downloadList.forEach { (key, value) ->
+						val (sum, count) = value
+						val percentage = count / sum.toFloat()
+						Row(
+							verticalAlignment = Alignment.CenterVertically,
+							modifier = Modifier.fillMaxWidth(),
 						) {
+							Box(
+								contentAlignment = Alignment.Center,
+								modifier = Modifier.size(64.dp),
+							) {
+								CircularProgressIndicator(
+									progress = { percentage },
+								)
+								Text(
+									text = "${(percentage * 100).toInt()}%",
+									color = MaterialTheme.colorScheme.onSurface,
+									style = MaterialTheme.typography.bodySmall,
+								)
+							}
 							Text(
-								text = confirm.current,
+								text = key,
+								color = MaterialTheme.colorScheme.onSurface,
+								style = MaterialTheme.typography.titleSmall,
+							)
+							Spacer(
+								modifier = Modifier.weight(1F),
+							)
+							Text(
+								text = "$count / $sum",
 								color = MaterialTheme.colorScheme.onSurface,
 								style = MaterialTheme.typography.titleSmall,
 							)
 						}
-					},
-					dismissButton = null,
-					text = {
-						Column(
-							verticalArrangement = Arrangement.spacedBy(16.dp),
-						) {
-							downloadList.forEach { (key, value) ->
-								val (sum, count) = value
-								val percentage = count / sum.toFloat()
-								Row(
-									verticalAlignment = Alignment.CenterVertically,
-									modifier = Modifier.fillMaxWidth(),
-								) {
-									Box(
-										contentAlignment = Alignment.Center,
-										modifier = Modifier.size(64.dp),
-									) {
-										CircularProgressIndicator(
-											progress = { percentage },
-										)
-										Text(
-											text = "${(percentage * 100).toInt()}%",
-											color = MaterialTheme.colorScheme.onSurface,
-											style = MaterialTheme.typography.bodySmall,
-										)
-									}
-									Text(
-										text = key,
-										color = MaterialTheme.colorScheme.onSurface,
-										style = MaterialTheme.typography.titleSmall,
-									)
-									Spacer(
-										modifier = Modifier.weight(1F),
-									)
-									Text(
-										text = "$count / $sum",
-										color = MaterialTheme.colorScheme.onSurface,
-										style = MaterialTheme.typography.titleSmall,
-									)
-								}
-							}
-						}
-					},
-				)
-			}
-		}
+					}
+				}
+			},
+		)
 	}
 }
 
