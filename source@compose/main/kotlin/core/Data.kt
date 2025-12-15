@@ -27,7 +27,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 class Data {
-	var seedColor by mutableStateOf(Color(0xFF9B9D95))
+	var seedColor by mutableStateOf(Color(-34593))
 	var isDarkMode by mutableStateOf<Boolean?>(null)
 	var versionsManifest by mutableStateOf<VersionsManifest?>(null)
 	var folders by mutableStateOf<List<GameFolder>>(emptyList())

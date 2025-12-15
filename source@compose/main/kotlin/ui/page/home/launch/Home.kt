@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import cn.yurin.mcl.core.Account
 import cn.yurin.mcl.core.Data
 import cn.yurin.mcl.core.buildGameProcess
 import cn.yurin.mcl.ui.LaunchPages
@@ -18,6 +19,7 @@ import cn.yurin.mcl.ui.localization.Context
 import cn.yurin.mcl.ui.localization.current
 import cn.yurin.mcl.ui.localization.dest
 import cn.yurin.mcl.ui.localization.destination.*
+import com.github.panpf.sketch.AsyncImage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -117,22 +119,47 @@ private fun RowScope.Sidebar(
 	onVersionSelectClick: () -> Unit,
 	onSettingClick: () -> Unit,
 ) = dest(LaunchDest.SideBar) {
-	Box(
+	Column(
+		horizontalAlignment = Alignment.CenterHorizontally,
 		modifier = Modifier
 			.fillMaxHeight()
 			.weight(0.3F)
 			.background(MaterialTheme.colorScheme.surfaceContainerHighest)
 			.padding(32.dp)
 	) {
-		Text(
-			text = data.currentAccount?.name ?: loginAccount.current,
-			color = MaterialTheme.colorScheme.onSurface,
-			style = MaterialTheme.typography.bodyLarge,
-			modifier = Modifier.align(Alignment.Center),
-		)
+		Column(
+			horizontalAlignment = Alignment.CenterHorizontally,
+			verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
+			modifier = Modifier
+				.weight(1F),
+		) {
+			data.currentAccount?.let { account ->
+				if (account is Account.Online) {
+					AsyncImage(
+						uri = "https://vzge.me/face/512/${account.uuid}",
+						contentDescription = null,
+						modifier = Modifier
+							.size(64.dp),
+					)
+				} else {
+					null
+				}
+			} ?: run {
+				AsyncImage(
+					uri = "https://vzge.me/face/512/X-Steve",
+					contentDescription = null,
+					modifier = Modifier
+						.size(64.dp),
+				)
+			}
+			Text(
+				text = data.currentAccount?.name ?: loginAccount.current,
+				color = MaterialTheme.colorScheme.onSurface,
+				style = MaterialTheme.typography.titleLarge,
+			)
+		}
 		Box(
 			contentAlignment = Alignment.BottomCenter,
-			modifier = Modifier.align(Alignment.BottomCenter),
 		) {
 			Column(
 				verticalArrangement = Arrangement.spacedBy(8.dp),

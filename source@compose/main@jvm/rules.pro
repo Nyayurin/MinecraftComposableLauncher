@@ -5,6 +5,8 @@
 -keep class io.ktor.serialization.kotlinx.** { *; }
 -keep class io.ktor.**
 -keep class androidx.compose.** { *; }
+-keep class * implements com.github.panpf.sketch.util.DecoderProvider { *; }
+-keep class * implements com.github.panpf.sketch.util.FetcherProvider { *; }
 
 -dontwarn ch.qos.logback.**
 -dontwarn androidx.compose.desktop.DesktopTheme_jvmKt

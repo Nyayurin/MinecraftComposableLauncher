@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
@@ -21,6 +22,7 @@ import cn.yurin.mcl.ui.localization.Context
 import cn.yurin.mcl.ui.localization.current
 import cn.yurin.mcl.ui.localization.dest
 import cn.yurin.mcl.ui.localization.destination.*
+import com.github.panpf.sketch.AsyncImage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.awt.Desktop
@@ -292,7 +294,9 @@ context(_: Context, data: Data)
 private fun Card(
 	account: Account,
 ) = dest(AccountsDest.Content) {
-	Column(
+	Row(
+		verticalAlignment = Alignment.CenterVertically,
+		horizontalArrangement = Arrangement.spacedBy(16.dp),
 		modifier = Modifier
 			.fillMaxWidth()
 			.clip(RoundedCornerShape(16.dp))
@@ -307,28 +311,45 @@ private fun Card(
 			.clickable { data.currentAccount = account }
 			.padding(16.dp),
 	) {
-		Text(
-			text = account.name,
-			color = animateColorAsState(
-				when (data.currentAccount == account) {
-					true -> MaterialTheme.colorScheme.onPrimary
-					else -> MaterialTheme.colorScheme.onSurface
-				}
-			).value,
-			style = MaterialTheme.typography.titleLarge,
-		)
-		Text(
-			text = when (account) {
-				is Account.Online -> onlineAccount.current
-				is Account.Offline -> offlineAccount.current
-			},
-			color = animateColorAsState(
-				when (data.currentAccount == account) {
-					true -> MaterialTheme.colorScheme.onPrimary
-					else -> MaterialTheme.colorScheme.onSurface
-				}
-			).value,
-			style = MaterialTheme.typography.bodyLarge,
-		)
+		when (account) {
+			is Account.Online -> AsyncImage(
+				uri = "https://vzge.me/face/512/${account.uuid}",
+				contentDescription = null,
+				modifier = Modifier
+					.size(64.dp),
+			)
+
+			is Account.Offline -> AsyncImage(
+				uri = "https://vzge.me/face/512/X-Steve",
+				contentDescription = null,
+				modifier = Modifier
+					.size(64.dp),
+			)
+		}
+		Column {
+			Text(
+				text = account.name,
+				color = animateColorAsState(
+					when (data.currentAccount == account) {
+						true -> MaterialTheme.colorScheme.onPrimary
+						else -> MaterialTheme.colorScheme.onSurface
+					}
+				).value,
+				style = MaterialTheme.typography.titleLarge,
+			)
+			Text(
+				text = when (account) {
+					is Account.Online -> onlineAccount.current
+					is Account.Offline -> offlineAccount.current
+				},
+				color = animateColorAsState(
+					when (data.currentAccount == account) {
+						true -> MaterialTheme.colorScheme.onPrimary
+						else -> MaterialTheme.colorScheme.onSurface
+					}
+				).value,
+				style = MaterialTheme.typography.bodyLarge,
+			)
+		}
 	}
 }

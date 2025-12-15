@@ -96,6 +96,8 @@ kotlin {
 			implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
 			implementation("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
 			implementation("com.russhwolf:multiplatform-settings:1.3.0")
+			implementation("io.github.panpf.sketch4:sketch-compose:4.3.1")
+			implementation("io.github.panpf.sketch4:sketch-http-ktor3:4.3.1")
 		}
 
 		composeJvmMain.dependencies {

@@ -109,7 +109,10 @@ private fun RowScope.Sidebar(
 				folders.forEach { folder ->
 					NavigationRailItem(
 						selected = true,
-						onClick = { data.currentFolder = folder },
+						onClick = {
+							data.currentFolder = folder
+							data.currentVersion = folder.versions.firstOrNull()
+						},
 						icon = {},
 						label = {
 							Text(
