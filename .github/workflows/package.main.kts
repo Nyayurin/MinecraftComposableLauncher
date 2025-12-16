@@ -21,7 +21,7 @@ import io.github.typesafegithub.workflows.domain.triggers.Release
 import io.github.typesafegithub.workflows.dsl.JobBuilder
 import io.github.typesafegithub.workflows.dsl.WorkflowBuilder
 import io.github.typesafegithub.workflows.dsl.workflow
-import java.io.File
+import io.github.typesafegithub.workflows.yaml.ConsistencyCheckJobConfig
 
 val content: WorkflowBuilder.() -> Unit = {
 	publish(
@@ -89,6 +89,7 @@ workflow(
 	),
 	sourceFile = __FILE__,
 	targetFileName = "package_on_push.yml",
+	consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
 	block = content,
 )
 
@@ -101,6 +102,7 @@ workflow(
 	),
 	sourceFile = __FILE__,
 	targetFileName = "package_on_release.yml",
+	consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
 	block = content,
 )
 
@@ -129,7 +131,6 @@ fun WorkflowBuilder.publish(runsOn: RunnerType, system: String, arch: String, pu
 		)
 		run(
 			command = """
-				chmod +x ./gradlew
 				./gradlew :generateComposeResClass
 				./gradlew :generateResourceAccessorsForComposeMain
 				./gradlew :generateExpectResourceCollectorsForCommonMain
