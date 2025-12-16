@@ -87,7 +87,8 @@ workflow(
 			pathsIgnore = listOf("README.md")
 		),
 	),
-	sourceFile = File("package_on_push.main.kts"),
+	sourceFile = __FILE__,
+	targetFileName = "package_on_push.yml",
 	block = content,
 )
 
@@ -98,7 +99,8 @@ workflow(
 			types = listOf("created"),
 		),
 	),
-	sourceFile = File("package_on_release.main.kts"),
+	sourceFile = __FILE__,
+	targetFileName = "package_on_release.yml",
 	block = content,
 )
 

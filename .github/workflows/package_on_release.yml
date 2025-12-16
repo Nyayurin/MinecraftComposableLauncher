@@ -1,4 +1,4 @@
-# This file was generated using Kotlin DSL (.github/workflows/package_on_release.main.kts).
+# This file was generated using Kotlin DSL (.github/workflows/package.main.kts).
 # If you want to modify the workflow, please change the Kotlin file and regenerate this YAML file.
 # Generated with https://github.com/typesafegithub/github-workflows-kt
 
@@ -17,10 +17,10 @@ jobs:
       uses: 'actions/checkout@v4'
     - id: 'step-1'
       name: 'Execute script'
-      run: 'rm ''.github/workflows/package_on_release.yaml'' && ''.github/workflows/package_on_release.main.kts'''
+      run: 'rm ''.github/workflows/package_on_release.yml'' && ''.github/workflows/package.main.kts'''
     - id: 'step-2'
       name: 'Consistency check'
-      run: 'git diff --exit-code ''.github/workflows/package_on_release.yaml'''
+      run: 'git diff --exit-code ''.github/workflows/package_on_release.yml'''
   package-windows-amd64:
     runs-on: 'windows-latest'
     permissions:
