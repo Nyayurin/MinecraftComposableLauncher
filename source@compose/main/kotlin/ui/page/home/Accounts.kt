@@ -22,7 +22,7 @@ import cn.yurin.mcl.ui.localization.Context
 import cn.yurin.mcl.ui.localization.current
 import cn.yurin.mcl.ui.localization.dest
 import cn.yurin.mcl.ui.localization.destination.*
-import com.github.panpf.sketch.AsyncImage
+import cn.yurin.mcl.ui.page.home.launch.ShadowedFace
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.awt.Desktop
@@ -312,18 +312,12 @@ private fun Card(
 			.padding(16.dp),
 	) {
 		when (account) {
-			is Account.Online -> AsyncImage(
-				uri = "https://vzge.me/face/512/${account.uuid}",
-				contentDescription = null,
-				modifier = Modifier
-					.size(64.dp),
+			is Account.Online -> ShadowedFace(
+				subject = account.uuid,
 			)
 
-			is Account.Offline -> AsyncImage(
-				uri = "https://vzge.me/face/512/X-Steve",
-				contentDescription = null,
-				modifier = Modifier
-					.size(64.dp),
+			is Account.Offline -> ShadowedFace(
+				subject = "X-Steve",
 			)
 		}
 		Column {

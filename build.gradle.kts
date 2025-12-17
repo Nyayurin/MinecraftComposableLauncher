@@ -1,10 +1,11 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 plugins {
-	kotlin("multiplatform") version "2.2.21"
-	kotlin("plugin.serialization") version "2.2.21"
-	id("org.jetbrains.kotlin.plugin.compose") version "2.2.21"
+	kotlin("multiplatform") version "2.3.0"
+	kotlin("plugin.serialization") version "2.3.0"
+	id("org.jetbrains.kotlin.plugin.compose") version "2.3.0"
 	id("org.jetbrains.compose") version "1.10.0-rc02"
 }
 
@@ -150,11 +151,15 @@ compose.desktop {
 	}
 }
 
+@OptIn(ExperimentalKotlinGradlePluginApi::class)
 fun KotlinSourceSet.configureSource(
 	path: String,
 	additionKotlin: List<String>,
 	additionResources: List<String>,
 ) {
+	//  Waiting for idea support
+	//	kotlin.setSrcDirs(listOf("$path/kotlin"))
+	//	generatedKotlin.setSrcDirs(additionKotlin.map { "build/generated/compose/resourceGenerator/kotlin/$it" })
 	kotlin.setSrcDirs(
 		listOf(
 			"$path/kotlin",
