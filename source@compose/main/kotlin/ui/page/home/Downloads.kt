@@ -17,18 +17,11 @@ import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.*
 import cn.yurin.mcl.network.VersionsManifest
 import cn.yurin.mcl.ui.DownloadsPage
-import cn.yurin.mcl.ui.localization.*
-import cn.yurin.mcl.ui.localization.destination.DownloadsDest
-import cn.yurin.mcl.ui.localization.destination.confirm
-import cn.yurin.mcl.ui.localization.destination.latest
-import cn.yurin.mcl.ui.localization.destination.oldAlpha
-import cn.yurin.mcl.ui.localization.destination.oldBeta
-import cn.yurin.mcl.ui.localization.destination.release
-import cn.yurin.mcl.ui.localization.destination.releaseAt
-import cn.yurin.mcl.ui.localization.destination.snapshot
-import cn.yurin.mcl.ui.localization.destination.titleDownloaded
-import cn.yurin.mcl.ui.localization.destination.titleDownloading
-import cn.yurin.mcl.ui.localization.destination.vanilla
+import cn.yurin.mcl.ui.localization.Context
+import cn.yurin.mcl.ui.localization.current
+import cn.yurin.mcl.ui.localization.dest
+import cn.yurin.mcl.ui.localization.destination.*
+import cn.yurin.mcl.ui.localization.language
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
 import io.github.vinceglb.filekit.absolutePath
@@ -79,8 +72,7 @@ private fun RowScope.Sidebar(
 					}
 					onPageChanged(page)
 				},
-				icon = {},
-				label = {
+				icon = {
 					AnimatedContent(context.language) {
 						Text(
 							text = when (page) {
@@ -90,7 +82,7 @@ private fun RowScope.Sidebar(
 							style = MaterialTheme.typography.titleSmall,
 						)
 					}
-				}
+				},
 			)
 		}
 	}

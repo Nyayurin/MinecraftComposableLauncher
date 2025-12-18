@@ -16,7 +16,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import androidx.compose.ui.window.application
 import cn.yurin.mcl.ui.App
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.User32

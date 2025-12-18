@@ -62,8 +62,7 @@ private fun RowScope.Sidebar(
 			NavigationRailItem(
 				selected = currentPage == page,
 				onClick = { onPageChanged(page) },
-				icon = {},
-				label = {
+				icon = {
 					AnimatedContent(context.language) {
 						Text(
 							text = when (page) {
@@ -74,7 +73,7 @@ private fun RowScope.Sidebar(
 							style = MaterialTheme.typography.titleSmall,
 						)
 					}
-				}
+				},
 			)
 		}
 	}

@@ -75,12 +75,12 @@ private fun TopBar(
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()
-				.background(MaterialTheme.colorScheme.primaryContainer)
+				.background(MaterialTheme.colorScheme.primary)
 				.padding(8.dp),
 		) {
 			Text(
 				text = "MCL",
-				color = MaterialTheme.colorScheme.onPrimaryContainer,
+				color = MaterialTheme.colorScheme.onPrimary,
 				style = MaterialTheme.typography.titleLarge,
 				modifier = Modifier
 					.padding(start = 8.dp)
@@ -103,11 +103,11 @@ private fun TopBar(
 								count = pages.size
 							),
 							colors = SegmentedButtonDefaults.colors(
-								activeContainerColor = MaterialTheme.colorScheme.primary,
-								activeContentColor = MaterialTheme.colorScheme.onPrimary,
-								activeBorderColor = MaterialTheme.colorScheme.primary,
-								inactiveContainerColor = MaterialTheme.colorScheme.primaryContainer,
-								inactiveContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+								activeContainerColor = MaterialTheme.colorScheme.primaryContainer,
+								activeContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+								activeBorderColor = MaterialTheme.colorScheme.primaryContainer,
+								inactiveContainerColor = MaterialTheme.colorScheme.primary,
+								inactiveContentColor = MaterialTheme.colorScheme.onPrimary,
 								inactiveBorderColor = MaterialTheme.colorScheme.primary,
 							),
 							label = {
@@ -121,8 +121,8 @@ private fun TopBar(
 									}.language(language),
 									color = animateColorAsState(
 										when (currentPage == page) {
-											true -> MaterialTheme.colorScheme.onPrimary
-											else -> MaterialTheme.colorScheme.onPrimaryContainer
+											true -> MaterialTheme.colorScheme.onPrimaryContainer
+											else -> MaterialTheme.colorScheme.onPrimary
 										}
 									).value,
 									style = MaterialTheme.typography.titleSmall,
@@ -142,7 +142,7 @@ private fun TopBar(
 					Icon(
 						painter = painterResource(Res.drawable.minimize_24px),
 						contentDescription = "Minimize",
-						tint = MaterialTheme.colorScheme.onPrimaryContainer,
+						tint = MaterialTheme.colorScheme.onPrimary,
 					)
 				}
 				IconButton(
@@ -151,7 +151,7 @@ private fun TopBar(
 					Icon(
 						painter = painterResource(Res.drawable.close_24px),
 						contentDescription = "Close",
-						tint = MaterialTheme.colorScheme.onPrimaryContainer,
+						tint = MaterialTheme.colorScheme.onPrimary,
 					)
 				}
 			}
