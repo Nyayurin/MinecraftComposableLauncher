@@ -45,10 +45,10 @@ data class VersionManifest(
 	data class Downloads(
 		val client: Download,
 		@SerialName("client_mappings")
-		val clientMappings: Download,
+		val clientMappings: Download? = null,
 		val server: Download,
 		@SerialName("server_mappings")
-		val serverMappings: Download,
+		val serverMappings: Download? = null,
 	) {
 		@Serializable
 		data class Download(

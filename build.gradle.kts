@@ -18,7 +18,7 @@ repositories {
 }
 
 kotlin {
-	jvmToolchain(21)
+	jvmToolchain(25)
 
 	jvm("composeJvm")
 
@@ -59,7 +59,7 @@ kotlin {
 			additionKotlin = listOf("composeJvmMainResourceCollectors"),
 			additionResources = listOf("composeJvmMain"),
 		)
-		val composeClrMain by creating(
+		@Suppress("unused") val composeClrMain by creating(
 			dependOn = composeMain,
 			path = "source@compose/main@clr",
 		)
@@ -67,11 +67,11 @@ kotlin {
 			dependOn = commonMain,
 			path = "source@avalonia/main",
 		)
-		val avaloniaMixMain by creating(
+		@Suppress("unused") val avaloniaMixMain by creating(
 			dependOn = avaloniaMain,
 			path = "source@avalonia/main@mix"
 		)
-		val avaloniaClrMain by creating(
+		@Suppress("unused") val avaloniaClrMain by creating(
 			dependOn = avaloniaMain,
 			path = "source@avalonia/main@clr",
 		)
@@ -115,6 +115,10 @@ kotlin {
 			languageSettings.enableLanguageFeature("ContextParameters")
 		}
 	}
+}
+
+tasks.withType<JavaExec>().configureEach {
+	jvmArgs("--enable-native-access=ALL-UNNAMED")
 }
 
 compose.resources {

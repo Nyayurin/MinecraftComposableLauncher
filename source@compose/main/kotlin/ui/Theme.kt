@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ScrollbarStyle
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -23,6 +24,7 @@ fun Theme(
 		when (it) {
 			true -> DynamicMaterialExpressiveTheme(
 				seedColor = seedColor,
+				motionScheme = MotionScheme.expressive(),
 				isDark = isDark,
 				specVersion = ColorSpec.SpecVersion.SPEC_2025,
 				animate = true,

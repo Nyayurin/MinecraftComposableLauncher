@@ -122,7 +122,7 @@ fun WorkflowBuilder.publish(runsOn: RunnerType, system: String, arch: String, pu
 		)
 		uses(
 			action = SetupJava(
-				javaVersion = "21",
+				javaVersion = "25",
 				distribution = SetupJava.Distribution.Zulu,
 			),
 		)

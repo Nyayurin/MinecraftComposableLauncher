@@ -27,7 +27,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 
 class Data {
-	var seedColor by mutableStateOf(Color(-34593))
+	var seedColor by mutableStateOf(Color(-8343041))
 	var isDarkMode by mutableStateOf(false)
 	var isExpressive by mutableStateOf(true)
 	var versionsManifest by mutableStateOf<VersionsManifest?>(null)

@@ -105,7 +105,7 @@ fun readData() = Data().apply {
 	}
 	runCatching {
 		settings.getIntOrNull("currentVersion")?.let {
-			currentVersion = currentFolder?.versions?.get(it)
+			currentVersion = currentFolder?.versions?.getOrNull(it)
 		}
 	}.onFailure { e ->
 		println(e)
