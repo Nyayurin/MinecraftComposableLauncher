@@ -280,6 +280,10 @@ private fun initSettingsPage() = SettingsDest {
 					chinese = "深色模式"
 					english = "Dark mode"
 				}
+				expressive {
+					chinese = "Material Expressive 主题"
+					english = "Material Expressive Theme"
+				}
 			}
 
 			SettingsDest.Content.Personalization.Language {

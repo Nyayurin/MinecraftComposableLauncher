@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -50,13 +49,14 @@ fun App(
 			}
 		}
 	}
-	val scrollbarStyle = if (data.isDarkMode ?: isSystemInDarkTheme()) darkScrollbarStyle() else lightScrollbarStyle()
+	val scrollbarStyle = if (data.isDarkMode) darkScrollbarStyle() else lightScrollbarStyle()
 	CompositionLocalProvider(
 		LocalScrollbarStyle provides scrollbarStyle,
 	) {
 		Theme(
 			seedColor = data.seedColor,
-			isDark = data.isDarkMode ?: isSystemInDarkTheme(),
+			isDark = data.isDarkMode,
+			isExpressive = data.isExpressive,
 		) {
 			Surface(
 				color = MaterialTheme.colorScheme.background,

@@ -262,7 +262,7 @@ fun ShadowedFace(subject: String) {
 					.dropShadow(
 						shape = shape,
 						shadow = Shadow(
-							radius = 12.dp,
+							radius = 6.dp,
 						),
 					),
 			)

@@ -6,7 +6,6 @@ import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,15 +20,11 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.Data
 import cn.yurin.mcl.ui.SettingsPage
-import cn.yurin.mcl.ui.localization.*
-import cn.yurin.mcl.ui.localization.destination.SettingsDest
-import cn.yurin.mcl.ui.localization.destination.chineseLang
-import cn.yurin.mcl.ui.localization.destination.darkMode
-import cn.yurin.mcl.ui.localization.destination.englishLang
-import cn.yurin.mcl.ui.localization.destination.language
-import cn.yurin.mcl.ui.localization.destination.launch
-import cn.yurin.mcl.ui.localization.destination.personalization
-import cn.yurin.mcl.ui.localization.destination.theme
+import cn.yurin.mcl.ui.localization.Context
+import cn.yurin.mcl.ui.localization.Language
+import cn.yurin.mcl.ui.localization.dest
+import cn.yurin.mcl.ui.localization.destination.*
+import cn.yurin.mcl.ui.localization.language
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
@@ -142,10 +137,12 @@ private fun Personalization() = dest(SettingsDest.Content.Personalization) {
 			modifier = Modifier.weight(0.5F),
 		) {
 			ColorPicker(
-				onColorChanged = { data.seedColor = it.color },
 				initialColor = data.seedColor,
+				onColorChanged = { data.seedColor = it.color },
+				initialDark = data.isDarkMode,
 				onDarkChanged = { data.isDarkMode = it },
-				initialDark = data.isDarkMode ?: isSystemInDarkTheme(),
+				initialExpressive = data.isExpressive,
+				onExpressiveChanged = { data.isExpressive = it },
 			)
 		}
 		Card(
@@ -217,10 +214,12 @@ private fun Card(
 @Composable
 context(context: Context, _: Data)
 fun ColorPicker(
-	onColorChanged: (ColorEnvelope) -> Unit,
 	initialColor: Color,
-	onDarkChanged: (Boolean) -> Unit,
+	onColorChanged: (ColorEnvelope) -> Unit,
 	initialDark: Boolean,
+	onDarkChanged: (Boolean) -> Unit,
+	initialExpressive: Boolean,
+	onExpressiveChanged: (Boolean) -> Unit,
 ) = dest(SettingsDest.Content.Personalization.ColorPicker) {
 	val controller = rememberColorPickerController()
 	HsvColorPicker(
@@ -250,6 +249,23 @@ fun ColorPicker(
 		Switch(
 			checked = initialDark,
 			onCheckedChange = onDarkChanged,
+		)
+	}
+	Row(
+		verticalAlignment = Alignment.CenterVertically,
+		horizontalArrangement = Arrangement.SpaceBetween,
+		modifier = Modifier.fillMaxWidth()
+	) {
+		AnimatedContent(context.language) {
+			Text(
+				text = expressive.language(it),
+				color = MaterialTheme.colorScheme.onSurface,
+				style = MaterialTheme.typography.bodyLarge,
+			)
+		}
+		Switch(
+			checked = initialExpressive,
+			onCheckedChange = onExpressiveChanged,
 		)
 	}
 }

@@ -32,6 +32,9 @@ val language get() = property("language")
 context(_: DestOrBuilderScope, _: SettingsDest.Content.Personalization.ColorPicker)
 val darkMode get() = property("darkMode")
 
+context(_: DestOrBuilderScope, _: SettingsDest.Content.Personalization.ColorPicker)
+val expressive get() = property("expressive")
+
 context(_: DestOrBuilderScope, _: SettingsDest.Content.Personalization.Language)
 val chineseLang get() = property("chinese")
 

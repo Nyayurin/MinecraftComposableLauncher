@@ -12,13 +12,10 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.Data
 import cn.yurin.mcl.ui.HomePage
-import cn.yurin.mcl.ui.localization.*
-import cn.yurin.mcl.ui.localization.destination.TopbarDest
-import cn.yurin.mcl.ui.localization.destination.accounts
-import cn.yurin.mcl.ui.localization.destination.downloads
-import cn.yurin.mcl.ui.localization.destination.launch
-import cn.yurin.mcl.ui.localization.destination.more
-import cn.yurin.mcl.ui.localization.destination.settings
+import cn.yurin.mcl.ui.localization.Context
+import cn.yurin.mcl.ui.localization.dest
+import cn.yurin.mcl.ui.localization.destination.*
+import cn.yurin.mcl.ui.localization.language
 import cn.yurin.mcl.ui.page.home.*
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.close_24px

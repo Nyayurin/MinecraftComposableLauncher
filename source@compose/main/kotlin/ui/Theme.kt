@@ -1,26 +1,43 @@
 package cn.yurin.mcl.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ScrollbarStyle
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.materialkolor.DynamicMaterialExpressiveTheme
 import com.materialkolor.DynamicMaterialTheme
 import com.materialkolor.dynamiccolor.ColorSpec
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Theme(
 	seedColor: Color,
 	isDark: Boolean,
+	isExpressive: Boolean,
 	content: @Composable () -> Unit,
 ) {
-	DynamicMaterialTheme(
-		seedColor = seedColor,
-		isDark = isDark,
-		specVersion = ColorSpec.SpecVersion.SPEC_2025,
-		animate = true,
-		content = content,
-	)
+	AnimatedContent(isExpressive) {
+		when (it) {
+			true -> DynamicMaterialExpressiveTheme(
+				seedColor = seedColor,
+				isDark = isDark,
+				specVersion = ColorSpec.SpecVersion.SPEC_2025,
+				animate = true,
+				content = content,
+			)
+
+			else -> DynamicMaterialTheme(
+				seedColor = seedColor,
+				isDark = isDark,
+				specVersion = ColorSpec.SpecVersion.SPEC_2025,
+				animate = true,
+				content = content,
+			)
+		}
+	}
 }
 
 fun lightScrollbarStyle() = ScrollbarStyle(

@@ -304,7 +304,7 @@ private fun Card(
 				animateColorAsState(
 					when (data.currentAccount == account) {
 						true -> MaterialTheme.colorScheme.primary
-						else -> MaterialTheme.colorScheme.surfaceContainer
+						else -> MaterialTheme.colorScheme.surfaceContainerHighest
 					}
 				).value
 			)

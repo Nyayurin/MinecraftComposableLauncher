@@ -87,7 +87,7 @@ kotlin {
 			implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha05")
 
 			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
-			implementation("com.materialkolor:material-kolor:4.0.0")
+			implementation("com.materialkolor:material-kolor:5.0.0-alpha01")
 			implementation("com.github.skydoves:colorpicker-compose:1.1.2")
 			implementation("io.ktor:ktor-client-core:3.3.3")
 			implementation("io.ktor:ktor-client-cio:3.3.3")

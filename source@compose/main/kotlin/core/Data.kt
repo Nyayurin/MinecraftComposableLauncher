@@ -28,7 +28,8 @@ import java.io.File
 
 class Data {
 	var seedColor by mutableStateOf(Color(-34593))
-	var isDarkMode by mutableStateOf<Boolean?>(null)
+	var isDarkMode by mutableStateOf(false)
+	var isExpressive by mutableStateOf(true)
 	var versionsManifest by mutableStateOf<VersionsManifest?>(null)
 	var folders by mutableStateOf<List<GameFolder>>(emptyList())
 	var currentFolder by mutableStateOf<GameFolder?>(null)

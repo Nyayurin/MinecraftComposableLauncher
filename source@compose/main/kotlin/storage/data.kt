@@ -19,7 +19,13 @@ fun saveData() {
 		e.printStackTrace()
 	}
 	runCatching {
-		data.isDarkMode?.let { settings.putBoolean("isDarkMode", it) }
+		settings.putBoolean("isDarkMode", data.isDarkMode)
+	}.onFailure { e ->
+		println(e)
+		e.printStackTrace()
+	}
+	runCatching {
+		settings.putBoolean("isExpressive", data.isExpressive)
 	}.onFailure { e ->
 		println(e)
 		e.printStackTrace()
@@ -68,6 +74,14 @@ fun readData() = Data().apply {
 	runCatching {
 		settings.getBooleanOrNull("isDarkMode")?.let {
 			isDarkMode = it
+		}
+	}.onFailure { e ->
+		println(e)
+		e.printStackTrace()
+	}
+	runCatching {
+		settings.getBooleanOrNull("isExpressive")?.let {
+			isExpressive = it
 		}
 	}.onFailure { e ->
 		println(e)
