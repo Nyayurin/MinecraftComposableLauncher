@@ -1,6 +1,5 @@
 package cn.yurin.mcl.ui
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -23,7 +22,7 @@ import cn.yurin.mcl.storage.readData
 import cn.yurin.mcl.storage.saveContext
 import cn.yurin.mcl.storage.saveData
 import cn.yurin.mcl.ui.localization.initContext
-import cn.yurin.mcl.ui.page.Home
+import cn.yurin.mcl.ui.neo.page.Home
 import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -68,37 +67,19 @@ fun App(
 					.clip(SmoothRoundedCornerShape(radius = 24.dp)),
 			) {
 				Box {
-					AnimatedContent(data.usingNeoUI) {
-						when (it) {
-							true -> cn.yurin.mcl.ui.neo.page.Home(
-								windowDraggableArea = windowDraggableArea,
-								exitApplication = {
-									saveContext()
-									saveData()
-									exitApplication()
-								},
-								minimizeWindow = {
-									saveContext()
-									saveData()
-									minimizeWindow()
-								},
-							)
-
-							else -> Home(
-								windowDraggableArea = windowDraggableArea,
-								exitApplication = {
-									saveContext()
-									saveData()
-									exitApplication()
-								},
-								minimizeWindow = {
-									saveContext()
-									saveData()
-									minimizeWindow()
-								},
-							)
-						}
-					}
+					Home(
+						windowDraggableArea = windowDraggableArea,
+						exitApplication = {
+							saveContext()
+							saveData()
+							exitApplication()
+						},
+						minimizeWindow = {
+							saveContext()
+							saveData()
+							minimizeWindow()
+						},
+					)
 					AnimatedVisibility(
 						visible = data.dialogProvider != null,
 						enter = fadeIn(),

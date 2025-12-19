@@ -28,8 +28,7 @@ import java.awt.Frame
 fun main() = application {
 	val state = rememberWindowState(
 		position = WindowPosition.Aligned(Alignment.Center),
-		size = DpSize(1000.dp, 550.dp),
-		//DpSize(700.dp, 400.dp), // neo ui
+		size = DpSize(700.dp, 400.dp),
 	)
 	val scope = rememberCoroutineScope()
 	var windowScale by remember { mutableFloatStateOf(0.75F) }
@@ -75,8 +74,7 @@ fun main() = application {
 				}
 			}
 		}
-		setMinimumSize(800.dp, 400.dp)
-//		setMinimumSize(600.dp, 350.dp) // neo ui
+		setMinimumSize(600.dp, 350.dp)
 		window.disableMaximize()
 		Box(
 			modifier = Modifier
