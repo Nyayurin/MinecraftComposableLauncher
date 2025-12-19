@@ -24,7 +24,7 @@ fun buildGameProcess(
 				}
 			}
 			// Only Apple Can Do
-			if ("osx" in System.getProperty("os.name").lowercase()) {
+			if (PreConfiguration.system == OperationSystem.Macos) {
 				add("-XstartOnFirstThread")
 			}
 			arguments.jvm.forEach(::process)

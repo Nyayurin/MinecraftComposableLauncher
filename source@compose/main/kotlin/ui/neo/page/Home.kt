@@ -83,13 +83,13 @@ private fun TopBar(
 				.fillMaxWidth()
 				.padding(
 					horizontal = 20.dp,
-					vertical = 12.dp,
+					vertical = 6.dp,
 				),
 		) {
 			Text(
 				text = "Minecraft Composable Launcher",
 				color = MaterialTheme.colorScheme.onBackground,
-				style = MaterialTheme.typography.headlineSmall,
+				style = MaterialTheme.typography.titleMedium,
 				modifier = Modifier.align(Alignment.Center),
 			)
 			Row(
@@ -103,6 +103,7 @@ private fun TopBar(
 						painter = painterResource(Res.drawable.minimize),
 						contentDescription = "Minimize",
 						tint = MaterialTheme.colorScheme.onBackground,
+						modifier = Modifier.size(20.dp),
 					)
 				}
 				IconButton(
@@ -112,6 +113,7 @@ private fun TopBar(
 						painter = painterResource(Res.drawable.close),
 						contentDescription = "Close",
 						tint = MaterialTheme.colorScheme.onBackground,
+						modifier = Modifier.size(20.dp),
 					)
 				}
 			}
@@ -156,7 +158,6 @@ private fun SideBarButton(
 ) {
 	Column(
 		horizontalAlignment = Alignment.CenterHorizontally,
-		verticalArrangement = Arrangement.spacedBy(2.dp),
 		modifier = Modifier
 			.width(50.dp)
 			.clip(SmoothRoundedCornerShape(radius = 16.dp))
@@ -180,7 +181,7 @@ private fun SideBarButton(
 					else -> MaterialTheme.colorScheme.onBackground
 				}
 			).value,
-			modifier = Modifier.size(16.dp),
+			modifier = Modifier.size(24.dp),
 		)
 	}
 }

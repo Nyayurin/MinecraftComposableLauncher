@@ -49,7 +49,7 @@ val content: WorkflowBuilder.() -> Unit = {
 	publish(
 		runsOn = RunnerType.UbuntuLatest,
 		system = "linux",
-		arch = "x64",
+		arch = "amd64",
 		publishes = listOf(
 			"uberjar" to "UberJarForCurrentOS" to "jars",
 			"portable" to "AppImage" to "binaries/main-release/app",
@@ -80,28 +80,27 @@ val content: WorkflowBuilder.() -> Unit = {
 }
 
 workflow(
-	name = "Package on Push",
+	name = "Package snapshot",
 	on = listOf(
 		Push(
-			branches = listOf("master"),
-			pathsIgnore = listOf("README.md")
+			pathsIgnore = listOf("README.md"),
 		),
 	),
 	sourceFile = __FILE__,
-	targetFileName = "package_on_push.yml",
+	targetFileName = "package_snapshot.yml",
 	consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
 	block = content,
 )
 
 workflow(
-	name = "Package on Release",
+	name = "Package release",
 	on = listOf(
 		Release(
 			types = listOf("created"),
 		),
 	),
 	sourceFile = __FILE__,
-	targetFileName = "package_on_release.yml",
+	targetFileName = "package_release.yml",
 	consistencyCheckJobConfig = ConsistencyCheckJobConfig.Disabled,
 	block = content,
 )
@@ -136,6 +135,8 @@ fun WorkflowBuilder.publish(runsOn: RunnerType, system: String, arch: String, pu
 				./gradlew :generateExpectResourceCollectorsForCommonMain
 				./gradlew :generateActualResourceCollectorsForComposeJvmMain
 				./gradlew :assembleComposeJvmMainResources
+				sed -i 's/Windows/${system.replaceFirstChar { it.uppercaseChar() }}/g' source@compose/main/kotlin/core/PreConfiguration.kt
+				sed -i 's/Amd64/${arch.replaceFirstChar { it.uppercaseChar() }}/g' source@compose/main/kotlin/core/PreConfiguration.kt
 			""".trimIndent(),
 		)
 		publishes.forEach { publish ->

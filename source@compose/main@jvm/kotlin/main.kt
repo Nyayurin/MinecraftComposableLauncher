@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import cn.yurin.mcl.core.OperationSystem
+import cn.yurin.mcl.core.PreConfiguration
 import cn.yurin.mcl.ui.App
 import com.sun.jna.Pointer
 import com.sun.jna.platform.win32.User32
@@ -74,7 +76,7 @@ fun main() = application {
 				}
 			}
 		}
-		setMinimumSize(600.dp, 350.dp)
+		setMinimumSize(600.dp, 400.dp)
 		window.disableMaximize()
 		Box(
 			modifier = Modifier
@@ -118,7 +120,7 @@ fun FrameWindowScope.setMinimumSize(
 }
 
 fun ComposeWindow.disableMaximize() {
-	if (!System.getProperty("os.name").lowercase().contains("win")) return
+	if (PreConfiguration.system != OperationSystem.Windows) return
 	val hwnd = WinDef.HWND(Pointer.createConstant(windowHandle))
 
 	val style = User32.INSTANCE.GetWindowLong(hwnd, WinUser.GWL_STYLE)

@@ -63,3 +63,14 @@ sealed class Account {
 		override val uuid: String,
 	) : Account()
 }
+
+enum class OperationSystem {
+	Windows,
+	Macos,
+	Linux,
+}
+
+enum class Architecture {
+	Amd64,
+	Aarch64,
+}
