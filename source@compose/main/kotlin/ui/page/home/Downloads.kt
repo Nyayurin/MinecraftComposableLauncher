@@ -5,7 +5,6 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -24,6 +23,7 @@ import cn.yurin.mcl.ui.localization.destination.*
 import cn.yurin.mcl.ui.localization.language
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
+import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.dialogs.compose.rememberDirectoryPickerLauncher
 import io.github.vinceglb.filekit.name
@@ -379,7 +379,7 @@ private fun Card(
 	Column(
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 		modifier = Modifier
-			.clip(RoundedCornerShape(16.dp))
+			.clip(SmoothRoundedCornerShape(radius = 16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainerHighest)
 			.padding(16.dp),
 	) {
@@ -404,7 +404,7 @@ private fun FoldableCard(
 	var fold by remember { mutableStateOf(true) }
 	Column(
 		modifier = Modifier
-			.clip(RoundedCornerShape(16.dp))
+			.clip(SmoothRoundedCornerShape(radius = 16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainerHighest)
 			.padding(16.dp),
 	) {
@@ -485,7 +485,7 @@ private fun VersionItem(
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
-			.clip(RoundedCornerShape(16.dp))
+			.clip(SmoothRoundedCornerShape(radius = 16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainer)
 			.clickable { onClick(version) }
 			.padding(12.dp),

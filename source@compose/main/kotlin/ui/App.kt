@@ -1,5 +1,6 @@
 package cn.yurin.mcl.ui
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -7,7 +8,6 @@ import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
@@ -24,6 +24,7 @@ import cn.yurin.mcl.storage.saveContext
 import cn.yurin.mcl.storage.saveData
 import cn.yurin.mcl.ui.localization.initContext
 import cn.yurin.mcl.ui.page.Home
+import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -64,22 +65,40 @@ fun App(
 					.fillMaxSize()
 					.scale(windowScale)
 					.alpha(windowAlpha)
-					.clip(RoundedCornerShape(8.dp)),
+					.clip(SmoothRoundedCornerShape(radius = 24.dp)),
 			) {
 				Box {
-					Home(
-						windowDraggableArea = windowDraggableArea,
-						exitApplication = {
-							saveContext()
-							saveData()
-							exitApplication()
-						},
-						minimizeWindow = {
-							saveContext()
-							saveData()
-							minimizeWindow()
-						},
-					)
+					AnimatedContent(data.usingNeoUI) {
+						when (it) {
+							true -> cn.yurin.mcl.ui.neo.page.Home(
+								windowDraggableArea = windowDraggableArea,
+								exitApplication = {
+									saveContext()
+									saveData()
+									exitApplication()
+								},
+								minimizeWindow = {
+									saveContext()
+									saveData()
+									minimizeWindow()
+								},
+							)
+
+							else -> Home(
+								windowDraggableArea = windowDraggableArea,
+								exitApplication = {
+									saveContext()
+									saveData()
+									exitApplication()
+								},
+								minimizeWindow = {
+									saveContext()
+									saveData()
+									minimizeWindow()
+								},
+							)
+						}
+					}
 					AnimatedVisibility(
 						visible = data.dialogProvider != null,
 						enter = fadeIn(),
@@ -101,7 +120,7 @@ fun App(
 								),
 						) {
 							Surface(
-								shape = RoundedCornerShape(32.dp),
+								shape = SmoothRoundedCornerShape(radius = 32.dp),
 								color = MaterialTheme.colorScheme.surfaceContainer,
 								modifier = Modifier
 									.wrapContentSize()

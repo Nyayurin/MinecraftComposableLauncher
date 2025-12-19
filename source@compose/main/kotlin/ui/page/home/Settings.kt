@@ -8,7 +8,6 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -29,6 +28,7 @@ import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.ColorEnvelope
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 
 @Composable
 context(_: Context, _: Data)
@@ -143,6 +143,21 @@ private fun Personalization() = dest(SettingsDest.Content.Personalization) {
 				initialExpressive = data.isExpressive,
 				onExpressiveChanged = { data.isExpressive = it },
 			)
+			Row(
+				verticalAlignment = Alignment.CenterVertically,
+				horizontalArrangement = Arrangement.SpaceBetween,
+				modifier = Modifier.fillMaxWidth()
+			) {
+				Text(
+					text = "Neo UI",
+					color = MaterialTheme.colorScheme.onSurface,
+					style = MaterialTheme.typography.bodyLarge,
+				)
+				Switch(
+					checked = data.usingNeoUI,
+					onCheckedChange = { data.usingNeoUI = it },
+				)
+			}
 		}
 		Card(
 			title = {
@@ -193,7 +208,7 @@ private fun Card(
 	Column(
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 		modifier = modifier
-			.clip(RoundedCornerShape(16.dp))
+			.clip(SmoothRoundedCornerShape(radius = 16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainerHighest)
 			.padding(16.dp),
 	) {

@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +22,7 @@ import cn.yurin.mcl.ui.localization.current
 import cn.yurin.mcl.ui.localization.dest
 import cn.yurin.mcl.ui.localization.destination.*
 import cn.yurin.mcl.ui.page.home.launch.ShadowedFace
+import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import java.awt.Desktop
@@ -113,7 +113,7 @@ private fun RowScope.Sidebar() = dest(AccountsDest.SideBar) {
 		)
 		FilledTonalButton(
 			onClick = { data.dialogProvider = onlineDialogProvider },
-			shape = RoundedCornerShape(12.dp),
+			shape = SmoothRoundedCornerShape(radius = 12.dp),
 			colors = ButtonDefaults.filledTonalButtonColors(
 				containerColor = MaterialTheme.colorScheme.primary,
 				contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -127,7 +127,7 @@ private fun RowScope.Sidebar() = dest(AccountsDest.SideBar) {
 		}
 		FilledTonalButton(
 			onClick = { data.dialogProvider = offlineDialogProvider },
-			shape = RoundedCornerShape(12.dp),
+			shape = SmoothRoundedCornerShape(radius = 12.dp),
 			colors = ButtonDefaults.filledTonalButtonColors(
 				containerColor = MaterialTheme.colorScheme.primary,
 				contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -299,7 +299,7 @@ private fun Card(
 		horizontalArrangement = Arrangement.spacedBy(16.dp),
 		modifier = Modifier
 			.fillMaxWidth()
-			.clip(RoundedCornerShape(16.dp))
+			.clip(SmoothRoundedCornerShape(radius = 16.dp))
 			.background(
 				animateColorAsState(
 					when (data.currentAccount == account) {

@@ -3,11 +3,7 @@ package cn.yurin.mcl.ui.page.home.launch
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,6 +30,7 @@ import cn.yurin.mcl.ui.localization.dest
 import cn.yurin.mcl.ui.localization.destination.*
 import com.github.panpf.sketch.PainterState
 import com.github.panpf.sketch.SubcomposeAsyncImage
+import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -126,6 +123,7 @@ fun Home(
 	}
 }
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 context(_: Context, data: Data)
 private fun RowScope.Sidebar(
@@ -174,7 +172,7 @@ private fun RowScope.Sidebar(
 			) {
 				FilledTonalButton(
 					onClick = onLaunchClick,
-					shape = RoundedCornerShape(12.dp),
+					shape = SmoothRoundedCornerShape(radius = 12.dp),
 					colors = ButtonDefaults.filledTonalButtonColors(
 						containerColor = MaterialTheme.colorScheme.primary,
 						contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -202,7 +200,7 @@ private fun RowScope.Sidebar(
 				) {
 					FilledTonalButton(
 						onClick = onVersionSelectClick,
-						shape = RoundedCornerShape(12.dp),
+						shape = SmoothRoundedCornerShape(radius = 12.dp),
 						colors = ButtonDefaults.filledTonalButtonColors(
 							containerColor = MaterialTheme.colorScheme.secondary,
 							contentColor = MaterialTheme.colorScheme.onSecondary,
@@ -217,7 +215,7 @@ private fun RowScope.Sidebar(
 					}
 					FilledTonalButton(
 						onClick = onSettingClick,
-						shape = RoundedCornerShape(12.dp),
+						shape = SmoothRoundedCornerShape(radius = 12.dp),
 						colors = ButtonDefaults.filledTonalButtonColors(
 							containerColor = MaterialTheme.colorScheme.secondary,
 							contentColor = MaterialTheme.colorScheme.onSecondary,

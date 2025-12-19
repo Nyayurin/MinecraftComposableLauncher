@@ -30,9 +30,9 @@ val content: WorkflowBuilder.() -> Unit = {
 		arch = "amd64",
 		publishes = listOf(
 			"uberjar" to "UberJarForCurrentOS" to "jars",
-			"portable" to "AppImage" to "binaries/main/app",
-			"installer-msi" to "Msi" to "binaries/main/msi",
-			"installer-exe" to "Exe" to "binaries/main/exe",
+			"portable" to "AppImage" to "binaries/main-release/app",
+			"installer-msi" to "Msi" to "binaries/main-release/msi",
+			"installer-exe" to "Exe" to "binaries/main-release/exe",
 		),
 	)
 	publish(
@@ -41,9 +41,9 @@ val content: WorkflowBuilder.() -> Unit = {
 		arch = "aarch64",
 		publishes = listOf(
 			"uberjar" to "UberJarForCurrentOS" to "jars",
-			"portable" to "AppImage" to "binaries/main/app",
-			"installer-msi" to "Msi" to "binaries/main/msi",
-			"installer-exe" to "Exe" to "binaries/main/exe",
+			"portable" to "AppImage" to "binaries/main-release/app",
+			"installer-msi" to "Msi" to "binaries/main-release/msi",
+			"installer-exe" to "Exe" to "binaries/main-release/exe",
 		),
 	)
 	publish(
@@ -52,9 +52,9 @@ val content: WorkflowBuilder.() -> Unit = {
 		arch = "x64",
 		publishes = listOf(
 			"uberjar" to "UberJarForCurrentOS" to "jars",
-			"portable" to "AppImage" to "binaries/main/app",
-			"installer-deb" to "Deb" to "binaries/main/deb",
-			"installer-rpm" to "Rpm" to "binaries/main/rpm",
+			"portable" to "AppImage" to "binaries/main-release/app",
+			"installer-deb" to "Deb" to "binaries/main-release/deb",
+			"installer-rpm" to "Rpm" to "binaries/main-release/rpm",
 		),
 	)
 	publish(
@@ -63,9 +63,9 @@ val content: WorkflowBuilder.() -> Unit = {
 		arch = "aarch64",
 		publishes = listOf(
 			"uberjar" to "UberJarForCurrentOS" to "jars",
-			"portable" to "AppImage" to "binaries/main/app",
-			"installer-deb" to "Deb" to "binaries/main/deb",
-			"installer-rpm" to "Rpm" to "binaries/main/rpm",
+			"portable" to "AppImage" to "binaries/main-release/app",
+			"installer-deb" to "Deb" to "binaries/main-release/deb",
+			"installer-rpm" to "Rpm" to "binaries/main-release/rpm",
 		),
 	)
 	publish(
@@ -74,7 +74,7 @@ val content: WorkflowBuilder.() -> Unit = {
 		arch = "aarch64",
 		publishes = listOf(
 			"uberjar" to "UberJarForCurrentOS" to "jars",
-			"installer-dmg" to "Dmg" to "binaries/main/dmg",
+			"installer-dmg" to "Dmg" to "binaries/main-release/dmg",
 		),
 	)
 }

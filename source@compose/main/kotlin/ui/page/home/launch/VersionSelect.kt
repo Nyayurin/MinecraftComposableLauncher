@@ -6,7 +6,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,8 +14,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import cn.yurin.mcl.core.*
-import cn.yurin.mcl.ui.localization.*
+import cn.yurin.mcl.core.Data
+import cn.yurin.mcl.core.GameFolder
+import cn.yurin.mcl.core.Version
+import cn.yurin.mcl.ui.localization.Context
+import cn.yurin.mcl.ui.localization.current
+import cn.yurin.mcl.ui.localization.dest
 import cn.yurin.mcl.ui.localization.destination.LaunchDest
 import cn.yurin.mcl.ui.localization.destination.importFolder
 import cn.yurin.mcl.ui.localization.destination.info
@@ -24,6 +27,7 @@ import cn.yurin.mcl.ui.localization.destination.regularVersion
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_back_24px
 import cn.yurin.minecraftcomposablelauncher.generated.resources.arrow_drop_up_24px
+import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import io.github.vinceglb.filekit.absolutePath
 import io.github.vinceglb.filekit.dialogs.compose.rememberDirectoryPickerLauncher
 import io.github.vinceglb.filekit.name
@@ -132,7 +136,7 @@ private fun RowScope.Sidebar(
 			onClick = {
 				launcher.launch()
 			},
-			shape = RoundedCornerShape(12.dp),
+			shape = SmoothRoundedCornerShape(radius = 12.dp),
 			colors = ButtonDefaults.filledTonalButtonColors(
 				containerColor = MaterialTheme.colorScheme.primary,
 				contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -262,7 +266,7 @@ private fun Card(
 	Column(
 		verticalArrangement = Arrangement.spacedBy(16.dp),
 		modifier = modifier
-			.clip(RoundedCornerShape(16.dp))
+			.clip(SmoothRoundedCornerShape(radius = 16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainerHighest)
 			.padding(16.dp),
 	) {
@@ -289,7 +293,7 @@ private fun FoldableCard(
 	var fold by remember { mutableStateOf(defaultFold) }
 	Column(
 		modifier = modifier
-			.clip(RoundedCornerShape(16.dp))
+			.clip(SmoothRoundedCornerShape(radius = 16.dp))
 			.background(MaterialTheme.colorScheme.surfaceContainerHighest)
 			.padding(16.dp),
 	) {
@@ -343,7 +347,7 @@ private fun VersionItem(
 	Column(
 		modifier = Modifier
 			.fillMaxWidth()
-			.clip(RoundedCornerShape(16.dp))
+			.clip(SmoothRoundedCornerShape(radius = 16.dp))
 			.background(color)
 			.clickable(onClick = onClick)
 			.padding(12.dp),

@@ -45,7 +45,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-windows-portable-amd64'
-        path: 'build/compose/binaries/main/app/*'
+        path: 'build/compose/binaries/main-release/app/*'
     - id: 'step-8'
       name: 'package windows-installer-msi-amd64'
       run: './gradlew :packageReleaseMsi'
@@ -53,7 +53,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-windows-installer-msi-amd64'
-        path: 'build/compose/binaries/main/msi/*'
+        path: 'build/compose/binaries/main-release/msi/*'
     - id: 'step-10'
       name: 'package windows-installer-exe-amd64'
       run: './gradlew :packageReleaseExe'
@@ -61,7 +61,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-windows-installer-exe-amd64'
-        path: 'build/compose/binaries/main/exe/*'
+        path: 'build/compose/binaries/main-release/exe/*'
   package-windows-aarch64:
     runs-on: 'windows-11-arm'
     permissions:
@@ -99,7 +99,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-windows-portable-aarch64'
-        path: 'build/compose/binaries/main/app/*'
+        path: 'build/compose/binaries/main-release/app/*'
     - id: 'step-8'
       name: 'package windows-installer-msi-aarch64'
       run: './gradlew :packageReleaseMsi'
@@ -107,7 +107,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-windows-installer-msi-aarch64'
-        path: 'build/compose/binaries/main/msi/*'
+        path: 'build/compose/binaries/main-release/msi/*'
     - id: 'step-10'
       name: 'package windows-installer-exe-aarch64'
       run: './gradlew :packageReleaseExe'
@@ -115,7 +115,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-windows-installer-exe-aarch64'
-        path: 'build/compose/binaries/main/exe/*'
+        path: 'build/compose/binaries/main-release/exe/*'
   package-linux-x64:
     runs-on: 'ubuntu-latest'
     permissions:
@@ -153,7 +153,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-linux-portable-x64'
-        path: 'build/compose/binaries/main/app/*'
+        path: 'build/compose/binaries/main-release/app/*'
     - id: 'step-8'
       name: 'package linux-installer-deb-x64'
       run: './gradlew :packageReleaseDeb'
@@ -161,7 +161,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-linux-installer-deb-x64'
-        path: 'build/compose/binaries/main/deb/*'
+        path: 'build/compose/binaries/main-release/deb/*'
     - id: 'step-10'
       name: 'package linux-installer-rpm-x64'
       run: './gradlew :packageReleaseRpm'
@@ -169,7 +169,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-linux-installer-rpm-x64'
-        path: 'build/compose/binaries/main/rpm/*'
+        path: 'build/compose/binaries/main-release/rpm/*'
   package-linux-aarch64:
     runs-on: 'ubuntu-22.04-arm'
     permissions:
@@ -207,7 +207,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-linux-portable-aarch64'
-        path: 'build/compose/binaries/main/app/*'
+        path: 'build/compose/binaries/main-release/app/*'
     - id: 'step-8'
       name: 'package linux-installer-deb-aarch64'
       run: './gradlew :packageReleaseDeb'
@@ -215,7 +215,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-linux-installer-deb-aarch64'
-        path: 'build/compose/binaries/main/deb/*'
+        path: 'build/compose/binaries/main-release/deb/*'
     - id: 'step-10'
       name: 'package linux-installer-rpm-aarch64'
       run: './gradlew :packageReleaseRpm'
@@ -223,7 +223,7 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-linux-installer-rpm-aarch64'
-        path: 'build/compose/binaries/main/rpm/*'
+        path: 'build/compose/binaries/main-release/rpm/*'
   package-macos-aarch64:
     runs-on: 'macos-latest'
     permissions:
@@ -261,4 +261,4 @@ jobs:
       uses: 'actions/upload-artifact@v4'
       with:
         name: 'MCL-macos-installer-dmg-aarch64'
-        path: 'build/compose/binaries/main/dmg/*'
+        path: 'build/compose/binaries/main-release/dmg/*'

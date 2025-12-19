@@ -99,6 +99,7 @@ kotlin {
 			implementation("com.russhwolf:multiplatform-settings:1.3.0")
 			implementation("io.github.panpf.sketch4:sketch-compose:4.3.1")
 			implementation("io.github.panpf.sketch4:sketch-http-ktor3:4.3.1")
+			implementation("io.github.iamcalledrob:smooth-rounded-corner-shape:1.0.4")
 		}
 
 		composeJvmMain.dependencies {

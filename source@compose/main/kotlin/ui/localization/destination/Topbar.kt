@@ -4,7 +4,6 @@ import cn.yurin.mcl.ui.localization.DestOrBuilderScope
 import cn.yurin.mcl.ui.localization.Destination
 import cn.yurin.mcl.ui.localization.property
 
-
 object TopbarDest : Destination.Sign
 
 context(_: DestOrBuilderScope, _: TopbarDest)
