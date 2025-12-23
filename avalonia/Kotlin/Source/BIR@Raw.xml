@@ -1,65 +1,154 @@
 <Root>
-    <File name="main.kt">
+    <File name="MALComponent.kt">
         <CodeNode.MultiLine>
             <PlainNode.SingleLine>
-                <PlainNode.Plain>namespace cn.yurin.minecraft_composable_launcher</PlainNode.Plain>
+                <PlainNode.Plain>namespace yurin.mal</PlainNode.Plain>
             </PlainNode.SingleLine>
             <PaddingNode.Block>
                 <CodeNode.MultiLine>
-                    <PlainNode.SingleLine>
-                        <PlainNode.Plain>[global::kotlin.clr.KotlinFileClass]</PlainNode.Plain>
-                    </PlainNode.SingleLine>
                     <CodeNode.SingleLine>
                         <PlainNode.Plain>public </PlainNode.Plain>
-                        <PlainNode.Plain>static </PlainNode.Plain>
+                        <PlainNode.Plain>sealed </PlainNode.Plain>
                         <PlainNode.Plain>class </PlainNode.Plain>
-                        <PlainNode.Plain>MainKt</PlainNode.Plain>
+                        <PlainNode.Plain>MALComponent</PlainNode.Plain>
+                        <PlainNode.Plain> : </PlainNode.Plain>
+                        <PlainNode.Plain>global::Avalonia.Markup.Declarative.ComponentBase</PlainNode.Plain>
                     </CodeNode.SingleLine>
                     <PaddingNode.Block>
                         <CodeNode.MultiLine>
                             <CodeNode.SingleLine>
                                 <PlainNode.Plain>public </PlainNode.Plain>
-                                <PlainNode.Plain>static </PlainNode.Plain>
-                                <PlainNode.Plain>void </PlainNode.Plain>
-                                <PlainNode.Plain>main(</PlainNode.Plain>
+                                <PlainNode.Plain>MALComponent(</PlainNode.Plain>
+                                <PlainNode.Plain></PlainNode.Plain>
+                                <PlainNode.Plain>)</PlainNode.Plain>
+                                <PlainNode.Plain> : </PlainNode.Plain>
+                                <CodeNode.SingleLineList>
+                                    <PlainNode.Plain>base(</PlainNode.Plain>
+                                    <PlainNode.Plain>)</PlainNode.Plain>
+                                </CodeNode.SingleLineList>
+                            </CodeNode.SingleLine>
+                            <PaddingNode.Block>
+
+                            </PaddingNode.Block>
+                        </CodeNode.MultiLine>
+                        <CodeNode.None />
+                        <CodeNode.MultiLine>
+                            <CodeNode.SingleLine>
+                                <PlainNode.Plain>[global::kotlin.clr.KotlinNotNull]</PlainNode.Plain>
+                            </CodeNode.SingleLine>
+                            <CodeNode.SingleLine>
+                                <PlainNode.Plain>protected </PlainNode.Plain>
+                                <PlainNode.Plain>override </PlainNode.Plain>
+                                <PlainNode.Plain>global::Material.Styles.Controls.Card </PlainNode.Plain>
+                                <PlainNode.Plain>Build(</PlainNode.Plain>
                                 <PlainNode.Plain></PlainNode.Plain>
                                 <PlainNode.Plain>)</PlainNode.Plain>
                             </CodeNode.SingleLine>
                             <PaddingNode.Block>
                                 <CodeNode.SingleLine>
                                     <CodeNode.SingleLineList>
-                                        <PlainNode.Plain>global::kotlin.io.ConsoleKt</PlainNode.Plain>
-                                        <PlainNode.Plain>.</PlainNode.Plain>
-                                        <PlainNode.Plain>println</PlainNode.Plain>
-                                        <PlainNode.Plain>(</PlainNode.Plain>
-                                        <PlainNode.Plain>"Hello World!"</PlainNode.Plain>
-                                        <PlainNode.Plain>)</PlainNode.Plain>
+                                        <PlainNode.Plain>return</PlainNode.Plain>
+                                        <PlainNode.Plain> </PlainNode.Plain>
+                                        <CodeNode.SingleLineList>
+                                            <PlainNode.Plain>new </PlainNode.Plain>
+                                            <PlainNode.Plain>global::Material.Styles.Controls.Card</PlainNode.Plain>
+                                            <PlainNode.Plain>(</PlainNode.Plain>
+                                            <PlainNode.Plain>)</PlainNode.Plain>
+                                        </CodeNode.SingleLineList>
                                     </CodeNode.SingleLineList>
                                     <PlainNode.Plain>;</PlainNode.Plain>
                                 </CodeNode.SingleLine>
                             </PaddingNode.Block>
                         </CodeNode.MultiLine>
-                        <CodeNode.None />
+                    </PaddingNode.Block>
+                </CodeNode.MultiLine>
+            </PaddingNode.Block>
+        </CodeNode.MultiLine>
+    </File>
+    <File name="MainWindow.kt">
+        <CodeNode.MultiLine>
+            <PlainNode.SingleLine>
+                <PlainNode.Plain>namespace yurin.mal</PlainNode.Plain>
+            </PlainNode.SingleLine>
+            <PaddingNode.Block>
+                <CodeNode.MultiLine>
+                    <CodeNode.SingleLine>
+                        <PlainNode.Plain>public </PlainNode.Plain>
+                        <PlainNode.Plain>sealed </PlainNode.Plain>
+                        <PlainNode.Plain>class </PlainNode.Plain>
+                        <PlainNode.Plain>MainWindow</PlainNode.Plain>
+                        <PlainNode.Plain> : </PlainNode.Plain>
+                        <PlainNode.Plain>global::Avalonia.Controls.Window</PlainNode.Plain>
+                    </CodeNode.SingleLine>
+                    <PaddingNode.Block>
                         <CodeNode.MultiLine>
                             <CodeNode.SingleLine>
                                 <PlainNode.Plain>public </PlainNode.Plain>
-                                <PlainNode.Plain>static </PlainNode.Plain>
-                                <PlainNode.Plain>void </PlainNode.Plain>
-                                <PlainNode.Plain>Main(</PlainNode.Plain>
-                                <PlainNode.Plain>[global::kotlin.clr.KotlinNotNull] string[] args</PlainNode.Plain>
+                                <PlainNode.Plain>MainWindow(</PlainNode.Plain>
+                                <PlainNode.Plain></PlainNode.Plain>
                                 <PlainNode.Plain>)</PlainNode.Plain>
+                                <PlainNode.Plain> : </PlainNode.Plain>
+                                <CodeNode.SingleLineList>
+                                    <PlainNode.Plain>base(</PlainNode.Plain>
+                                    <PlainNode.Plain>)</PlainNode.Plain>
+                                </CodeNode.SingleLineList>
                             </CodeNode.SingleLine>
                             <PaddingNode.Block>
-                                <CodeNode.SingleLine>
-                                    <CodeNode.SingleLineList>
-                                        <PlainNode.Plain>global::cn.yurin.minecraft_composable_launcher.MainKt</PlainNode.Plain>
-                                        <PlainNode.Plain>.</PlainNode.Plain>
-                                        <PlainNode.Plain>main</PlainNode.Plain>
-                                        <PlainNode.Plain>(</PlainNode.Plain>
-                                        <PlainNode.Plain>)</PlainNode.Plain>
-                                    </CodeNode.SingleLineList>
-                                    <PlainNode.Plain>;</PlainNode.Plain>
-                                </CodeNode.SingleLine>
+                                <PaddingNode.Block>
+                                    <CodeNode.SingleLine>
+                                        <CodeNode.SingleLineList>
+                                            <PlainNode.Plain>(</PlainNode.Plain>
+                                            <PlainNode.Plain>this</PlainNode.Plain>
+                                            <PlainNode.Plain>)</PlainNode.Plain>
+                                            <PlainNode.Plain>.</PlainNode.Plain>
+                                            <PlainNode.Plain>Width</PlainNode.Plain>
+                                            <PlainNode.Plain> = </PlainNode.Plain>
+                                            <PlainNode.Plain>1000</PlainNode.Plain>
+                                        </CodeNode.SingleLineList>
+                                        <PlainNode.Plain>;</PlainNode.Plain>
+                                    </CodeNode.SingleLine>
+                                    <CodeNode.SingleLine>
+                                        <CodeNode.SingleLineList>
+                                            <PlainNode.Plain>(</PlainNode.Plain>
+                                            <PlainNode.Plain>this</PlainNode.Plain>
+                                            <PlainNode.Plain>)</PlainNode.Plain>
+                                            <PlainNode.Plain>.</PlainNode.Plain>
+                                            <PlainNode.Plain>Height</PlainNode.Plain>
+                                            <PlainNode.Plain> = </PlainNode.Plain>
+                                            <PlainNode.Plain>600</PlainNode.Plain>
+                                        </CodeNode.SingleLineList>
+                                        <PlainNode.Plain>;</PlainNode.Plain>
+                                    </CodeNode.SingleLine>
+                                    <CodeNode.SingleLine>
+                                        <CodeNode.SingleLineList>
+                                            <PlainNode.Plain>(</PlainNode.Plain>
+                                            <PlainNode.Plain>this</PlainNode.Plain>
+                                            <PlainNode.Plain>)</PlainNode.Plain>
+                                            <PlainNode.Plain>.</PlainNode.Plain>
+                                            <PlainNode.Plain>Title</PlainNode.Plain>
+                                            <PlainNode.Plain> = </PlainNode.Plain>
+                                            <PlainNode.Plain>"Minecraft Avalonia Launcher"</PlainNode.Plain>
+                                        </CodeNode.SingleLineList>
+                                        <PlainNode.Plain>;</PlainNode.Plain>
+                                    </CodeNode.SingleLine>
+                                    <CodeNode.SingleLine>
+                                        <CodeNode.SingleLineList>
+                                            <PlainNode.Plain>(</PlainNode.Plain>
+                                            <PlainNode.Plain>this</PlainNode.Plain>
+                                            <PlainNode.Plain>)</PlainNode.Plain>
+                                            <PlainNode.Plain>.</PlainNode.Plain>
+                                            <PlainNode.Plain>Content</PlainNode.Plain>
+                                            <PlainNode.Plain> = </PlainNode.Plain>
+                                            <CodeNode.SingleLineList>
+                                                <PlainNode.Plain>new </PlainNode.Plain>
+                                                <PlainNode.Plain>global::yurin.mal.MALComponent</PlainNode.Plain>
+                                                <PlainNode.Plain>(</PlainNode.Plain>
+                                                <PlainNode.Plain>)</PlainNode.Plain>
+                                            </CodeNode.SingleLineList>
+                                        </CodeNode.SingleLineList>
+                                        <PlainNode.Plain>;</PlainNode.Plain>
+                                    </CodeNode.SingleLine>
+                                </PaddingNode.Block>
                             </PaddingNode.Block>
                         </CodeNode.MultiLine>
                     </PaddingNode.Block>

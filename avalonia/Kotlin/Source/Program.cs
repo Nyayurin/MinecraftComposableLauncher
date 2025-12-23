@@ -2,10 +2,10 @@
 using Avalonia.Markup.Declarative;
 using ReactiveUI.Avalonia;
 
-namespace Yurin.MCL;
+namespace Yurin.MAL;
 
 class Program {
-	// [STAThread]
+	[STAThread]
 	public static void Main(string[] args) =>
 		buildAvaloniaApp()
 			.StartWithClassicDesktopLifetime(args);

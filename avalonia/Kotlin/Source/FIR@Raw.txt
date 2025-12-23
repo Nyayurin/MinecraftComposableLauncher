@@ -1,16 +1,24 @@
-FILE: App.kt
-    public final? class App : Application {
-        public? constructor(): R|cn/yurin/minecraft_avalonia_launcher/App| {
-            super<Application>()
+FILE: MALComponent.kt
+    public final? class MALComponent : ComponentBase {
+        public? constructor(): R|yurin/mal/MALComponent| {
+            super<ComponentBase>()
+        }
+
+        protected open? override fun Build(): <implicit> {
+            ^Build Card#()
         }
 
     }
 
-FILE: Program.kt
-    public? final? fun main(args: Array): <implicit> {
-        ^main buildAvaloniaApp#()
-    }
-    private final? fun buildAvaloniaApp(): <implicit> {
-        ^buildAvaloniaApp AppBuilder#.Configure#<App>()
+FILE: MainWindow.kt
+    public final? class MainWindow : Window {
+        public? constructor(): R|yurin/mal/MainWindow| {
+            super<<implicit>>()
+            Width# = IntegerLiteral(1000)
+            Height# = IntegerLiteral(600)
+            Title# = String(Minecraft Avalonia Launcher)
+            Content# = MALComponent#()
+        }
+
     }
 

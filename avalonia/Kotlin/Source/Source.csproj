@@ -6,7 +6,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UseAvalonia>true</UseAvalonia>
-		<RootNamespace>Kotlin</RootNamespace>
+		<RootNamespace>Yurin.MAL</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

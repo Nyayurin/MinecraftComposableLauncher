@@ -1,6 +1,5 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Media;
-using Avalonia.Platform;
 
 namespace Yurin.MCL;
 

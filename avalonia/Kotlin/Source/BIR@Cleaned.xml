@@ -1,37 +1,72 @@
 <Root>
-    <File name="main.kt">
+    <File name="MALComponent.kt">
         <CodeNode.MultiLine>
             <PlainNode.SingleLine>
-                <PlainNode.Plain>namespace cn.yurin.minecraft_composable_launcher</PlainNode.Plain>
+                <PlainNode.Plain>namespace yurin.mal</PlainNode.Plain>
             </PlainNode.SingleLine>
             <PaddingNode.Block>
                 <CodeNode.MultiLine>
-                    <PlainNode.SingleLine>
-                        <PlainNode.Plain>[global::kotlin.clr.KotlinFileClass]</PlainNode.Plain>
-                    </PlainNode.SingleLine>
                     <CodeNode.SingleLine>
-                        <PlainNode.Plain>public static class MainKt</PlainNode.Plain>
+                        <PlainNode.Plain>public sealed class MALComponent : global::Avalonia.Markup.Declarative.ComponentBase</PlainNode.Plain>
                     </CodeNode.SingleLine>
                     <PaddingNode.Block>
                         <CodeNode.MultiLine>
                             <CodeNode.SingleLine>
-                                <PlainNode.Plain>public static void main()</PlainNode.Plain>
+                                <PlainNode.Plain>public MALComponent() : base()</PlainNode.Plain>
                             </CodeNode.SingleLine>
                             <PaddingNode.Block>
-                                <CodeNode.SingleLine>
-                                    <PlainNode.Plain>global::kotlin.io.ConsoleKt.println("Hello World!");</PlainNode.Plain>
-                                </CodeNode.SingleLine>
+
                             </PaddingNode.Block>
                         </CodeNode.MultiLine>
                         <CodeNode.None />
                         <CodeNode.MultiLine>
                             <CodeNode.SingleLine>
-                                <PlainNode.Plain>public static void Main([global::kotlin.clr.KotlinNotNull] string[] args)</PlainNode.Plain>
+                                <PlainNode.Plain>[global::kotlin.clr.KotlinNotNull]</PlainNode.Plain>
+                            </CodeNode.SingleLine>
+                            <CodeNode.SingleLine>
+                                <PlainNode.Plain>protected override global::Material.Styles.Controls.Card Build()</PlainNode.Plain>
                             </CodeNode.SingleLine>
                             <PaddingNode.Block>
                                 <CodeNode.SingleLine>
-                                    <PlainNode.Plain>global::cn.yurin.minecraft_composable_launcher.MainKt.main();</PlainNode.Plain>
+                                    <PlainNode.Plain>return new global::Material.Styles.Controls.Card();</PlainNode.Plain>
                                 </CodeNode.SingleLine>
+                            </PaddingNode.Block>
+                        </CodeNode.MultiLine>
+                    </PaddingNode.Block>
+                </CodeNode.MultiLine>
+            </PaddingNode.Block>
+        </CodeNode.MultiLine>
+    </File>
+    <File name="MainWindow.kt">
+        <CodeNode.MultiLine>
+            <PlainNode.SingleLine>
+                <PlainNode.Plain>namespace yurin.mal</PlainNode.Plain>
+            </PlainNode.SingleLine>
+            <PaddingNode.Block>
+                <CodeNode.MultiLine>
+                    <CodeNode.SingleLine>
+                        <PlainNode.Plain>public sealed class MainWindow : global::Avalonia.Controls.Window</PlainNode.Plain>
+                    </CodeNode.SingleLine>
+                    <PaddingNode.Block>
+                        <CodeNode.MultiLine>
+                            <CodeNode.SingleLine>
+                                <PlainNode.Plain>public MainWindow() : base()</PlainNode.Plain>
+                            </CodeNode.SingleLine>
+                            <PaddingNode.Block>
+                                <PaddingNode.Block>
+                                    <CodeNode.SingleLine>
+                                        <PlainNode.Plain>(this).Width = 1000;</PlainNode.Plain>
+                                    </CodeNode.SingleLine>
+                                    <CodeNode.SingleLine>
+                                        <PlainNode.Plain>(this).Height = 600;</PlainNode.Plain>
+                                    </CodeNode.SingleLine>
+                                    <CodeNode.SingleLine>
+                                        <PlainNode.Plain>(this).Title = "Minecraft Avalonia Launcher";</PlainNode.Plain>
+                                    </CodeNode.SingleLine>
+                                    <CodeNode.SingleLine>
+                                        <PlainNode.Plain>(this).Content = new global::yurin.mal.MALComponent();</PlainNode.Plain>
+                                    </CodeNode.SingleLine>
+                                </PaddingNode.Block>
                             </PaddingNode.Block>
                         </CodeNode.MultiLine>
                     </PaddingNode.Block>
