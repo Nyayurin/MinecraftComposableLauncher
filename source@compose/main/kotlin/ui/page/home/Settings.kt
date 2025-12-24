@@ -143,21 +143,6 @@ private fun Personalization() = dest(SettingsDest.Content.Personalization) {
 				initialExpressive = data.isExpressive,
 				onExpressiveChanged = { data.isExpressive = it },
 			)
-			Row(
-				verticalAlignment = Alignment.CenterVertically,
-				horizontalArrangement = Arrangement.SpaceBetween,
-				modifier = Modifier.fillMaxWidth()
-			) {
-				Text(
-					text = "Neo UI",
-					color = MaterialTheme.colorScheme.onSurface,
-					style = MaterialTheme.typography.bodyLarge,
-				)
-				Switch(
-					checked = data.usingNeoUI,
-					onCheckedChange = { data.usingNeoUI = it },
-				)
-			}
 		}
 		Card(
 			title = {

@@ -5,14 +5,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -86,6 +85,31 @@ private fun TopBar(
 					vertical = 6.dp,
 				),
 		) {
+			Row(
+				horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
+				modifier = Modifier.align(Alignment.CenterStart),
+			) {
+				Surface(
+					color = Color(0xFFF25056),
+					modifier = Modifier
+						.size(20.dp)
+						.clip(CircleShape)
+						.clickable(onClick = exitApplication),
+				) {}
+				Surface(
+					color = Color(0xFFFAC536),
+					modifier = Modifier
+						.size(20.dp)
+						.clip(CircleShape)
+						.clickable(onClick = minimizeWindow),
+				) {}
+				Surface(
+					color = Color(0xFFD9D9DA),
+					modifier = Modifier
+						.size(20.dp)
+						.clip(CircleShape),
+				) {}
+			}
 			Text(
 				text = "Minecraft Composable Launcher",
 				color = MaterialTheme.colorScheme.onBackground,

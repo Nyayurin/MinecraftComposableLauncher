@@ -38,7 +38,6 @@ class Data {
 	var currentAccount: Account? by mutableStateOf(null)
 
 	var dialogProvider by mutableStateOf<(@Composable () -> AlertDialog)?>(null)
-	var usingNeoUI by mutableStateOf(false)
 
 	val json = Json {
 		ignoreUnknownKeys = true
