@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalScrollbarStyle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.core.Data
 import cn.yurin.mcl.core.refreshVersionsManifest
@@ -27,10 +29,14 @@ import cn.yurin.mcl.storage.saveContext
 import cn.yurin.mcl.storage.saveData
 import cn.yurin.mcl.ui.localization.initContext
 import cn.yurin.mcl.ui.neo.page.Home
+import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
+import cn.yurin.minecraftcomposablelauncher.generated.resources.background
+import dev.chrisbanes.haze.hazeSource
 import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import kotlin.uuid.ExperimentalUuidApi
 
 @OptIn(ExperimentalUuidApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
@@ -54,6 +60,7 @@ fun App(
 		}
 	}
 	val scrollbarStyle = if (data.isDarkMode) darkScrollbarStyle() else lightScrollbarStyle()
+	data.windowSize = calculateWindowSizeClass()
 	CompositionLocalProvider(
 		LocalScrollbarStyle provides scrollbarStyle,
 	) {
@@ -62,9 +69,7 @@ fun App(
 			isDark = data.isDarkMode,
 			isExpressive = data.isExpressive,
 		) {
-			data.windowSize = calculateWindowSizeClass()
-			Surface(
-				color = MaterialTheme.colorScheme.background,
+			Box(
 				modifier = Modifier
 					.fillMaxSize()
 					.scale(windowScale)
@@ -73,13 +78,24 @@ fun App(
 						SmoothRoundedCornerShape(
 							radius = animateDpAsState(
 								when (data.windowSize.widthSizeClass) {
-									WindowWidthSizeClass.Expanded -> 24.dp
-									else -> 12.dp
+									WindowWidthSizeClass.Compact -> 12.dp
+									WindowWidthSizeClass.Medium -> 16.dp
+									else -> 24.dp
 								}
 							).value
 						)
-					),
+					)
 			) {
+				Box(
+					modifier = Modifier.hazeSource(data.hazeState),
+				) {
+					Image(
+						painter = painterResource(Res.drawable.background),
+						contentDescription = null,
+						contentScale = ContentScale.Crop,
+						modifier = Modifier.fillMaxSize(),
+					)
+				}
 				Box {
 					Home(
 						windowDraggableArea = windowDraggableArea,

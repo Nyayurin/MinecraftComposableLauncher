@@ -21,12 +21,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.*
 import cn.yurin.mcl.core.Data
+import cn.yurin.mcl.core.OperationSystem
+import cn.yurin.mcl.core.PreConfiguration
 import cn.yurin.mcl.ui.HomePage
 import cn.yurin.mcl.ui.localization.Context
 import cn.yurin.mcl.ui.localization.dest
-import cn.yurin.mcl.ui.localization.destination.TopbarDest
-import cn.yurin.mcl.ui.page.home.*
+import cn.yurin.mcl.ui.localization.destination.NavigationBar
+import cn.yurin.mcl.ui.neo.page.home.Launch
+import cn.yurin.mcl.ui.page.home.Accounts
+import cn.yurin.mcl.ui.page.home.Downloads
+import cn.yurin.mcl.ui.page.home.More
+import cn.yurin.mcl.ui.page.home.Settings
 import cn.yurin.minecraftcomposablelauncher.generated.resources.*
+import dev.chrisbanes.haze.hazeEffect
 import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import org.jetbrains.compose.resources.painterResource
 
@@ -51,22 +58,29 @@ fun Home(
 						targetState = currentPage,
 						transitionSpec = {
 							slideIn(tween()) {
-								IntOffset(0, (targetState.position compareTo initialState.position) * it.width)
+								IntOffset((targetState.position compareTo initialState.position) * it.width, 0)
 							} togetherWith slideOut(tween()) {
-								IntOffset(0, (initialState.position compareTo targetState.position) * it.width)
+								IntOffset((initialState.position compareTo targetState.position) * it.width, 0)
 							}
 						},
-						modifier = Modifier.weight(1F),
+						modifier = Modifier
+							.weight(1F)
+							.padding(
+								horizontal = 16.dp,
+								vertical = 8.dp,
+							),
 					) {
 						when (it) {
 							HomePage.Launch -> Launch(
-								onChangeToAccountPage = { currentPage = HomePage.Accounts },
+								onChangeToGamesPage = { currentPage = HomePage.Games },
+								onChangeToAccountsPage = { currentPage = HomePage.Accounts },
 							)
 
+							HomePage.Games -> {}
 							HomePage.Accounts -> Accounts()
 							HomePage.Downloads -> Downloads()
 							HomePage.Settings -> Settings()
-							HomePage.More -> More()
+							HomePage.Others -> More()
 						}
 					}
 					NavigationBar(
@@ -76,6 +90,7 @@ fun Home(
 
 				else -> Row {
 					SideBar(
+						windowDraggableArea = windowDraggableArea,
 						currentPage = currentPage,
 						onPageChanges = { currentPage = it },
 					)
@@ -83,21 +98,30 @@ fun Home(
 						targetState = currentPage,
 						transitionSpec = {
 							slideIn(tween()) {
-								IntOffset(0, (targetState.position compareTo initialState.position) * it.width)
+								IntOffset(0, (targetState.position compareTo initialState.position) * it.height)
 							} togetherWith slideOut(tween()) {
-								IntOffset(0, (initialState.position compareTo targetState.position) * it.width)
+								IntOffset(0, (initialState.position compareTo targetState.position) * it.height)
 							}
 						},
+						modifier = Modifier
+							.padding(
+								start = 0.dp,
+								top = 16.dp,
+								end = 32.dp,
+								bottom = 32.dp,
+							),
 					) {
 						when (it) {
 							HomePage.Launch -> Launch(
-								onChangeToAccountPage = { currentPage = HomePage.Accounts },
+								onChangeToGamesPage = { currentPage = HomePage.Games },
+								onChangeToAccountsPage = { currentPage = HomePage.Accounts },
 							)
 
+							HomePage.Games -> {}
 							HomePage.Accounts -> Accounts()
 							HomePage.Downloads -> Downloads()
 							HomePage.Settings -> Settings()
-							HomePage.More -> More()
+							HomePage.Others -> More()
 						}
 					}
 				}
@@ -112,54 +136,58 @@ private fun TopBar(
 	windowDraggableArea: @Composable (@Composable () -> Unit) -> Unit,
 	exitApplication: () -> Unit,
 	minimizeWindow: () -> Unit,
-) = dest(TopbarDest) {
+) = dest(NavigationBar) {
 	windowDraggableArea {
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()
+				.hazeEffect(data.hazeState, data.hazeStyle)
 				.padding(
 					animateDpAsState(
 						when (data.windowSize.widthSizeClass) {
-							WindowWidthSizeClass.Expanded -> 16.dp
-							else -> 8.dp
+							WindowWidthSizeClass.Compact -> 8.dp
+							WindowWidthSizeClass.Medium -> 12.dp
+							else -> 16.dp
 						}
 					).value,
 				),
 		) {
-			Row(
-				horizontalArrangement = Arrangement.spacedBy(9.dp, Alignment.Start),
-				modifier = Modifier
-					.align(Alignment.CenterStart)
-					.padding(
-						start = animateDpAsState(
-							when (data.windowSize.widthSizeClass) {
-								WindowWidthSizeClass.Compact -> 3.dp
-								WindowWidthSizeClass.Medium -> 0.5.dp
-								else -> 8.5.dp
-							}
-						).value
-					),
-			) {
-				Surface(
-					color = Color(0xFFF25056),
+			if (PreConfiguration.system == OperationSystem.Macos) {
+				Row(
+					horizontalArrangement = Arrangement.spacedBy(9.dp, Alignment.Start),
 					modifier = Modifier
-						.size(15.dp)
-						.clip(CircleShape)
-						.clickable(onClick = exitApplication),
-				) {}
-				Surface(
-					color = Color(0xFFFAC536),
-					modifier = Modifier
-						.size(15.dp)
-						.clip(CircleShape)
-						.clickable(onClick = minimizeWindow),
-				) {}
-				Surface(
-					color = Color(0xFFD9D9DA),
-					modifier = Modifier
-						.size(15.dp)
-						.clip(CircleShape),
-				) {}
+						.align(Alignment.CenterStart)
+						.padding(
+							start = animateDpAsState(
+								when (data.windowSize.widthSizeClass) {
+									WindowWidthSizeClass.Compact -> 3.dp
+									WindowWidthSizeClass.Medium -> 4.5.dp
+									else -> 8.5.dp
+								}
+							).value
+						),
+				) {
+					Surface(
+						color = Color(0xFFF25056),
+						modifier = Modifier
+							.size(15.dp)
+							.clip(CircleShape)
+							.clickable(onClick = exitApplication),
+					) {}
+					Surface(
+						color = Color(0xFFFAC536),
+						modifier = Modifier
+							.size(15.dp)
+							.clip(CircleShape)
+							.clickable(onClick = minimizeWindow),
+					) {}
+					Surface(
+						color = Color(0xFFD9D9DA),
+						modifier = Modifier
+							.size(15.dp)
+							.clip(CircleShape),
+					) {}
+				}
 			}
 			AnimatedContent(
 				targetState = data.windowSize.widthSizeClass == WindowWidthSizeClass.Compact,
@@ -168,61 +196,63 @@ private fun TopBar(
 				when (isCompact) {
 					true -> Text(
 						text = "MCL",
-						color = MaterialTheme.colorScheme.onBackground,
+						color = MaterialTheme.colorScheme.onSurface,
 						style = MaterialTheme.typography.titleMedium,
 					)
 
 					else -> Text(
 						text = "Minecraft Composable Launcher",
-						color = MaterialTheme.colorScheme.onBackground,
+						color = MaterialTheme.colorScheme.onSurface,
 						fontSize = TextUnit(18F, TextUnitType.Sp),
 						style = MaterialTheme.typography.titleMedium,
 					)
 				}
 			}
-			Row(
-				horizontalArrangement = Arrangement.spacedBy(
-					space = animateDpAsState(
+			if (PreConfiguration.system != OperationSystem.Macos) {
+				Row(
+					horizontalArrangement = Arrangement.spacedBy(
+						space = animateDpAsState(
+							when (data.windowSize.widthSizeClass) {
+								WindowWidthSizeClass.Compact -> 8.dp
+								else -> 12.dp
+							}
+						).value,
+						alignment = Alignment.End
+					),
+					modifier = Modifier.align(Alignment.CenterEnd),
+				) {
+					val iconSize by animateDpAsState(
 						when (data.windowSize.widthSizeClass) {
-							WindowWidthSizeClass.Compact -> 8.dp
-							else -> 12.dp
+							WindowWidthSizeClass.Compact -> 20.dp
+							else -> 24.dp
 						}
-					).value,
-					alignment = Alignment.End
-				),
-				modifier = Modifier.align(Alignment.CenterEnd),
-			) {
-				val iconSize by animateDpAsState(
-					when (data.windowSize.widthSizeClass) {
-						WindowWidthSizeClass.Compact -> 20.dp
-						else -> 24.dp
-					}
-				)
-				Icon(
-					painter = painterResource(Res.drawable.minimize),
-					contentDescription = "Minimize",
-					tint = MaterialTheme.colorScheme.onBackground,
-					modifier = Modifier
-						.size(iconSize)
-						.clip(CircleShape)
-						.clickable(onClick = minimizeWindow),
-				)
-				Icon(
-					painter = painterResource(Res.drawable.close),
-					contentDescription = "Close",
-					tint = MaterialTheme.colorScheme.onBackground,
-					modifier = Modifier
-						.size(iconSize)
-						.clip(CircleShape)
-						.clickable(onClick = exitApplication),
-				)
+					)
+					Icon(
+						painter = painterResource(Res.drawable.minimize),
+						contentDescription = "Minimize",
+						tint = MaterialTheme.colorScheme.onSurface,
+						modifier = Modifier
+							.size(iconSize)
+							.clip(CircleShape)
+							.clickable(onClick = minimizeWindow),
+					)
+					Icon(
+						painter = painterResource(Res.drawable.close),
+						contentDescription = "Close",
+						tint = MaterialTheme.colorScheme.onSurface,
+						modifier = Modifier
+							.size(iconSize)
+							.clip(CircleShape)
+							.clickable(onClick = exitApplication),
+					)
+				}
 			}
 		}
 	}
 }
 
 @Composable
-context(_: Context, _: Data)
+context(_: Context, data: Data)
 private fun NavigationBar(
 	currentPage: HomePage,
 	onPageChanges: (HomePage) -> Unit,
@@ -231,19 +261,21 @@ private fun NavigationBar(
 		horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
 		modifier = Modifier
 			.fillMaxWidth()
+			.hazeEffect(data.hazeState, data.hazeStyle)
 			.padding(vertical = 16.dp),
 	) {
-		val pages = listOf(HomePage.Launch, HomePage.Accounts, HomePage.Downloads, HomePage.Settings, HomePage.More)
+		val pages = listOf(HomePage.Launch, HomePage.Games, HomePage.Accounts, HomePage.Downloads, HomePage.Settings, HomePage.Others)
 		pages.forEach { page ->
 			SideBarButton(
 				selected = currentPage == page,
 				onSelect = { onPageChanges(page) },
 				icon = when (page) {
 					HomePage.Launch -> painterResource(Res.drawable.launch)
+					HomePage.Games -> painterResource(Res.drawable.minecraft)
 					HomePage.Accounts -> painterResource(Res.drawable.accounts)
 					HomePage.Downloads -> painterResource(Res.drawable.downloads)
 					HomePage.Settings -> painterResource(Res.drawable.settings)
-					HomePage.More -> painterResource(Res.drawable.others)
+					HomePage.Others -> painterResource(Res.drawable.others)
 				},
 				buttonSize = DpSize(48.dp, 48.dp),
 				iconSize = DpSize(24.dp, 24.dp),
@@ -255,60 +287,61 @@ private fun NavigationBar(
 @Composable
 context(_: Context, data: Data)
 private fun SideBar(
+	windowDraggableArea: @Composable (@Composable () -> Unit) -> Unit,
 	currentPage: HomePage,
 	onPageChanges: (HomePage) -> Unit,
 ) {
-	Column(
-		verticalArrangement = Arrangement.spacedBy(
-			space = animateDpAsState(
-				when (data.windowSize.heightSizeClass) {
-					WindowHeightSizeClass.Compact -> 12.dp
-					WindowHeightSizeClass.Medium -> 24.dp
-					else -> 60.dp
+	windowDraggableArea {
+		Column(
+			verticalArrangement = Arrangement.spacedBy(
+				space = animateDpAsState(
+					when (data.windowSize.heightSizeClass) {
+						WindowHeightSizeClass.Medium -> 24.dp
+						else -> 60.dp
+					}
+				).value,
+				alignment = Alignment.CenterVertically
+			),
+			modifier = Modifier
+				.fillMaxHeight()
+				.hazeEffect(data.hazeState, data.hazeStyle)
+				.padding(horizontal = 16.dp),
+		) {
+			val pages = listOf(HomePage.Launch, HomePage.Games, HomePage.Accounts, HomePage.Downloads, HomePage.Settings, HomePage.Others)
+			val buttonWidth by animateDpAsState(
+				when (data.windowSize.widthSizeClass) {
+					WindowWidthSizeClass.Medium -> 60.dp
+					else -> 80.dp
 				}
-			).value,
-			alignment = Alignment.CenterVertically
-		),
-		modifier = Modifier
-			.fillMaxHeight()
-			.padding(horizontal = 16.dp),
-	) {
-		val pages = listOf(HomePage.Launch, HomePage.Accounts, HomePage.Downloads, HomePage.Settings, HomePage.More)
-		val buttonWidth by animateDpAsState(
-			when {
-				data.windowSize.widthSizeClass == WindowWidthSizeClass.Medium -> 48.dp
-				else -> 80.dp
-			}
-		)
-		val buttonHeight by animateDpAsState(
-			when (data.windowSize.widthSizeClass) {
-				WindowWidthSizeClass.Expanded -> 56.dp
-				else -> 48.dp
-			}
-		)
-		val iconSize by animateDpAsState(
-			when (data.windowSize.widthSizeClass) {
-				WindowWidthSizeClass.Expanded -> 36.dp
-				else -> 24.dp
-			}
-		)
-		pages.forEach { page ->
-			SideBarButton(
-				selected = currentPage == page,
-				onSelect = { onPageChanges(page) },
-				icon = when (page) {
-					HomePage.Launch -> painterResource(Res.drawable.launch)
-					HomePage.Accounts -> painterResource(Res.drawable.accounts)
-					HomePage.Downloads -> painterResource(Res.drawable.downloads)
-					HomePage.Settings -> painterResource(Res.drawable.settings)
-					HomePage.More -> painterResource(Res.drawable.others)
-				},
-				buttonSize = DpSize(
-					width = buttonWidth,
-					height = buttonHeight,
-				),
-				iconSize = DpSize(iconSize, iconSize),
 			)
+			val buttonHeight by animateDpAsState(
+				when (data.windowSize.widthSizeClass) {
+					WindowWidthSizeClass.Medium -> 40.dp
+					else -> 52.dp
+				}
+			)
+			val iconSize by animateDpAsState(
+				when (data.windowSize.widthSizeClass) {
+					WindowWidthSizeClass.Medium -> 24.dp
+					else -> 36.dp
+				}
+			)
+			pages.forEach { page ->
+				SideBarButton(
+					selected = currentPage == page,
+					onSelect = { onPageChanges(page) },
+					icon = when (page) {
+						HomePage.Launch -> painterResource(Res.drawable.launch)
+						HomePage.Games -> painterResource(Res.drawable.minecraft)
+						HomePage.Accounts -> painterResource(Res.drawable.accounts)
+						HomePage.Downloads -> painterResource(Res.drawable.downloads)
+						HomePage.Settings -> painterResource(Res.drawable.settings)
+						HomePage.Others -> painterResource(Res.drawable.others)
+					},
+					buttonSize = DpSize(buttonWidth, buttonHeight),
+					iconSize = DpSize(iconSize, iconSize),
+				)
+			}
 		}
 	}
 }
@@ -321,8 +354,9 @@ private fun SideBarButton(
 	buttonSize: DpSize,
 	iconSize: DpSize,
 ) {
-	Box(
-		contentAlignment = Alignment.Center,
+	Column(
+		horizontalAlignment = Alignment.CenterHorizontally,
+		verticalArrangement = Arrangement.Center,
 		modifier = Modifier
 			.size(buttonSize)
 			.clip(SmoothRoundedCornerShape(radius = 12.dp))
@@ -330,11 +364,12 @@ private fun SideBarButton(
 				animateColorAsState(
 					when (selected) {
 						true -> MaterialTheme.colorScheme.primary
-						else -> MaterialTheme.colorScheme.background
+						else -> Color.Transparent
 					}
 				).value
 			)
-			.clickable(onClick = onSelect),
+			.clickable(onClick = onSelect)
+			.padding(8.dp),
 	) {
 		Icon(
 			painter = icon,
@@ -342,7 +377,7 @@ private fun SideBarButton(
 			tint = animateColorAsState(
 				when (selected) {
 					true -> MaterialTheme.colorScheme.onPrimary
-					else -> MaterialTheme.colorScheme.onBackground
+					else -> MaterialTheme.colorScheme.onSurface
 				}
 			).value,
 			modifier = Modifier.size(iconSize),

@@ -30,7 +30,7 @@ import java.awt.Frame
 fun main() = application {
 	val state = rememberWindowState(
 		position = WindowPosition.Aligned(Alignment.Center),
-		size = DpSize(700.dp, 400.dp),
+		size = DpSize(800.dp, 600.dp),
 	)
 	val scope = rememberCoroutineScope()
 	var windowScale by remember { mutableFloatStateOf(0.75F) }
@@ -76,7 +76,7 @@ fun main() = application {
 				}
 			}
 		}
-		setMinimumSize(350.dp, 400.dp)
+		setMinimumSize(420.dp, 540.dp)
 		window.disableMaximize()
 		Box(
 			modifier = Modifier

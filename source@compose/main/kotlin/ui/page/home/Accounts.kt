@@ -21,7 +21,7 @@ import cn.yurin.mcl.ui.localization.Context
 import cn.yurin.mcl.ui.localization.current
 import cn.yurin.mcl.ui.localization.dest
 import cn.yurin.mcl.ui.localization.destination.*
-import cn.yurin.mcl.ui.page.home.launch.ShadowedFace
+import cn.yurin.mcl.ui.neo.page.home.ShadowedFace
 import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch

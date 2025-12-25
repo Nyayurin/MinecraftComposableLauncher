@@ -1,5 +1,6 @@
 package cn.yurin.mcl.core
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -7,11 +8,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.network.VersionsManifest
 import cn.yurin.mcl.ui.localization.Context
 import cn.yurin.mcl.ui.localization.current
 import cn.yurin.mcl.ui.localization.dest
 import cn.yurin.mcl.ui.localization.destination.*
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -45,6 +50,15 @@ class Data {
 		set(value) {
 			backingWindowSize = value
 		}
+
+	val hazeState = HazeState()
+	val hazeStyle
+		@Composable
+		get() = HazeStyle(
+			tint = HazeTint(MaterialTheme.colorScheme.surface.copy(alpha = 0.5F)),
+			blurRadius = 10.dp,
+			noiseFactor = 0F,
+		)
 
 	val json = Json {
 		ignoreUnknownKeys = true

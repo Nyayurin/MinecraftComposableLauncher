@@ -2,10 +2,11 @@ package cn.yurin.mcl.ui
 
 sealed class HomePage(val position: Int) {
 	data object Launch : HomePage(0)
-	data object Accounts : HomePage(1)
-	data object Downloads : HomePage(2)
-	data object Settings : HomePage(3)
-	data object More : HomePage(4)
+	data object Games : HomePage(1)
+	data object Accounts : HomePage(2)
+	data object Downloads : HomePage(3)
+	data object Settings : HomePage(4)
+	data object Others : HomePage(5)
 }
 
 sealed class LaunchPages(val position: Int) {

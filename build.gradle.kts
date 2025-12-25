@@ -95,6 +95,8 @@ kotlin {
 			implementation("io.github.panpf.sketch4:sketch-compose:4.3.1")
 			implementation("io.github.panpf.sketch4:sketch-http-ktor3:4.3.1")
 			implementation("io.github.iamcalledrob:smooth-rounded-corner-shape:1.0.4")
+			implementation("dev.chrisbanes.haze:haze:1.7.1")
+			implementation("dev.chrisbanes.haze:haze-materials:1.7.1")
 
 			// Logic dependencies
 			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")

@@ -5,7 +5,7 @@ import cn.yurin.mcl.ui.localization.destination.*
 
 fun initContext() = buildContext {
 	readContext()
-	initTopbar()
+	initNavigationBar()
 	initLaunchPage()
 	initAccountsPage()
 	initDownloadsPage()
@@ -13,7 +13,7 @@ fun initContext() = buildContext {
 }
 
 context(_: ContextBuilder)
-private fun initTopbar() = TopbarDest {
+private fun initNavigationBar() = NavigationBar {
 	launch {
 		chinese = "启动"
 		english = "Launch"
@@ -30,35 +30,41 @@ private fun initTopbar() = TopbarDest {
 		chinese = "设置"
 		english = "Settings"
 	}
-	more {
-		chinese = "更多"
-		english = "More"
+	others {
+		chinese = "其他"
+		english = "Others"
 	}
 }
 
 context(_: ContextBuilder)
 private fun initLaunchPage() = LaunchDest {
-	LaunchDest.SideBar {
-		loginAccount {
-			chinese = "登录账户"
-			english = "Login Account"
-		}
-		launch {
-			chinese = "启动"
-			english = "Launch"
-		}
-		selectVersion {
-			chinese = "选择版本"
-			english = "Select Version"
-		}
-		versions {
-			chinese = "版本"
-			english = "Versions"
-		}
-		settings {
-			chinese = "设置"
-			english = "Settings"
-		}
+	loginAccount {
+		chinese = "登录账户"
+		english = "Login Account"
+	}
+	launch {
+		chinese = "启动"
+		english = "Launch"
+	}
+	selectVersion {
+		chinese = "选择版本"
+		english = "Select Version"
+	}
+	versions {
+		chinese = "版本"
+		english = "Versions"
+	}
+	settings {
+		chinese = "设置"
+		english = "Settings"
+	}
+	onlineAccount {
+		chinese = "正版账户"
+		english = "Online Account"
+	}
+	offlineAccount {
+		chinese = "离线账户"
+		english = "Offline Account"
 	}
 
 	LaunchDest.Content {
