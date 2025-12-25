@@ -1,5 +1,6 @@
 package cn.yurin.mcl.core
 
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,12 @@ class Data {
 	var currentAccount: Account? by mutableStateOf(null)
 
 	var dialogProvider by mutableStateOf<(@Composable () -> AlertDialog)?>(null)
+	private var backingWindowSize by mutableStateOf<WindowSizeClass?>(null)
+	var windowSize
+		get() = backingWindowSize!!
+		set(value) {
+			backingWindowSize = value
+		}
 
 	val json = Json {
 		ignoreUnknownKeys = true

@@ -254,8 +254,8 @@ jobs:
         ./gradlew :generateExpectResourceCollectorsForCommonMain
         ./gradlew :generateActualResourceCollectorsForComposeJvmMain
         ./gradlew :assembleComposeJvmMainResources
-        sed -i 's/Windows/Macos/g' source@compose/main/kotlin/core/PreConfiguration.kt
-        sed -i 's/Amd64/Aarch64/g' source@compose/main/kotlin/core/PreConfiguration.kt
+        sed -i '' 's/Windows/Macos/g' source@compose/main/kotlin/core/PreConfiguration.kt
+        sed -i '' 's/Amd64/Aarch64/g' source@compose/main/kotlin/core/PreConfiguration.kt
     - id: 'step-4'
       name: 'package macos-uberjar-aarch64'
       run: './gradlew :packageReleaseUberJarForCurrentOS'

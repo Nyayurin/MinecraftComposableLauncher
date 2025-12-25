@@ -34,6 +34,7 @@ val content: WorkflowBuilder.() -> Unit = {
 			"installer-msi" to "Msi" to "binaries/main-release/msi",
 			"installer-exe" to "Exe" to "binaries/main-release/exe",
 		),
+		hasBakParameter = false,
 	)
 	publish(
 		runsOn = RunnerType.Custom("windows-11-arm"),
@@ -45,6 +46,7 @@ val content: WorkflowBuilder.() -> Unit = {
 			"installer-msi" to "Msi" to "binaries/main-release/msi",
 			"installer-exe" to "Exe" to "binaries/main-release/exe",
 		),
+		hasBakParameter = false,
 	)
 	publish(
 		runsOn = RunnerType.UbuntuLatest,
@@ -56,6 +58,7 @@ val content: WorkflowBuilder.() -> Unit = {
 			"installer-deb" to "Deb" to "binaries/main-release/deb",
 			"installer-rpm" to "Rpm" to "binaries/main-release/rpm",
 		),
+		hasBakParameter = false,
 	)
 	publish(
 		runsOn = RunnerType.Custom("ubuntu-22.04-arm"),
@@ -67,6 +70,7 @@ val content: WorkflowBuilder.() -> Unit = {
 			"installer-deb" to "Deb" to "binaries/main-release/deb",
 			"installer-rpm" to "Rpm" to "binaries/main-release/rpm",
 		),
+		hasBakParameter = false,
 	)
 	publish(
 		runsOn = RunnerType.MacOSLatest,
@@ -76,6 +80,7 @@ val content: WorkflowBuilder.() -> Unit = {
 			"uberjar" to "UberJarForCurrentOS" to "jars",
 			"installer-dmg" to "Dmg" to "binaries/main-release/dmg",
 		),
+		hasBakParameter = true,
 	)
 }
 
@@ -107,7 +112,7 @@ workflow(
 
 infix fun <T1, T2, T3> Pair<T1, T2>.to(third: T3): Triple<T1, T2, T3> = Triple(this.first, this.second, third)
 
-fun WorkflowBuilder.publish(runsOn: RunnerType, system: String, arch: String, publishes: List<Triple<String, String, String>>) {
+fun WorkflowBuilder.publish(runsOn: RunnerType, system: String, arch: String, publishes: List<Triple<String, String, String>>, hasBakParameter: Boolean) {
 	job(
 		id = "package-$system-$arch",
 		runsOn = runsOn,
@@ -135,8 +140,8 @@ fun WorkflowBuilder.publish(runsOn: RunnerType, system: String, arch: String, pu
 				./gradlew :generateExpectResourceCollectorsForCommonMain
 				./gradlew :generateActualResourceCollectorsForComposeJvmMain
 				./gradlew :assembleComposeJvmMainResources
-				sed -i 's/Windows/${system.replaceFirstChar { it.uppercaseChar() }}/g' source@compose/main/kotlin/core/PreConfiguration.kt
-				sed -i 's/Amd64/${arch.replaceFirstChar { it.uppercaseChar() }}/g' source@compose/main/kotlin/core/PreConfiguration.kt
+				sed -i${if (hasBakParameter) " ''" else ""} 's/Windows/${system.replaceFirstChar { it.uppercaseChar() }}/g' source@compose/main/kotlin/core/PreConfiguration.kt
+				sed -i${if (hasBakParameter) " ''" else ""} 's/Amd64/${arch.replaceFirstChar { it.uppercaseChar() }}/g' source@compose/main/kotlin/core/PreConfiguration.kt
 			""".trimIndent(),
 		)
 		publishes.forEach { publish ->

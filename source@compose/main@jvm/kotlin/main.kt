@@ -76,7 +76,7 @@ fun main() = application {
 				}
 			}
 		}
-		setMinimumSize(600.dp, 400.dp)
+		setMinimumSize(350.dp, 400.dp)
 		window.disableMaximize()
 		Box(
 			modifier = Modifier

@@ -81,25 +81,30 @@ kotlin {
 		}
 
 		composeMain.dependencies {
-			implementation("org.jetbrains.compose.runtime:runtime:1.10.0-rc02")
-			implementation("org.jetbrains.compose.ui:ui:1.10.0-rc02")
-			implementation("org.jetbrains.compose.foundation:foundation:1.10.0-rc02")
-			implementation("org.jetbrains.compose.material3:material3:1.10.0-alpha05")
+			// Compose dependencies
+			implementation("org.jetbrains.compose.runtime:runtime:1.11.0-alpha01")
+			implementation("org.jetbrains.compose.ui:ui:1.11.0-alpha01")
+			implementation("org.jetbrains.compose.foundation:foundation:1.11.0-alpha01")
+			implementation("org.jetbrains.compose.material3:material3:1.11.0-alpha01")
+			implementation("org.jetbrains.compose.material3:material3-window-size-class:1.11.0-alpha01")
 
-			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
+			// UI dependencies
 			implementation("com.materialkolor:material-kolor:5.0.0-alpha01")
 			implementation("com.github.skydoves:colorpicker-compose:1.1.2")
+			implementation("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
+			implementation("io.github.panpf.sketch4:sketch-compose:4.3.1")
+			implementation("io.github.panpf.sketch4:sketch-http-ktor3:4.3.1")
+			implementation("io.github.iamcalledrob:smooth-rounded-corner-shape:1.0.4")
+
+			// Logic dependencies
+			implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 			implementation("io.ktor:ktor-client-core:3.3.3")
 			implementation("io.ktor:ktor-client-cio:3.3.3")
 			implementation("io.ktor:ktor-client-content-negotiation:3.3.3")
 			implementation("io.ktor:ktor-serialization-kotlinx-json:3.3.3")
 			implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 			implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1")
-			implementation("io.github.vinceglb:filekit-dialogs-compose:0.12.0")
 			implementation("com.russhwolf:multiplatform-settings:1.3.0")
-			implementation("io.github.panpf.sketch4:sketch-compose:4.3.1")
-			implementation("io.github.panpf.sketch4:sketch-http-ktor3:4.3.1")
-			implementation("io.github.iamcalledrob:smooth-rounded-corner-shape:1.0.4")
 		}
 
 		composeJvmMain.dependencies {

@@ -1,6 +1,7 @@
 package cn.yurin.mcl.ui
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.LocalScrollbarStyle
@@ -9,6 +10,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,7 +33,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 
-@OptIn(ExperimentalUuidApi::class)
+@OptIn(ExperimentalUuidApi::class, ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun App(
 	windowScale: Float,
@@ -58,13 +62,23 @@ fun App(
 			isDark = data.isDarkMode,
 			isExpressive = data.isExpressive,
 		) {
+			data.windowSize = calculateWindowSizeClass()
 			Surface(
 				color = MaterialTheme.colorScheme.background,
 				modifier = Modifier
 					.fillMaxSize()
 					.scale(windowScale)
 					.alpha(windowAlpha)
-					.clip(SmoothRoundedCornerShape(radius = 24.dp)),
+					.clip(
+						SmoothRoundedCornerShape(
+							radius = animateDpAsState(
+								when (data.windowSize.widthSizeClass) {
+									WindowWidthSizeClass.Expanded -> 24.dp
+									else -> 12.dp
+								}
+							).value
+						)
+					),
 			) {
 				Box {
 					Home(
