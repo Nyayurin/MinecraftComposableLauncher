@@ -27,7 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import cn.yurin.mcl.core.Account
 import cn.yurin.mcl.core.Data
-import cn.yurin.mcl.core.buildGameProcess
+import cn.yurin.mcl.core.launchMinecraft
 import cn.yurin.mcl.ui.localization.Context
 import cn.yurin.mcl.ui.localization.current
 import cn.yurin.mcl.ui.localization.dest
@@ -36,11 +36,6 @@ import com.github.panpf.sketch.PainterState
 import com.github.panpf.sketch.SubcomposeAsyncImage
 import dev.chrisbanes.haze.hazeEffect
 import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
-import java.io.File
 
 @Composable
 context(_: Context, data: Data)
@@ -71,11 +66,15 @@ fun Launch(
 				horizontalArrangement = Arrangement.spacedBy(12.dp),
 				modifier = Modifier
 					.clip(SmoothRoundedCornerShape(radius = 16.dp))
-					.hazeEffect(data.hazeState, data.hazeStyle)
+					.run {
+						when (data.imageBackground) {
+							true -> hazeEffect(data.hazeState)
+							else -> background(MaterialTheme.colorScheme.surfaceContainer)
+						}
+					}
 					.padding(20.dp),
 			) {
 				Row(
-//					verticalAlignment = Alignment.CenterVertically,
 					horizontalArrangement = Arrangement.spacedBy(12.dp),
 					modifier = Modifier
 						.clip(SmoothRoundedCornerShape(radius = 12.dp))
@@ -123,73 +122,10 @@ fun Launch(
 						.clip(SmoothRoundedCornerShape(radius = 12.dp))
 						.background(MaterialTheme.colorScheme.primary)
 						.clickable {
-							val osName = System.getProperty("os.name").lowercase()
-							val classpathSeparator = when {
-								"win" in osName -> ";"
-								else -> ":"
-							}
-							when {
-								data.currentVersion == null -> onChangeToGamesPage()
-								data.currentAccount == null -> onChangeToAccountsPage()
-								else -> data.scope.launch(Dispatchers.IO) {
-									val currentFolder = data.currentFolder!!
-									val currentVersion = data.currentVersion!!
-									val currentAccount = data.currentAccount!!
-									val libraries = listOf(
-										*currentVersion.manifest.libraries.filter { library ->
-											when (library.rule?.os?.name) {
-												null -> true
-												in osName -> true
-												else -> false
-											}
-										}.map { library ->
-											library.downloads?.artifact?.path?.let { path ->
-												File("${currentFolder.path}/libraries", path).absolutePath
-											} ?: run {
-												val (groupId, artifactId, version) = library.name.split(":")
-												val groups = groupId.split(".")
-												File("${currentFolder.path}/libraries", "${groups.joinToString("/")}/$artifactId/$version/$artifactId-$version.jar").absolutePath
-											}
-										}.toTypedArray(),
-										File(currentVersion.path, "${currentVersion.name}.jar").absolutePath
-									)
-									val process = buildGameProcess(
-										java = "java",
-										mainClass = currentVersion.manifest.mainClass,
-										arguments = currentVersion.manifest.arguments,
-										variables = mapOf(
-											"auth_player_name" to currentAccount.name,
-											"version_name" to currentVersion.manifest.id,
-											"game_directory" to currentFolder.path,
-											"assets_root" to "${currentFolder.path}/assets",
-											"assets_index_name" to currentVersion.manifest.assetIndex.id,
-											"auth_uuid" to currentAccount.uuid,
-											"auth_access_token" to currentAccount.token,
-											"user_type" to "msa",
-											"version_type" to "MCL 1.0.0",
-											"natives_directory" to File(currentVersion.path, "natives").absolutePath,
-											"launcher_name" to "Minecraft Composable Launcher",
-											"launcher_version" to "1.0.0",
-											"classpath" to listOf(*libraries.toTypedArray(), File(currentVersion.path, "${currentVersion.name}.jar").absolutePath).joinToString(classpathSeparator),
-											"classpath_separator" to classpathSeparator,
-											"library_directory" to File(currentFolder.path, "libraries").absolutePath,
-										),
-										features = mapOf(),
-									).start()
-									val error = async(Dispatchers.IO) {
-										while (process.isAlive) {
-											process.errorReader().readLine()?.let(System.err::println)
-										}
-									}
-									val input = async(Dispatchers.IO) {
-										while (process.isAlive) {
-											process.inputReader().readLine()?.let(::println)
-										}
-									}
-									awaitAll(input, error)
-									println("Process done")
-								}
-							}
+							launchMinecraft(
+								onChangeToGamesPage = onChangeToGamesPage,
+								onChangeToAccountsPage = onChangeToAccountsPage,
+							)
 						}
 						.padding(
 							horizontal = 16.dp,

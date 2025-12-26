@@ -31,6 +31,9 @@ import cn.yurin.mcl.ui.localization.initContext
 import cn.yurin.mcl.ui.neo.page.Home
 import cn.yurin.minecraftcomposablelauncher.generated.resources.Res
 import cn.yurin.minecraftcomposablelauncher.generated.resources.background
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
+import dev.chrisbanes.haze.LocalHazeStyle
 import dev.chrisbanes.haze.hazeSource
 import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import kotlinx.coroutines.Dispatchers
@@ -59,15 +62,19 @@ fun App(
 			}
 		}
 	}
-	val scrollbarStyle = if (data.isDarkMode) darkScrollbarStyle() else lightScrollbarStyle()
-	data.windowSize = calculateWindowSizeClass()
-	CompositionLocalProvider(
-		LocalScrollbarStyle provides scrollbarStyle,
+	Theme(
+		seedColor = data.seedColor,
+		isDark = data.isDarkMode,
+		isExpressive = data.isExpressive,
 	) {
-		Theme(
-			seedColor = data.seedColor,
-			isDark = data.isDarkMode,
-			isExpressive = data.isExpressive,
+		data.windowSize = calculateWindowSizeClass()
+		CompositionLocalProvider(
+			LocalScrollbarStyle provides if (data.isDarkMode) darkScrollbarStyle() else lightScrollbarStyle(),
+			LocalHazeStyle provides HazeStyle(
+				tint = HazeTint(MaterialTheme.colorScheme.surface.copy(alpha = 0.75F)),
+				blurRadius = 10.dp,
+				noiseFactor = 0F,
+			),
 		) {
 			Box(
 				modifier = Modifier
@@ -84,17 +91,33 @@ fun App(
 								}
 							).value
 						)
-					)
+					),
 			) {
 				Box(
 					modifier = Modifier.hazeSource(data.hazeState),
 				) {
-					Image(
-						painter = painterResource(Res.drawable.background),
-						contentDescription = null,
-						contentScale = ContentScale.Crop,
-						modifier = Modifier.fillMaxSize(),
-					)
+					AnimatedVisibility(
+						visible = data.imageBackground,
+						enter = fadeIn(),
+						exit = fadeOut(),
+					) {
+						Image(
+							painter = painterResource(Res.drawable.background),
+							contentDescription = null,
+							contentScale = ContentScale.Crop,
+							modifier = Modifier.fillMaxSize(),
+						)
+					}
+					AnimatedVisibility(
+						visible = !data.imageBackground,
+						enter = fadeIn(),
+						exit = fadeOut(),
+					) {
+						Surface(
+							color = MaterialTheme.colorScheme.background,
+							modifier = Modifier.fillMaxSize(),
+						) {}
+					}
 				}
 				Box {
 					Home(

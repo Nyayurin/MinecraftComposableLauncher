@@ -142,6 +142,8 @@ private fun Personalization() = dest(SettingsDest.Content.Personalization) {
 				onDarkChanged = { data.isDarkMode = it },
 				initialExpressive = data.isExpressive,
 				onExpressiveChanged = { data.isExpressive = it },
+				initialImageBackground = data.imageBackground,
+				onImageBackgroundChanged = { data.imageBackground = it },
 			)
 		}
 		Card(
@@ -219,6 +221,8 @@ fun ColorPicker(
 	onDarkChanged: (Boolean) -> Unit,
 	initialExpressive: Boolean,
 	onExpressiveChanged: (Boolean) -> Unit,
+	initialImageBackground: Boolean,
+	onImageBackgroundChanged: (Boolean) -> Unit,
 ) = dest(SettingsDest.Content.Personalization.ColorPicker) {
 	val controller = rememberColorPickerController()
 	HsvColorPicker(
@@ -265,6 +269,23 @@ fun ColorPicker(
 		Switch(
 			checked = initialExpressive,
 			onCheckedChange = onExpressiveChanged,
+		)
+	}
+	Row(
+		verticalAlignment = Alignment.CenterVertically,
+		horizontalArrangement = Arrangement.SpaceBetween,
+		modifier = Modifier.fillMaxWidth()
+	) {
+		AnimatedContent(context.language) {
+			Text(
+				text = "Image Background",
+				color = MaterialTheme.colorScheme.onSurface,
+				style = MaterialTheme.typography.bodyLarge,
+			)
+		}
+		Switch(
+			checked = initialImageBackground,
+			onCheckedChange = onImageBackgroundChanged,
 		)
 	}
 }

@@ -1,6 +1,5 @@
 package cn.yurin.mcl.core
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -8,15 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import cn.yurin.mcl.network.VersionsManifest
 import cn.yurin.mcl.ui.localization.Context
 import cn.yurin.mcl.ui.localization.current
 import cn.yurin.mcl.ui.localization.dest
 import cn.yurin.mcl.ui.localization.destination.*
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.HazeTint
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -36,6 +32,7 @@ class Data {
 	var seedColor by mutableStateOf(Color(-8343041))
 	var isDarkMode by mutableStateOf(false)
 	var isExpressive by mutableStateOf(true)
+	var imageBackground by mutableStateOf(false)
 	var versionsManifest by mutableStateOf<VersionsManifest?>(null)
 	var folders by mutableStateOf<List<GameFolder>>(emptyList())
 	var currentFolder by mutableStateOf<GameFolder?>(null)
@@ -52,13 +49,6 @@ class Data {
 		}
 
 	val hazeState = HazeState()
-	val hazeStyle
-		@Composable
-		get() = HazeStyle(
-			tint = HazeTint(MaterialTheme.colorScheme.surface.copy(alpha = 0.75F)),
-			blurRadius = 10.dp,
-			noiseFactor = 0F,
-		)
 
 	val json = Json {
 		ignoreUnknownKeys = true
@@ -86,6 +76,80 @@ data class AlertDialog(
 	val title: @Composable (() -> Unit)? = null,
 	val content: @Composable (() -> Unit)? = null,
 )
+
+context(data: Data, _: Context)
+fun launchMinecraft(
+	onChangeToGamesPage: () -> Unit,
+	onChangeToAccountsPage: () -> Unit,
+) {
+	val osName = System.getProperty("os.name").lowercase()
+	val classpathSeparator = when {
+		"win" in osName -> ";"
+		else -> ":"
+	}
+	when {
+		data.currentVersion == null -> onChangeToGamesPage()
+		data.currentAccount == null -> onChangeToAccountsPage()
+		else -> data.scope.launch(Dispatchers.IO) {
+			val currentFolder = data.currentFolder!!
+			val currentVersion = data.currentVersion!!
+			val currentAccount = data.currentAccount!!
+			val libraries = listOf(
+				*currentVersion.manifest.libraries.filter { library ->
+					when (library.rule?.os?.name) {
+						null -> true
+						in osName -> true
+						else -> false
+					}
+				}.map { library ->
+					library.downloads?.artifact?.path?.let { path ->
+						File("${currentFolder.path}/libraries", path).absolutePath
+					} ?: run {
+						val (groupId, artifactId, version) = library.name.split(":")
+						val groups = groupId.split(".")
+						File("${currentFolder.path}/libraries", "${groups.joinToString("/")}/$artifactId/$version/$artifactId-$version.jar").absolutePath
+					}
+				}.toTypedArray(),
+				File(currentVersion.path, "${currentVersion.name}.jar").absolutePath
+			)
+			val process = buildGameProcess(
+				java = "java",
+				mainClass = currentVersion.manifest.mainClass,
+				arguments = currentVersion.manifest.arguments,
+				variables = mapOf(
+					"auth_player_name" to currentAccount.name,
+					"version_name" to currentVersion.manifest.id,
+					"game_directory" to currentFolder.path,
+					"assets_root" to "${currentFolder.path}/assets",
+					"assets_index_name" to currentVersion.manifest.assetIndex.id,
+					"auth_uuid" to currentAccount.uuid,
+					"auth_access_token" to currentAccount.token,
+					"user_type" to "msa",
+					"version_type" to "MCL 1.0.0",
+					"natives_directory" to File(currentVersion.path, "natives").absolutePath,
+					"launcher_name" to "Minecraft Composable Launcher",
+					"launcher_version" to "1.0.0",
+					"classpath" to listOf(*libraries.toTypedArray(), File(currentVersion.path, "${currentVersion.name}.jar").absolutePath).joinToString(classpathSeparator),
+					"classpath_separator" to classpathSeparator,
+					"library_directory" to File(currentFolder.path, "libraries").absolutePath,
+				),
+				features = mapOf(),
+			).start()
+			val error = async(Dispatchers.IO) {
+				while (process.isAlive) {
+					process.errorReader().readLine()?.let(System.err::println)
+				}
+			}
+			val input = async(Dispatchers.IO) {
+				while (process.isAlive) {
+					process.inputReader().readLine()?.let(::println)
+				}
+			}
+			awaitAll(input, error)
+			println("Process done")
+		}
+	}
+}
 
 context(data: Data, _: Context)
 suspend fun login(

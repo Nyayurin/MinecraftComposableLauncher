@@ -3,6 +3,7 @@ package cn.yurin.mcl.ui.neo.page
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -33,7 +34,9 @@ import cn.yurin.mcl.ui.page.home.Accounts
 import cn.yurin.mcl.ui.page.home.Downloads
 import cn.yurin.mcl.ui.page.home.More
 import cn.yurin.mcl.ui.page.home.Settings
+import cn.yurin.mcl.ui.page.home.launch.Versions
 import cn.yurin.minecraftcomposablelauncher.generated.resources.*
+import dev.chrisbanes.haze.LocalHazeStyle
 import dev.chrisbanes.haze.hazeEffect
 import io.github.iamcalledrob.smoothRoundedCornerShape.SmoothRoundedCornerShape
 import org.jetbrains.compose.resources.painterResource
@@ -107,7 +110,7 @@ fun Home(
 							onChangeToAccountsPage = { currentPage = HomePage.Accounts },
 						)
 
-						HomePage.Games -> {}
+						HomePage.Games -> Versions(onBack = { currentPage = HomePage.Launch })
 						HomePage.Accounts -> Accounts()
 						HomePage.Downloads -> Downloads()
 						HomePage.Settings -> Settings()
@@ -141,7 +144,12 @@ private fun TopBar(
 		Box(
 			modifier = Modifier
 				.fillMaxWidth()
-				.hazeEffect(data.hazeState, data.hazeStyle.copy(backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85F)))
+				.run {
+					when (data.imageBackground) {
+						true -> hazeEffect(data.hazeState, LocalHazeStyle.current.copy(backgroundColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85F)))
+						else -> background(MaterialTheme.colorScheme.surfaceContainerHigh)
+					}
+				}
 				.padding(
 					animateDpAsState(
 						when (data.windowSize.widthSizeClass) {
@@ -240,7 +248,12 @@ private fun NavigationBar(
 		modifier = Modifier
 			.fillMaxWidth()
 			.clip(SmoothRoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 0.dp, bottomEnd = 0.dp))
-			.hazeEffect(data.hazeState, data.hazeStyle)
+			.run {
+				when (data.imageBackground) {
+					true -> hazeEffect(data.hazeState)
+					else -> background(MaterialTheme.colorScheme.surfaceContainer)
+				}
+			}
 			.padding(
 				horizontal = 32.dp,
 				vertical = 16.dp,
@@ -275,7 +288,12 @@ private fun SideBar(
 						).value
 					)
 				)
-				.hazeEffect(data.hazeState, data.hazeStyle)
+				.run {
+					when (data.imageBackground) {
+						true -> hazeEffect(data.hazeState)
+						else -> background(MaterialTheme.colorScheme.surfaceContainer)
+					}
+				}
 				.padding(
 					horizontal = 16.dp,
 					vertical = 32.dp,
