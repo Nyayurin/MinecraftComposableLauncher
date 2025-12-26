@@ -1,15 +1,18 @@
 package cn.yurin.mcl.ui.neo.page.home
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.dropShadow
@@ -20,10 +23,8 @@ import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.*
 import cn.yurin.mcl.core.Account
 import cn.yurin.mcl.core.Data
 import cn.yurin.mcl.core.buildGameProcess
@@ -48,140 +49,170 @@ fun Launch(
 	onChangeToAccountsPage: () -> Unit,
 ) = dest(LaunchDest) {
 	Column(
-		horizontalAlignment = Alignment.End,
 		modifier = Modifier.fillMaxSize(),
 	) {
+		Spacer(
+			modifier = Modifier.weight(1F),
+		)
 		Row(
-			horizontalArrangement = Arrangement.spacedBy(4.dp),
-			modifier = Modifier
-				.clip(SmoothRoundedCornerShape(radius = 12.dp))
-				.hazeEffect(data.hazeState, data.hazeStyle)
-				.clickable(onClick = onChangeToGamesPage)
-				.padding(12.dp),
+			horizontalArrangement = Arrangement.aligned(
+				BiasAlignment.Horizontal(
+					animateFloatAsState(
+						when (data.windowSize.widthSizeClass) {
+							WindowWidthSizeClass.Compact -> 0F
+							else -> 1F
+						}
+					).value
+				),
+			),
+			modifier = Modifier.fillMaxWidth(),
 		) {
-			Column(
-				horizontalAlignment = Alignment.End,
-				verticalArrangement = Arrangement.Center,
+			Row(
+				horizontalArrangement = Arrangement.spacedBy(12.dp),
+				modifier = Modifier
+					.clip(SmoothRoundedCornerShape(radius = 16.dp))
+					.hazeEffect(data.hazeState, data.hazeStyle)
+					.padding(20.dp),
 			) {
-				Text(
-					text = data.currentAccount?.name ?: loginAccount.current,
-					color = MaterialTheme.colorScheme.onSurface,
-					style = MaterialTheme.typography.headlineLarge,
-				)
-				AnimatedVisibility(data.currentAccount != null) {
-					Text(
-						text = data.currentAccount?.let { account ->
-							when (account) {
-								is Account.Online -> onlineAccount.current
-								is Account.Offline -> offlineAccount.current
+				Row(
+//					verticalAlignment = Alignment.CenterVertically,
+					horizontalArrangement = Arrangement.spacedBy(12.dp),
+					modifier = Modifier
+						.clip(SmoothRoundedCornerShape(radius = 12.dp))
+						.clickable(onClick = onChangeToGamesPage)
+						.padding(8.dp),
+				) {
+					data.currentAccount?.let { account ->
+						when (account) {
+							is Account.Online -> ShadowedFace(account.uuid)
+							else -> null
+						}
+					} ?: run {
+						ShadowedFace(
+							subject = "X-Steve",
+						)
+					}
+					Column(
+						horizontalAlignment = Alignment.Start,
+						verticalArrangement = Arrangement.spacedBy(8.dp),
+					) {
+						Text(
+							text = data.currentAccount?.name ?: loginAccount.current,
+							color = MaterialTheme.colorScheme.onSurface,
+							style = MaterialTheme.typography.headlineSmall,
+						)
+						AnimatedVisibility(data.currentAccount != null) {
+							Text(
+								text = data.currentAccount?.let { account ->
+									when (account) {
+										is Account.Online -> onlineAccount.current
+										is Account.Offline -> offlineAccount.current
+									}
+								} ?: "",
+								color = MaterialTheme.colorScheme.onSurfaceVariant,
+								fontSize = 18.sp,
+								style = MaterialTheme.typography.titleMedium,
+							)
+						}
+					}
+				}
+				Column(
+					horizontalAlignment = Alignment.CenterHorizontally,
+					verticalArrangement = Arrangement.spacedBy(8.dp),
+					modifier = Modifier
+						.clip(SmoothRoundedCornerShape(radius = 12.dp))
+						.background(MaterialTheme.colorScheme.primary)
+						.clickable {
+							val osName = System.getProperty("os.name").lowercase()
+							val classpathSeparator = when {
+								"win" in osName -> ";"
+								else -> ":"
 							}
-						} ?: "",
-						color = MaterialTheme.colorScheme.onSurfaceVariant,
+							when {
+								data.currentVersion == null -> onChangeToGamesPage()
+								data.currentAccount == null -> onChangeToAccountsPage()
+								else -> data.scope.launch(Dispatchers.IO) {
+									val currentFolder = data.currentFolder!!
+									val currentVersion = data.currentVersion!!
+									val currentAccount = data.currentAccount!!
+									val libraries = listOf(
+										*currentVersion.manifest.libraries.filter { library ->
+											when (library.rule?.os?.name) {
+												null -> true
+												in osName -> true
+												else -> false
+											}
+										}.map { library ->
+											library.downloads?.artifact?.path?.let { path ->
+												File("${currentFolder.path}/libraries", path).absolutePath
+											} ?: run {
+												val (groupId, artifactId, version) = library.name.split(":")
+												val groups = groupId.split(".")
+												File("${currentFolder.path}/libraries", "${groups.joinToString("/")}/$artifactId/$version/$artifactId-$version.jar").absolutePath
+											}
+										}.toTypedArray(),
+										File(currentVersion.path, "${currentVersion.name}.jar").absolutePath
+									)
+									val process = buildGameProcess(
+										java = "java",
+										mainClass = currentVersion.manifest.mainClass,
+										arguments = currentVersion.manifest.arguments,
+										variables = mapOf(
+											"auth_player_name" to currentAccount.name,
+											"version_name" to currentVersion.manifest.id,
+											"game_directory" to currentFolder.path,
+											"assets_root" to "${currentFolder.path}/assets",
+											"assets_index_name" to currentVersion.manifest.assetIndex.id,
+											"auth_uuid" to currentAccount.uuid,
+											"auth_access_token" to currentAccount.token,
+											"user_type" to "msa",
+											"version_type" to "MCL 1.0.0",
+											"natives_directory" to File(currentVersion.path, "natives").absolutePath,
+											"launcher_name" to "Minecraft Composable Launcher",
+											"launcher_version" to "1.0.0",
+											"classpath" to listOf(*libraries.toTypedArray(), File(currentVersion.path, "${currentVersion.name}.jar").absolutePath).joinToString(classpathSeparator),
+											"classpath_separator" to classpathSeparator,
+											"library_directory" to File(currentFolder.path, "libraries").absolutePath,
+										),
+										features = mapOf(),
+									).start()
+									val error = async(Dispatchers.IO) {
+										while (process.isAlive) {
+											process.errorReader().readLine()?.let(System.err::println)
+										}
+									}
+									val input = async(Dispatchers.IO) {
+										while (process.isAlive) {
+											process.inputReader().readLine()?.let(::println)
+										}
+									}
+									awaitAll(input, error)
+									println("Process done")
+								}
+							}
+						}
+						.padding(
+							horizontal = 16.dp,
+							vertical = 8.dp,
+						),
+				) {
+					Text(
+						text = launch.current,
+						color = MaterialTheme.colorScheme.onPrimary,
+						overflow = TextOverflow.Ellipsis,
+						maxLines = 1,
+						style = MaterialTheme.typography.headlineSmall,
+					)
+					Text(
+						text = data.currentVersion?.manifest?.id ?: selectVersion.current,
+						color = MaterialTheme.colorScheme.outlineVariant,
+						fontSize = 18.sp,
+						overflow = TextOverflow.Ellipsis,
+						maxLines = 1,
 						style = MaterialTheme.typography.titleMedium,
 					)
 				}
 			}
-			data.currentAccount?.let { account ->
-				when (account) {
-					is Account.Online -> ShadowedFace(account.uuid)
-					else -> null
-				}
-			} ?: run {
-				ShadowedFace(
-					subject = "X-Steve",
-				)
-			}
-		}
-		Spacer(
-			modifier = Modifier.weight(1F),
-		)
-		Column(
-			horizontalAlignment = Alignment.CenterHorizontally,
-			modifier = Modifier
-				.width(260.dp)
-				.clip(SmoothRoundedCornerShape(radius = 16.dp))
-				.background(MaterialTheme.colorScheme.primary)
-				.clickable {
-					val osName = System.getProperty("os.name").lowercase()
-					val classpathSeparator = when {
-						"win" in osName -> ";"
-						else -> ":"
-					}
-					when {
-						data.currentVersion == null -> onChangeToGamesPage()
-						data.currentAccount == null -> onChangeToAccountsPage()
-						else -> data.scope.launch(Dispatchers.IO) {
-							val currentFolder = data.currentFolder!!
-							val currentVersion = data.currentVersion!!
-							val currentAccount = data.currentAccount!!
-							val libraries = listOf(
-								*currentVersion.manifest.libraries.filter { library ->
-									when (library.rule?.os?.name) {
-										null -> true
-										in osName -> true
-										else -> false
-									}
-								}.map { library ->
-									library.downloads?.artifact?.path?.let { path ->
-										File("${currentFolder.path}/libraries", path).absolutePath
-									} ?: run {
-										val (groupId, artifactId, version) = library.name.split(":")
-										val groups = groupId.split(".")
-										File("${currentFolder.path}/libraries", "${groups.joinToString("/")}/$artifactId/$version/$artifactId-$version.jar").absolutePath
-									}
-								}.toTypedArray(),
-								File(currentVersion.path, "${currentVersion.name}.jar").absolutePath
-							)
-							val process = buildGameProcess(
-								java = "java",
-								mainClass = currentVersion.manifest.mainClass,
-								arguments = currentVersion.manifest.arguments,
-								variables = mapOf(
-									"auth_player_name" to currentAccount.name,
-									"version_name" to currentVersion.manifest.id,
-									"game_directory" to currentFolder.path,
-									"assets_root" to "${currentFolder.path}/assets",
-									"assets_index_name" to currentVersion.manifest.assetIndex.id,
-									"auth_uuid" to currentAccount.uuid,
-									"auth_access_token" to currentAccount.token,
-									"user_type" to "msa",
-									"version_type" to "MCL 1.0.0",
-									"natives_directory" to File(currentVersion.path, "natives").absolutePath,
-									"launcher_name" to "Minecraft Composable Launcher",
-									"launcher_version" to "1.0.0",
-									"classpath" to listOf(*libraries.toTypedArray(), File(currentVersion.path, "${currentVersion.name}.jar").absolutePath).joinToString(classpathSeparator),
-									"classpath_separator" to classpathSeparator,
-									"library_directory" to File(currentFolder.path, "libraries").absolutePath,
-								),
-								features = mapOf(),
-							).start()
-							val error = async(Dispatchers.IO) {
-								while (process.isAlive) {
-									process.errorReader().readLine()?.let(System.err::println)
-								}
-							}
-							val input = async(Dispatchers.IO) {
-								while (process.isAlive) {
-									process.inputReader().readLine()?.let(::println)
-								}
-							}
-							awaitAll(input, error)
-							println("Process done")
-						}
-					}
-				}
-				.padding(16.dp),
-		) {
-			Text(
-				text = launch.current,
-				color = MaterialTheme.colorScheme.onPrimary,
-				style = MaterialTheme.typography.headlineSmall,
-			)
-			Text(
-				text = data.currentVersion?.manifest?.id ?: selectVersion.current,
-				color = MaterialTheme.colorScheme.outlineVariant,
-				style = MaterialTheme.typography.titleMedium,
-			)
 		}
 	}
 }

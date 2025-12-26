@@ -55,7 +55,7 @@ class Data {
 	val hazeStyle
 		@Composable
 		get() = HazeStyle(
-			tint = HazeTint(MaterialTheme.colorScheme.surface.copy(alpha = 0.5F)),
+			tint = HazeTint(MaterialTheme.colorScheme.surface.copy(alpha = 0.75F)),
 			blurRadius = 10.dp,
 			noiseFactor = 0F,
 		)

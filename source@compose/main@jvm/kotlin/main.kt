@@ -76,7 +76,7 @@ fun main() = application {
 				}
 			}
 		}
-		setMinimumSize(420.dp, 540.dp)
+		setMinimumSize(520.dp, 620.dp)
 		window.disableMaximize()
 		Box(
 			modifier = Modifier
@@ -115,7 +115,7 @@ fun FrameWindowScope.setMinimumSize(
 ) {
 	val density = LocalDensity.current
 	LaunchedEffect(density) {
-		window.minimumSize = Dimension(width.value.toInt(), height.value.toInt())
+		window.minimumSize = Dimension(width.value.toInt() + 16, height.value.toInt() + 16)
 	}
 }
 
